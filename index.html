@@ -379,13 +379,28 @@
         </button>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <script>
+        // Configuração Nativa do Firebase (Injetada automaticamente pela plataforma)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'brindes-app-id';
+        let firebaseConfig = {};
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch(e) {}
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let userId = null;
+
         // Dados extraídos do documento PDF
         const productsData = [
             { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
             { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
-            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" }, // null indica "Valor a confirmar"
+            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" },
             { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
             { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
             { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
@@ -402,7 +417,8 @@
             selectedCategory: "Todos",
             categories: ["Todos", ...new Set(productsData.map(p => p.category))],
             ordersHistory: [], 
-            userBalance: 3000.00 // Novo Saldo inicial do usuário (R$ 3.000,00)
+            userBalance: 3000.00,
+            email: null // Mantém o usuário logado no Estado
         };
 
         // Elementos do DOM
@@ -418,21 +434,18 @@
             balanceWarning: document.getElementById('balanceWarning'),
             checkoutBtn: document.getElementById('checkoutBtn'),
             
-            // Novos Elementos Checkout
             checkoutForm: document.getElementById('checkoutForm'),
             separationDate: document.getElementById('separationDate'),
             dateErrorMsg: document.getElementById('dateErrorMsg'),
             btnToday: document.getElementById('btnToday'),
             orderNotes: document.getElementById('orderNotes'),
 
-            // Dashboard
             statUnits: document.getElementById('stat-units'),
             statInvested: document.getElementById('stat-invested'),
             statItems: document.getElementById('stat-items'),
             statBalance: document.getElementById('stat-balance'),
             headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
             
-            // Mobile & Modals
             cartSidebar: document.getElementById('cartSidebar'),
             cartOverlay: document.getElementById('cartOverlay'),
             mobileCartBtn: document.getElementById('mobileCartBtn'),
@@ -442,7 +455,6 @@
             successModalContent: document.getElementById('successModalContent'),
             closeModalBtn: document.getElementById('closeModalBtn'),
 
-            // Novos Elementos Histórico
             myOrdersBtn: document.getElementById('myOrdersBtn'),
             ordersModal: document.getElementById('ordersModal'),
             ordersModalBg: document.getElementById('ordersModalBg'),
@@ -450,7 +462,6 @@
             closeOrdersBtn: document.getElementById('closeOrdersBtn'),
             ordersListContainer: document.getElementById('ordersListContainer'),
 
-            // Novos Elementos Login
             loginScreen: document.getElementById('loginScreen'),
             loginForm: document.getElementById('loginForm'),
             loginEmail: document.getElementById('loginEmail'),
@@ -458,13 +469,11 @@
             userNameDisplay: document.getElementById('userNameDisplay'),
             logoutBtn: document.getElementById('logoutBtn'),
             
-            // Novos Elementos Confirmação Logout
             logoutConfirmModal: document.getElementById('logoutConfirmModal'),
             logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'),
             logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
             logoutCancelBtn: document.getElementById('logoutCancelBtn'),
             
-            // Novos Elementos Confirmação de Ações Genéricas
             actionConfirmModal: document.getElementById('actionConfirmModal'),
             actionConfirmModalContent: document.getElementById('actionConfirmModalContent'),
             actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
@@ -474,10 +483,7 @@
             actionCancelBtn: document.getElementById('actionCancelBtn'),
             actionConfirmBtn: document.getElementById('actionConfirmBtn'),
 
-            // Custom Context Menu
             customContextMenu: document.getElementById('customContextMenu'),
-            
-            // Botão de Tema
             themeToggleBtn: document.getElementById('themeToggleBtn')
         };
 
@@ -492,31 +498,83 @@
             }
         });
 
-        // --- SISTEMA DE LOGIN (Simulado) ---
-        function checkAuth() {
-            const userEmail = localStorage.getItem('brindesUser');
-            if (userEmail) {
-                // Usuário logado: esconde tela de login
+        // --- SISTEMA DE LOGIN e BANCO DE DADOS EM NUVEM (FIRESTORE) ---
+        function checkAuthUI() {
+            if (State.email) {
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
-                // Formatar nome a partir do email (ex: joao.silva@ -> Joao Silva)
-                let namePart = userEmail.split('@')[0];
+                let namePart = State.email.split('@')[0];
                 let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 els.userNameDisplay.textContent = formattedName;
             } else {
-                // Usuário deslogado: mostra tela de login
                 els.loginScreen.classList.remove('hidden');
                 setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
             }
         }
 
-        els.loginForm?.addEventListener('submit', (e) => {
+        async function saveToFirestore() {
+            if (!userId) return;
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'brindes', 'state');
+            try {
+                await setDoc(docRef, {
+                    email: State.email || null,
+                    cart: State.cart,
+                    ordersHistory: JSON.stringify(State.ordersHistory),
+                    userBalance: State.userBalance
+                });
+            } catch (error) {
+                console.error("Erro ao salvar no banco de dados:", error);
+            }
+        }
+
+        async function loadFromFirestore() {
+            if (!userId) return;
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'brindes', 'state');
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    State.email = data.email || null;
+                    State.cart = data.cart || {};
+                    State.ordersHistory = data.ordersHistory ? JSON.parse(data.ordersHistory) : [];
+                    State.userBalance = data.userBalance !== undefined ? data.userBalance : 3000.00;
+                    
+                    // Recalcular o estoque deduzindo os itens do histórico (ignora os cancelados)
+                    State.products = JSON.parse(JSON.stringify(productsData));
+                    State.ordersHistory.forEach(order => {
+                        if (order.status !== 'Cancelado') {
+                            Object.keys(order.items).forEach(id => {
+                                const product = State.products.find(p => p.id === id);
+                                if (product) product.stock -= order.items[id];
+                            });
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao carregar do banco de dados:", error);
+            }
+        }
+
+        // Submeter Formulário de Login
+        els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = els.loginEmail.value;
             if(email) {
-                localStorage.setItem('brindesUser', email);
-                checkAuth();
+                State.email = email;
+                
+                // Feedback visual de carregamento
+                const btn = els.loginForm.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Conectando...';
+                btn.disabled = true;
+                lucide.createIcons();
+
+                await saveToFirestore();
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                checkAuthUI();
             }
         });
 
@@ -536,19 +594,29 @@
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
         });
 
-        // Confirmar logout
-        els.logoutConfirmBtn?.addEventListener('click', () => {
+        // Confirmar logout e resetar estado
+        els.logoutConfirmBtn?.addEventListener('click', async () => {
             els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
             els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             
-            localStorage.removeItem('brindesUser');
+            State.email = null;
+            State.cart = {};
+            State.ordersHistory = [];
+            State.userBalance = 3000.00;
+            State.products = JSON.parse(JSON.stringify(productsData)); // Reseta estoque original
             els.loginEmail.value = '';
             if(els.loginPassword) els.loginPassword.value = '';
-            checkAuth();
+            
+            await saveToFirestore();
+            
+            initDashboard();
+            renderProducts();
+            updateCartUI();
+            checkAuthUI();
         });
 
-        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES (Substitui o window.confirm) ---
+        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES ---
         let pendingActionCallback = null;
 
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
@@ -592,21 +660,17 @@
             els.actionCancelBtn.click(); // Usa a lógica de fechar no botão de cancelar
         });
 
-        // --- SISTEMA DE MENU DE CONTEXTO PERSONALIZADO (Botão Direito) ---
+        // --- SISTEMA DE MENU DE CONTEXTO PERSONALIZADO ---
         document.addEventListener('contextmenu', (e) => {
-            // Previne o menu padrão só nas áreas do sistema, mas não em inputs se quiser permitir copiar/colar
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
-                
                 const menu = els.customContextMenu;
                 menu.classList.remove('hidden');
                 
-                // Calcula dimensões após remover a classe hidden
                 const rect = menu.getBoundingClientRect();
                 let x = e.clientX;
                 let y = e.clientY;
                 
-                // Impede que o menu saia da tela
                 if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
                 if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
                 
@@ -621,10 +685,7 @@
             }
         });
 
-        // Ações do Menu de Contexto
-        document.getElementById('contextReload')?.addEventListener('click', () => {
-            location.reload();
-        });
+        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
         document.getElementById('contextTheme')?.addEventListener('click', () => {
             els.themeToggleBtn.click();
             els.customContextMenu.classList.add('hidden');
@@ -634,48 +695,10 @@
             window.print();
         });
 
-        // --- SISTEMA DE ARMAZENAMENTO LOCAL (Funcionalidade Real) ---
-        function saveToStorage() {
-            localStorage.setItem('brindesCart', JSON.stringify(State.cart));
-            localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
-            localStorage.setItem('brindesBalance', State.userBalance.toString());
-        }
-
-        function loadFromStorage() {
-            const savedCart = localStorage.getItem('brindesCart');
-            const savedOrders = localStorage.getItem('brindesOrders');
-            const savedBalance = localStorage.getItem('brindesBalance');
-            
-            if (savedCart) State.cart = JSON.parse(savedCart);
-            if (savedOrders) State.ordersHistory = JSON.parse(savedOrders);
-            if (savedBalance) State.userBalance = parseFloat(savedBalance);
-
-            // Recalcular o estoque real deduzindo os itens já solicitados no histórico
-            State.ordersHistory.forEach(order => {
-                Object.keys(order.items).forEach(id => {
-                    const product = State.products.find(p => p.id === id);
-                    if (product) {
-                        product.stock -= order.items[id];
-                    }
-                });
-            });
-        }
-        // ------------------------------------------------------------
-
+        // --- FUNÇÕES DE RENDERIZAÇÃO E NEGÓCIO ---
         const formatMoney = (value) => {
             if (value === null) return "Valor a confirmar";
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        };
-
-        const getCategoryIcon = (category) => {
-            const map = {
-                'Papelaria': 'pencil-ruler',
-                'Acessórios': 'gem',
-                'Térmicos & Bebidas': 'glass-water',
-                'Cutelaria': 'chef-hat',
-                'Colecionáveis': 'box'
-            };
-            return map[category] || 'tag';
         };
 
         function initDashboard() {
@@ -683,11 +706,9 @@
             const totalInvested = State.products.reduce((acc, curr) => acc + (curr.price ? curr.price * curr.stock : 0), 0);
             
             els.statUnits.textContent = totalUnits;
-            // Formatação mais próxima do mockup para o valor investido
             els.statInvested.textContent = "R$ " + (totalInvested / 1000).toFixed(1).replace('.', ',') + "k";
             els.statItems.textContent = productsData.length;
             
-            // Atualiza saldos visuais do comercial
             if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
             if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
         }
@@ -714,8 +735,6 @@
 
         function renderProducts() {
             els.productsGrid.innerHTML = '';
-            
-            // Filtrar
             let filtered = State.products.filter(p => {
                 const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
                 const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || 
@@ -744,10 +763,7 @@
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 
                 card.innerHTML = `
-                    <!-- Top Area (Visual/Icon) -->
                     <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[160px]">
-                        
-                        <!-- Badges -->
                         <div class="absolute top-3 left-3 flex gap-2">
                             <span class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
                         </div>
@@ -756,18 +772,13 @@
                                 Estoque: ${product.stock} un.
                             </span>
                         </div>
-                        
-                        <!-- Ícone Placeholder -->
                         <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
                             <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
                         </div>
                     </div>
-
-                    <!-- Bottom Area (Info) -->
                     <div class="p-4 flex-1 flex flex-col">
                         <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
                         <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        
                         <div class="mt-auto pt-3 flex items-end justify-between">
                             <div class="flex flex-col">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
@@ -775,22 +786,14 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Botão Adicionar com Seletor de Quantidade -->
                     <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-2">
-                            <!-- Seletor numérico -->
                             <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
-                                <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
+                                <button onclick="window.changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
                                 <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
-                                <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
+                                <button onclick="window.changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
                             </div>
-                            <!-- Botão Adicionar -->
-                            <button 
-                                onclick="addMultipleToCart('${product.id}')"
-                                class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}"
-                                ${isOutOfStock ? 'disabled' : ''}
-                            >
+                            <button onclick="window.addMultipleToCart('${product.id}')" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
                                 <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i>
                                 ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
                             </button>
@@ -799,79 +802,62 @@
                 `;
                 els.productsGrid.appendChild(card);
             });
-
-            // Recarregar ícones inseridos dinamicamente
             lucide.createIcons();
         }
 
-        // --- NOVAS FUNÇÕES: Controle de Quantidade no Card ---
+        // --- EXPORTANDO FUNÇÕES PARA O ESCOPO GLOBAL DO BROWSER (WINDOW) ---
         window.changeCardQty = function(productId, delta) {
             const input = document.getElementById(`card-qty-${productId}`);
             if(!input) return;
-            
             const product = State.products.find(p => p.id === productId);
             const qtyInCart = State.cart[productId] || 0;
             const stockRemaining = product.stock - qtyInCart;
-            
             let newVal = parseInt(input.value) + delta;
             
             if (newVal < 1) newVal = 1;
             if (newVal > stockRemaining) newVal = stockRemaining;
-            
             input.value = newVal;
         };
 
         window.addMultipleToCart = function(productId) {
             const input = document.getElementById(`card-qty-${productId}`);
             let qtyToAdd = input ? parseInt(input.value) : 1;
-            
             const product = State.products.find(p => p.id === productId);
             const currentQty = State.cart[productId] || 0;
             const stockRemaining = product.stock - currentQty;
             
-            // Proteção contra valores digitados manualmente de forma errada
             if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
             if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
             
             if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
                 State.cart[productId] = currentQty + qtyToAdd;
                 updateCartUI();
-                renderProducts(); // Atualiza contador de estoque visual
-                saveToStorage();
+                renderProducts();
+                saveToFirestore();
                 
-                // Animação de feedback no botão carrinho mobile
                 els.mobileCartBtn.classList.add('scale-110');
                 setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
             }
-        };
-
-        // Mantida para retrocompatibilidade
-        window.addToCart = function(productId) {
-            window.addMultipleToCart(productId);
         };
 
         window.updateQuantity = function(productId, delta) {
             const product = State.products.find(p => p.id === productId);
             let newQty = (State.cart[productId] || 0) + delta;
             
-            if (newQty <= 0) {
-                delete State.cart[productId];
-            } else if (newQty <= product.stock) {
-                State.cart[productId] = newQty;
-            } else {
-                return; // Não permite ultrapassar estoque
-            }
+            if (newQty <= 0) delete State.cart[productId];
+            else if (newQty <= product.stock) State.cart[productId] = newQty;
+            else return;
             
             updateCartUI();
             renderProducts();
-            saveToStorage();
+            saveToFirestore();
         };
 
         window.removeFromCart = function(productId) {
             delete State.cart[productId];
             updateCartUI();
             renderProducts();
-            saveToStorage();
+            saveToFirestore();
         };
 
         function updateCartUI() {
@@ -884,7 +870,7 @@
                 els.cartItemsContainer.appendChild(els.emptyCartState);
                 els.emptyCartState.classList.remove('hidden');
                 els.checkoutBtn.disabled = true;
-                els.checkoutForm.classList.add('hidden'); // Oculta formulário de data
+                els.checkoutForm.classList.add('hidden');
                 els.cartTotalItems.textContent = "0";
                 
                 if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
@@ -896,7 +882,7 @@
             }
 
             els.emptyCartState.classList.add('hidden');
-            els.checkoutForm.classList.remove('hidden'); // Exibe formulário de data
+            els.checkoutForm.classList.remove('hidden');
 
             cartKeys.forEach(id => {
                 const product = State.products.find(p => p.id === id);
@@ -916,17 +902,15 @@
                     </div>
                     
                     <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                        <button onclick="window.updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
                             <i data-lucide="minus" class="w-3 h-3"></i>
                         </button>
                         <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
-                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                        <button onclick="window.updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
                             <i data-lucide="plus" class="w-3 h-3"></i>
                         </button>
                     </div>
-
-                    <!-- Botão remover -->
-                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
+                    <button onclick="window.removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 `;
@@ -935,7 +919,6 @@
 
             els.cartTotalItems.textContent = totalItems;
             
-            // Validação do Saldo do Usuário
             if (els.cartTotalValue) {
                 els.cartTotalValue.textContent = formatMoney(totalValue);
                 if (totalValue > State.userBalance) {
@@ -955,31 +938,27 @@
                  els.checkoutBtn.disabled = false;
             }
             
-            // Atualiza badge mobile
             els.mobileCartBadge.textContent = totalItems;
             if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
 
             lucide.createIcons();
         }
-
         
-        // Busca
         els.searchInput.addEventListener('input', (e) => {
             State.searchQuery = e.target.value;
             renderProducts();
         });
 
-        // Controles Sidebar Mobile
         const toggleSidebar = () => {
             const isClosed = els.cartSidebar.classList.contains('translate-x-full');
             if (isClosed) {
                 els.cartSidebar.classList.remove('translate-x-full');
                 els.cartOverlay.classList.remove('hidden');
-                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); // Trigger transition
+                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10);
             } else {
                 els.cartSidebar.classList.add('translate-x-full');
                 els.cartOverlay.classList.remove('opacity-100');
-                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300); // Wait for transition
+                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
             }
         };
 
@@ -987,14 +966,13 @@
         els.closeCartBtn.addEventListener('click', toggleSidebar);
         els.cartOverlay.addEventListener('click', toggleSidebar);
 
-        // Configuração do Campo de Data
         const setupDateInput = () => {
             const today = new Date();
             const tzOffset = today.getTimezoneOffset() * 60000;
             const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
             
             els.separationDate.min = localISOTime;
-            els.separationDate.value = ""; // Removido o preenchimento padrão para forçar o usuário a escolher
+            els.separationDate.value = "";
 
             els.btnToday.addEventListener('click', () => {
                 els.separationDate.value = localISOTime;
@@ -1002,7 +980,6 @@
                 if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
             });
 
-            // Limpa o erro caso o usuário selecione a data manualmente
             els.separationDate.addEventListener('change', () => {
                 if (els.separationDate.value) {
                     els.separationDate.classList.remove('border-red-500', 'ring-red-500');
@@ -1011,15 +988,11 @@
             });
         };
 
-        // Lógica de Checkout (Finalizar Solicitação)
         els.checkoutBtn.addEventListener('click', () => {
-            // Validação visual da data
             if (!els.separationDate.value) {
                 els.separationDate.classList.add('border-red-500', 'ring-red-500');
                 els.dateErrorMsg.classList.remove('hidden');
                 els.separationDate.focus();
-                
-                // Ocultar mensagem e borda após alguns segundos
                 setTimeout(() => {
                     els.separationDate.classList.remove('border-red-500', 'ring-red-500');
                     els.dateErrorMsg.classList.add('hidden');
@@ -1027,7 +1000,6 @@
                 return;
             }
 
-            // Cria o objeto do novo pedido
             const newOrder = {
                 id: 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
                 date: new Date().toISOString(),
@@ -1037,7 +1009,6 @@
                 status: 'Enviado para Separação'
             };
 
-            // Deduz estoque localmente para simular o banco de dados e calcula gasto
             let orderTotalValue = 0;
             Object.keys(State.cart).forEach(id => {
                 const productIndex = State.products.findIndex(p => p.id === id);
@@ -1049,48 +1020,35 @@
                 }
             });
 
-            // Deduz do saldo do usuário
             State.userBalance -= orderTotalValue;
-
-            // Adiciona pedido ao histórico (no topo)
             State.ordersHistory.unshift(newOrder);
 
-            // Resetar Carrinho e Form
             State.cart = {};
             els.orderNotes.value = "";
             setupDateInput();
             
-            // Persistir e atualizar tela
-            saveToStorage();
+            saveToFirestore(); // Dispara salvamento em nuvem
             updateCartUI();
             renderProducts();
             initDashboard();
             
-            // Mostrar Modal de Sucesso
             els.successModal.classList.remove('hidden');
-            // Trigger animation
             setTimeout(() => {
                 els.successModalContent.classList.remove('scale-95', 'opacity-0');
                 els.successModalContent.classList.add('scale-100', 'opacity-100');
             }, 10);
             
-            // Fechar sidebar no mobile se estiver aberta
             if(!els.cartSidebar.classList.contains('translate-x-full')) {
                 toggleSidebar();
             }
         });
 
-        // Fechar Modal e Resetar
         els.closeModalBtn.addEventListener('click', () => {
             els.successModalContent.classList.remove('scale-100', 'opacity-100');
             els.successModalContent.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                els.successModal.classList.add('hidden');
-            }, 300); // Removemos o reset do carrinho daqui pois já ocorre na finalização
+            setTimeout(() => els.successModal.classList.add('hidden'), 300);
         });
 
-        // --- SISTEMA DE HISTÓRICO DE PEDIDOS ---
         const renderOrdersHistory = () => {
             els.ordersListContainer.innerHTML = '';
             
@@ -1107,7 +1065,7 @@
             State.ordersHistory.forEach(order => {
                 const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
                 const sepDateParts = order.separationDate.split('-');
-                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; // Converter YYYY-MM-DD para DD/MM/YYYY
+                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`;
                 const isCancelled = order.status === 'Cancelado';
 
                 const card = document.createElement('div');
@@ -1117,9 +1075,8 @@
                     : 'bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'
                 }`;
                 
-                // Montar lista de itens deste pedido
                 let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = productsData.find(p => p.id === id); // Pega nome do dado estático original
+                    const productInfo = productsData.find(p => p.id === id);
                     const name = productInfo ? productInfo.name : id;
                     return `
                         <li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
@@ -1159,10 +1116,10 @@
 
                     ${!isCancelled ? `
                     <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
-                        <button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
+                        <button onclick="window.editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
                             <i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar
                         </button>
-                        <button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
+                        <button onclick="window.cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
                             <i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar
                         </button>
                     </div>` : ''}
@@ -1184,13 +1141,10 @@
             } else {
                 els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
                 els.ordersModalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    els.ordersModal.classList.add('hidden');
-                }, 300);
+                setTimeout(() => els.ordersModal.classList.add('hidden'), 300);
             }
         };
 
-        // Função de Cancelar Pedido
         window.cancelOrder = function(orderId) {
             showActionConfirm(
                 'Cancelar Solicitação', 
@@ -1200,10 +1154,8 @@
                 () => {
                     const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
                     if(orderIndex === -1) return;
-                    
                     const order = State.ordersHistory[orderIndex];
                     
-                    // Restaurar Estoque e Saldo
                     let orderCost = 0;
                     Object.keys(order.items).forEach(itemId => {
                         const product = State.products.find(p => p.id === itemId);
@@ -1216,8 +1168,7 @@
                     State.userBalance += orderCost;
                     order.status = 'Cancelado';
                     
-                    // Salvar e atualizar interface
-                    saveToStorage();
+                    saveToFirestore();
                     renderOrdersHistory();
                     renderProducts();
                     initDashboard();
@@ -1225,14 +1176,12 @@
             );
         };
 
-        // Função de Alterar Pedido (Puxa pro Carrinho)
         window.editOrder = function(orderId) {
             const proceedWithEdit = () => {
                 const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
                 if(orderIndex === -1) return;
                 const order = State.ordersHistory[orderIndex];
                 
-                // Reverter custos e estoque temporariamente
                 let orderCost = 0;
                 Object.keys(order.items).forEach(itemId => {
                     const product = State.products.find(p => p.id === itemId);
@@ -1244,26 +1193,20 @@
                 
                 State.userBalance += orderCost;
                 
-                // Mover para o carrinho e preencher os dados
                 State.cart = { ...order.items };
                 els.separationDate.value = order.separationDate;
                 els.orderNotes.value = order.notes || '';
                 
-                // Remover o pedido original do histórico
                 State.ordersHistory.splice(orderIndex, 1);
                 
-                // Salvar e atualizar interface
-                saveToStorage();
+                saveToFirestore();
                 renderOrdersHistory();
                 renderProducts();
                 initDashboard();
                 updateCartUI();
                 
-                // Fechar modal de histórico e abrir a sidebar do carrinho
                 toggleOrdersModal(); 
-                if(els.cartSidebar.classList.contains('translate-x-full')) {
-                    toggleSidebar();
-                }
+                if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
             };
 
             if(Object.keys(State.cart).length > 0) {
@@ -1275,23 +1218,35 @@
                     proceedWithEdit
                 );
             } else {
-                proceedWithEdit(); // Se o carrinho estiver vazio, puxa direto
+                proceedWithEdit();
             }
         };
 
-        // Eventos do Modal de Histórico
         els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
         els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
         els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
 
-        window.addEventListener('DOMContentLoaded', () => {
-            checkAuth(); // Verifica o login antes de qualquer coisa
-            loadFromStorage();
+        // Inicialização Principal usando Firestore Nativo
+        window.addEventListener('DOMContentLoaded', async () => {
             setupDateInput();
+            
+            // Autenticação na nuvem em background
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+            userId = auth.currentUser?.uid;
+
+            // Carrega os dados reais atrelados à conta deste usuário na nuvem
+            await loadFromFirestore();
+            
+            // Renderiza a interface
             initDashboard();
             renderCategories();
             renderProducts();
             updateCartUI();
+            checkAuthUI(); 
             lucide.createIcons();
         });
 
