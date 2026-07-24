@@ -31,43 +31,18 @@
         }
     </script>
     <style>
-        /* Estilos personalizados para barra de rolagem e transições suaves */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-        .transition-all-ease {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        /* Ocultar barra de rolagem no carrinho mas permitir scroll */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        /* Remover setas nativas do input number */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .transition-all-ease { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
     </style>
 
-    <!-- Script de inicialização do Tema (Evita piscar branco antes de carregar o dark mode) -->
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -92,11 +67,11 @@
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail Corporativo</label>
-                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="nome.sobrenome@empresa.com">
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="nome.sobrenome@empresa.com">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
                 </div>
                 <button type="submit" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
@@ -106,164 +81,122 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL (Esquerda) -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         
-        <!-- Header -->
         <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 transition-colors duration-300">
             <div>
-                <!-- Logo Light Mode -->
                 <img src="https://i.imgur.com/DeN7M4G.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain block dark:hidden">
-                <!-- Logo Dark Mode -->
                 <img src="https://i.imgur.com/2HfPsZz.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain hidden dark:block">
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                
-                <!-- Novo: Meu Saldo no Header -->
                 <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
                     <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
-                    <strong class="text-sm" id="headerBalanceDisplay">R$ 3.000,00</strong>
+                    <strong class="text-sm" id="headerBalanceDisplay">R$ 0,00</strong>
                 </div>
 
-                <!-- Info do Usuário e Logout -->
                 <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
                     <div class="text-right">
                         <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
                     </div>
-                    
-                    <!-- Botão de Alternar Tema -->
-                    <button id="themeToggleBtn" type="button" title="Mudar Tema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 transition-colors ml-1">
-                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <button id="themeToggleBtn" type="button" title="Mudar Tema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 text-slate-500 transition-colors ml-1">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-slate-300"></i>
                         <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
                     </button>
-
-                    <button id="logoutBtn" type="button" title="Sair do sistema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 text-slate-400 transition-colors">
+                    <button id="logoutBtn" type="button" title="Sair do sistema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors">
                         <i data-lucide="power" class="w-4 h-4"></i>
                     </button>
                 </div>
 
-                <!-- Botão de Histórico -->
-                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
                     <i data-lucide="list-ordered" class="w-4 h-4"></i>
                     <span class="hidden md:inline">Histórico</span>
                 </button>
                 
                 <div class="relative w-full md:w-80">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                    <input 
-                        type="text" 
-                        id="searchInput"
-                        placeholder="Buscar caneca, moleskine..." 
-                        class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white"
-                    >
+                    <input type="text" id="searchInput" placeholder="Buscar caneca, moleskine..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent rounded-lg text-sm outline-none transition-all-ease text-slate-900 dark:text-white">
                 </div>
             </div>
 
-            <!-- Botão mobile para abrir carrinho -->
             <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2">
                 <i data-lucide="shopping-cart"></i>
-                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
             </button>
         </header>
 
-        <!-- Área Rolável -->
         <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col">
-            
-            <!-- Info Banner -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
-                <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"></i>
-                <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na planilha de controle (Base 2026).</p>
-            </div>
-
-            <!-- Dashboard Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
                     <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-units">--</strong>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Valor Investido</span>
                     <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-invested">--</strong>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
                     <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm flex flex-col justify-center transition-colors">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm flex flex-col justify-center">
                     <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
                     <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="stat-balance">--</strong>
                 </div>
             </div>
 
-            <!-- Filtros de Categoria -->
             <div class="flex items-center justify-between mb-6">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters">
-                    <!-- Botões de categoria serão inseridos via JS -->
-                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters"></div>
                 <span class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
             </div>
 
-            <!-- Grid de Produtos -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid">
-                <!-- Cards de produtos serão inseridos via JS -->
-            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid"></div>
 
-            <!-- Novo: Rodapé -->
             <footer class="mt-auto pt-10 pb-4 text-center w-full">
                 <p class="text-xs text-slate-400 dark:text-slate-500 font-medium tracking-wide">
-                    &copy; 2026 Zattar Seguros &bull; Desenvolvido pelo time de Marketing
+                    &copy; 2026 Zattar Seguros &bull; Criado pelo time de Marketing
                 </p>
             </footer>
         </div>
     </main>
 
-    <!-- SIDEBAR - CARRINHO DE SOLICITAÇÃO -->
+    <!-- SIDEBAR CARRINHO -->
     <aside id="cartSidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-2xl transform translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 z-40 flex flex-col">
-        
-        <!-- Header Sidebar -->
         <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
             <div>
                 <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
-                    Sua Solicitação
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Sua Solicitação
                 </h2>
-                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Ref: ABA 2026</span>
+                <span class="text-xs text-slate-500 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Ref: ABA 2026</span>
             </div>
-            <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+            <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 rounded-lg hover:bg-slate-100">
                 <i data-lucide="x"></i>
             </button>
         </div>
 
-        <!-- Lista de Itens no Carrinho -->
         <div class="flex-1 overflow-y-auto p-4 space-y-4" id="cartItemsContainer">
-            <!-- Estado Vazio -->
-            <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 space-y-3">
+            <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 space-y-3">
                 <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
                 <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo ao lado.</p>
             </div>
-            
-            <!-- Itens serão renderizados aqui -->
         </div>
 
-        <!-- Footer Sidebar (Resumo e Botão Finalizar) -->
         <div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            
-            <!-- Novos Campos: Data e Observação -->
             <div id="checkoutForm" class="mb-5 space-y-3 hidden">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Data da Separação <span class="text-red-500">*</span></label>
                     <div class="flex gap-2">
-                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease text-slate-900 dark:text-white [color-scheme:light] dark:[color-scheme:dark]">
-                        <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors">Hoje</button>
+                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 rounded-lg text-sm outline-none dark:text-white">
+                        <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-sm font-medium rounded-lg">Hoje</button>
                     </div>
-                    <span id="dateErrorMsg" class="text-red-500 dark:text-red-400 text-xs mt-1 hidden block">⚠️ Por favor, selecione uma data de separação.</span>
+                    <span id="dateErrorMsg" class="text-red-500 text-xs mt-1 hidden block">⚠️ Selecione a data.</span>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Motivo / Cliente (Opcional)</label>
-                    <textarea id="orderNotes" rows="2" placeholder="Ex: Reunião com diretoria da XPTO..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease resize-none text-slate-900 dark:text-white"></textarea>
+                    <textarea id="orderNotes" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 rounded-lg text-sm outline-none resize-none dark:text-white"></textarea>
                 </div>
             </div>
 
@@ -272,351 +205,323 @@
                 <strong class="text-slate-900 dark:text-white text-lg" id="cartTotalItems">0</strong>
             </div>
             
-            <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+            <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 pt-3">
                 <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
                 <div class="text-right">
-                    <strong class="text-brand-600 dark:text-brand-400 text-xl block" id="cartTotalValue">R$ 0,00</strong>
-                    <span id="balanceWarning" class="text-red-500 dark:text-red-400 text-[10px] hidden font-bold mt-1">Saldo insuficiente!</span>
+                    <strong class="text-brand-600 text-xl block" id="cartTotalValue">R$ 0,00</strong>
+                    <span id="balanceWarning" class="text-red-500 text-[10px] hidden font-bold mt-1">Saldo insuficiente!</span>
                 </div>
             </div>
 
-            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-lg font-semibold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
-                <i data-lucide="send" class="w-4 h-4"></i>
-                Enviar Solicitação
+            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold shadow-sm flex justify-center items-center gap-2 disabled:opacity-50" disabled>
+                <i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação
             </button>
         </div>
     </aside>
 
-    <!-- Overlay para mobile quando sidebar está aberta -->
-    <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+    <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm"></div>
 
-    <!-- Modal de Sucesso -->
+    <!-- MODAIS -->
+    <!-- Sucesso -->
     <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="successModalContent">
-            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="successModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-6 mt-2">
-                <i data-lucide="check" class="h-8 w-8 text-green-600 dark:text-green-400"></i>
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6 mt-2">
+                <i data-lucide="check" class="h-8 w-8 text-green-600"></i>
             </div>
             <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Solicitação Enviada!</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-2 text-sm">Sua requisição de brindes foi registrada na planilha de controle e enviada para separação da equipe.</p>
+            <p class="text-center text-slate-500 text-sm">Registrado na planilha e enviado para separação.</p>
         </div>
     </div>
 
-    <!-- Modal de Histórico de Pedidos -->
+    <!-- Histórico -->
     <div id="ordersModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="ordersModalContent">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="ordersModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4 border-b pb-4">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <i data-lucide="history" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
-                    Histórico de Solicitações
+                    <i data-lucide="history" class="w-5 h-5 text-brand-600"></i> Minhas Solicitações
                 </h3>
-                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:bg-slate-100 rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <div class="flex-1 overflow-y-auto pr-2 space-y-4" id="ordersListContainer">
-                <!-- Pedidos serão listados aqui -->
-            </div>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-4" id="ordersListContainer"></div>
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Logout -->
-    <div id="logoutConfirmModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="logoutConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4">
-                <i data-lucide="log-out" class="h-6 w-6 text-red-500 dark:text-red-400"></i>
-            </div>
-            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Tem certeza que deseja desconectar sua conta do Portal de Brindes?</p>
-            <div class="flex gap-3">
-                <button id="logoutCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
-                    Cancelar
-                </button>
-                <button id="logoutConfirmBtn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm">
-                    Sim, sair
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação de Ações Genéricas (Cancelar/Alterar) -->
+    <!-- Ações Genéricas (Logout/Cancelar) -->
     <div id="actionConfirmModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4" id="actionConfirmIconContainer">
-                <i data-lucide="alert-triangle" class="h-6 w-6 text-amber-500 dark:text-amber-400" id="actionConfirmIcon"></i>
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="actionConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" id="actionConfirmIconContainer">
+                <i data-lucide="alert-triangle" class="h-6 w-6" id="actionConfirmIcon"></i>
             </div>
             <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm" id="actionConfirmText">Tem certeza que deseja realizar esta ação?</p>
+            <p class="text-center text-slate-500 mb-6 text-sm" id="actionConfirmText">Tem certeza?</p>
             <div class="flex gap-3">
-                <button id="actionCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
-                    Voltar
-                </button>
-                <button id="actionConfirmBtn" class="flex-1 px-4 py-2 text-white font-medium rounded-lg transition-colors shadow-sm">
-                    Confirmar
-                </button>
+                <button id="actionCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg">Voltar</button>
+                <button id="actionConfirmBtn" class="flex-1 px-4 py-2 text-white font-medium rounded-lg">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- Menu de Contexto Personalizado (Botão Direito) -->
-    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-lg py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
-        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextReload">
+    <!-- Menu Contexto -->
+    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border shadow-xl rounded-lg py-1.5 min-w-[180px] text-sm transition-opacity">
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3" id="contextReload">
             <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
         </button>
-        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextTheme">
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3" id="contextTheme">
             <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
         </button>
         <div class="h-px bg-slate-200 dark:bg-slate-700 my-1.5"></div>
-        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextPrint">
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3" id="contextPrint">
             <i data-lucide="printer" class="w-4 h-4 text-slate-400"></i> Imprimir Tela
         </button>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-        // Configuração Nativa do Firebase (Injetada automaticamente pela plataforma)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'brindes-app-id';
-        let firebaseConfig = {};
-        try {
-            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        } catch(e) {}
+        // === CONFIGURAÇÃO SUPABASE ===
+        // Cole sua URL real do projeto Supabase aqui:
+        const SUPABASE_URL = "https://ykcqnzrcxrroahrqqnej.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4"; 
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let userId = null;
 
-        // Dados extraídos do documento PDF
-        const productsData = [
-            { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
-            { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
-            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" },
-            { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
-            { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
-            { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
-            { id: "TER-002", category: "Térmicos & Bebidas", name: "Caneca — Preta", stock: 13, price: 41.58, icon: "coffee" },
-            { id: "TER-003", category: "Térmicos & Bebidas", name: "Caneca — Branca", stock: 25, price: 39.50, icon: "coffee" },
-            { id: "CUT-001", category: "Cutelaria", name: "Faca de Churrasco", stock: 17, price: 120.00, icon: "utensils" },
-            { id: "COL-001", category: "Colecionáveis", name: "Miniatura Caminhão", stock: 12, price: 240.00, icon: "truck" }
-        ];
-
+        // O Estado da Interface
         const State = {
-            products: JSON.parse(JSON.stringify(productsData)),
+            products: [], // Preenchido com dados da tabela public.produtos
+            categories: ["Todos"], // Preenchido com dados da tabela public.categorias
             cart: {}, 
             searchQuery: "",
             selectedCategory: "Todos",
-            categories: ["Todos", ...new Set(productsData.map(p => p.category))],
-            ordersHistory: [], 
-            userBalance: 3000.00,
-            email: null // Mantém o usuário logado no Estado
+            ordersHistory: [], // Preenchido cruzando public.pedidos e public.pedido-itens
+            userBalance: 0, // Preenchido com public.usuarios
+            email: null
         };
 
-        // Elementos do DOM
         const els = {
-            productsGrid: document.getElementById('productsGrid'),
-            categoryFilters: document.getElementById('categoryFilters'),
-            searchInput: document.getElementById('searchInput'),
-            itemsCountLabel: document.getElementById('itemsCountLabel'),
-            cartItemsContainer: document.getElementById('cartItemsContainer'),
-            emptyCartState: document.getElementById('emptyCartState'),
-            cartTotalItems: document.getElementById('cartTotalItems'),
-            cartTotalValue: document.getElementById('cartTotalValue'),
-            balanceWarning: document.getElementById('balanceWarning'),
-            checkoutBtn: document.getElementById('checkoutBtn'),
-            
-            checkoutForm: document.getElementById('checkoutForm'),
-            separationDate: document.getElementById('separationDate'),
-            dateErrorMsg: document.getElementById('dateErrorMsg'),
-            btnToday: document.getElementById('btnToday'),
-            orderNotes: document.getElementById('orderNotes'),
-
-            statUnits: document.getElementById('stat-units'),
-            statInvested: document.getElementById('stat-invested'),
-            statItems: document.getElementById('stat-items'),
-            statBalance: document.getElementById('stat-balance'),
-            headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
-            
-            cartSidebar: document.getElementById('cartSidebar'),
-            cartOverlay: document.getElementById('cartOverlay'),
-            mobileCartBtn: document.getElementById('mobileCartBtn'),
-            mobileCartBadge: document.getElementById('mobileCartBadge'),
-            closeCartBtn: document.getElementById('closeCartBtn'),
-            successModal: document.getElementById('successModal'),
-            successModalContent: document.getElementById('successModalContent'),
-            closeModalBtn: document.getElementById('closeModalBtn'),
-
-            myOrdersBtn: document.getElementById('myOrdersBtn'),
-            ordersModal: document.getElementById('ordersModal'),
-            ordersModalBg: document.getElementById('ordersModalBg'),
-            ordersModalContent: document.getElementById('ordersModalContent'),
-            closeOrdersBtn: document.getElementById('closeOrdersBtn'),
-            ordersListContainer: document.getElementById('ordersListContainer'),
-
-            loginScreen: document.getElementById('loginScreen'),
-            loginForm: document.getElementById('loginForm'),
-            loginEmail: document.getElementById('loginEmail'),
-            loginPassword: document.getElementById('loginPassword'),
-            userNameDisplay: document.getElementById('userNameDisplay'),
-            logoutBtn: document.getElementById('logoutBtn'),
-            
-            logoutConfirmModal: document.getElementById('logoutConfirmModal'),
-            logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'),
-            logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
-            logoutCancelBtn: document.getElementById('logoutCancelBtn'),
-            
-            actionConfirmModal: document.getElementById('actionConfirmModal'),
-            actionConfirmModalContent: document.getElementById('actionConfirmModalContent'),
-            actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
-            actionConfirmIcon: document.getElementById('actionConfirmIcon'),
-            actionConfirmTitle: document.getElementById('actionConfirmTitle'),
-            actionConfirmText: document.getElementById('actionConfirmText'),
-            actionCancelBtn: document.getElementById('actionCancelBtn'),
-            actionConfirmBtn: document.getElementById('actionConfirmBtn'),
-
-            customContextMenu: document.getElementById('customContextMenu'),
+            // ... (mapeamento mantido idêntico)
+            productsGrid: document.getElementById('productsGrid'), categoryFilters: document.getElementById('categoryFilters'),
+            searchInput: document.getElementById('searchInput'), itemsCountLabel: document.getElementById('itemsCountLabel'),
+            cartItemsContainer: document.getElementById('cartItemsContainer'), emptyCartState: document.getElementById('emptyCartState'),
+            cartTotalItems: document.getElementById('cartTotalItems'), cartTotalValue: document.getElementById('cartTotalValue'),
+            balanceWarning: document.getElementById('balanceWarning'), checkoutBtn: document.getElementById('checkoutBtn'),
+            checkoutForm: document.getElementById('checkoutForm'), separationDate: document.getElementById('separationDate'),
+            dateErrorMsg: document.getElementById('dateErrorMsg'), btnToday: document.getElementById('btnToday'),
+            orderNotes: document.getElementById('orderNotes'), statUnits: document.getElementById('stat-units'),
+            statInvested: document.getElementById('stat-invested'), statItems: document.getElementById('stat-items'),
+            statBalance: document.getElementById('stat-balance'), headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
+            cartSidebar: document.getElementById('cartSidebar'), cartOverlay: document.getElementById('cartOverlay'),
+            mobileCartBtn: document.getElementById('mobileCartBtn'), mobileCartBadge: document.getElementById('mobileCartBadge'),
+            closeCartBtn: document.getElementById('closeCartBtn'), successModal: document.getElementById('successModal'),
+            successModalBg: document.getElementById('successModalBg'), successModalContent: document.getElementById('successModalContent'),
+            closeModalBtn: document.getElementById('closeModalBtn'), myOrdersBtn: document.getElementById('myOrdersBtn'),
+            ordersModal: document.getElementById('ordersModal'), ordersModalBg: document.getElementById('ordersModalBg'),
+            ordersModalContent: document.getElementById('ordersModalContent'), closeOrdersBtn: document.getElementById('closeOrdersBtn'),
+            ordersListContainer: document.getElementById('ordersListContainer'), loginScreen: document.getElementById('loginScreen'),
+            loginForm: document.getElementById('loginForm'), loginEmail: document.getElementById('loginEmail'),
+            loginPassword: document.getElementById('loginPassword'), userNameDisplay: document.getElementById('userNameDisplay'),
+            logoutBtn: document.getElementById('logoutBtn'), actionConfirmModal: document.getElementById('actionConfirmModal'),
+            actionConfirmModalContent: document.getElementById('actionConfirmModalContent'), actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
+            actionConfirmIcon: document.getElementById('actionConfirmIcon'), actionConfirmTitle: document.getElementById('actionConfirmTitle'),
+            actionConfirmText: document.getElementById('actionConfirmText'), actionCancelBtn: document.getElementById('actionCancelBtn'),
+            actionConfirmBtn: document.getElementById('actionConfirmBtn'), customContextMenu: document.getElementById('customContextMenu'),
             themeToggleBtn: document.getElementById('themeToggleBtn')
         };
 
-        // --- SISTEMA DE TEMA (Dark/Light Mode) ---
-        els.themeToggleBtn?.addEventListener('click', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
+        // --- SISTEMA DE INTEGRAÇÃO RELACIONAL SUPABASE ---
+
+        async function carregarDadosRelacionais() {
+            if (!userId || SUPABASE_URL === "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") return;
+            try {
+                // 1. Carregar Dados do Usuário (Saldo) - TABELA: usuarios
+                // MAPEAMENTO DE COLUNAS ASSUMIDO: id, saldo
+                const { data: userData } = await supabase.from('usuarios').select('*').eq('id', userId).single();
+                if (userData && userData.saldo !== undefined) State.userBalance = userData.saldo;
+
+                // 2. Carregar Categorias - TABELA: categorias
+                // MAPEAMENTO DE COLUNAS ASSUMIDO: nome
+                const { data: catData } = await supabase.from('categorias').select('*');
+                if (catData) State.categories = ["Todos", ...catData.map(c => c.nome || c.id)];
+
+                // 3. Carregar Produtos - TABELA: produtos
+                // MAPEAMENTO DE COLUNAS ASSUMIDO: id, nome, categoria, estoque, preco, icone
+                const { data: prodData } = await supabase.from('produtos').select('*');
+                if (prodData) {
+                    State.products = prodData.map(p => ({
+                        id: p.id,
+                        name: p.nome,
+                        category: p.categoria || 'Geral', // se for um ID de categoria na sua tabela, ajuste aqui
+                        stock: p.estoque,
+                        price: p.preco,
+                        icon: p.icone || 'package'
+                    }));
+                }
+
+                // 4. Carregar Histórico - TABELA: pedidos CRUZADO COM pedido-itens
+                // MAPEAMENTO DE COLUNAS ASSUMIDO PEDIDOS: id, data_criacao, data_separacao, observacao, status
+                // MAPEAMENTO DE COLUNAS ASSUMIDO PEDIDO-ITENS: produto_id, quantidade
+                const { data: ordersData } = await supabase.from('pedidos')
+                    .select('*, itens:pedido-itens(*)') // Requer que haja Chave Estrangeira entre pedido-itens e pedidos
+                    .eq('usuario_id', userId)
+                    .order('data_criacao', { ascending: false });
+
+                if (ordersData) {
+                    State.ordersHistory = ordersData.map(o => {
+                        let parsedItems = {};
+                        if (o.itens) {
+                            o.itens.forEach(item => {
+                                parsedItems[item.produto_id] = item.quantidade;
+                            });
+                        }
+                        return {
+                            id: o.id,
+                            date: o.data_criacao,
+                            separationDate: o.data_separacao,
+                            notes: o.observacao,
+                            status: o.status,
+                            items: parsedItems
+                        };
+                    });
+                }
+
+                initDashboard();
+                renderCategories();
+                renderProducts();
+            } catch (err) {
+                console.error("Erro ao puxar dados das tabelas", err);
             }
+        }
+
+        async function processarCheckoutNoBanco(newOrder, orderTotalValue) {
+            // Essa função distribui os dados do carrinho para suas respectivas tabelas
+            try {
+                // 1. Inserir Pedido - TABELA: pedidos
+                const { error: orderErr } = await supabase.from('pedidos').insert({
+                    id: newOrder.id,
+                    usuario_id: userId,
+                    data_criacao: newOrder.date,
+                    data_separacao: newOrder.separationDate,
+                    observacao: newOrder.notes,
+                    status: newOrder.status,
+                    valor_total: orderTotalValue // Se sua tabela tiver coluna valor_total
+                });
+                if(orderErr) throw orderErr;
+
+                // 2. Inserir Itens do Pedido - TABELA: pedido-itens
+                const itemsToInsert = Object.keys(newOrder.items).map(prodId => ({
+                    pedido_id: newOrder.id,
+                    produto_id: prodId,
+                    quantidade: newOrder.items[prodId]
+                }));
+                const { error: itemsErr } = await supabase.from('pedido-itens').insert(itemsToInsert);
+                if(itemsErr) throw itemsErr;
+
+                // 3. Atualizar Saldo do Usuário - TABELA: usuarios
+                await supabase.from('usuarios').update({ saldo: State.userBalance }).eq('id', userId);
+
+                // 4. Atualizar Estoque dos Produtos - TABELA: produtos
+                for (const prodId of Object.keys(newOrder.items)) {
+                    const prod = State.products.find(p => p.id === prodId);
+                    if(prod) {
+                        await supabase.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
+                    }
+                }
+            } catch(e) {
+                console.error("Falha ao salvar checkout no banco", e);
+                alert("Erro ao enviar pedido para o banco. Olhe o console.");
+            }
+        }
+
+        async function cancelarPedidoNoBanco(orderId, orderCost, itensDevolvidos) {
+            try {
+                // 1. Atualizar status na tabela pedidos
+                await supabase.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+
+                // 2. Devolver saldo na tabela usuarios
+                await supabase.from('usuarios').update({ saldo: State.userBalance }).eq('id', userId);
+
+                // 3. Devolver estoque na tabela produtos
+                for (const prodId of Object.keys(itensDevolvidos)) {
+                    const prod = State.products.find(p => p.id === prodId);
+                    if(prod) {
+                        await supabase.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
+                    }
+                }
+            } catch(e) {
+                console.error("Erro ao cancelar no banco", e);
+            }
+        }
+
+        // --- SISTEMA DE TEMA E LOGIN ---
+        els.themeToggleBtn?.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- SISTEMA DE LOGIN e BANCO DE DADOS EM NUVEM (FIRESTORE) ---
         function checkAuthUI() {
             if (State.email) {
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
-                
-                let namePart = State.email.split('@')[0];
-                let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                els.userNameDisplay.textContent = formattedName;
+                els.userNameDisplay.textContent = State.email.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
             } else {
                 els.loginScreen.classList.remove('hidden');
                 setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
             }
         }
 
-        async function saveToFirestore() {
-            if (!userId) return;
-            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'brindes', 'state');
-            try {
-                await setDoc(docRef, {
-                    email: State.email || null,
-                    cart: State.cart,
-                    ordersHistory: JSON.stringify(State.ordersHistory),
-                    userBalance: State.userBalance
-                });
-            } catch (error) {
-                console.error("Erro ao salvar no banco de dados:", error);
-            }
-        }
-
-        async function loadFromFirestore() {
-            if (!userId) return;
-            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'brindes', 'state');
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    State.email = data.email || null;
-                    State.cart = data.cart || {};
-                    State.ordersHistory = data.ordersHistory ? JSON.parse(data.ordersHistory) : [];
-                    State.userBalance = data.userBalance !== undefined ? data.userBalance : 3000.00;
-                    
-                    // Recalcular o estoque deduzindo os itens do histórico (ignora os cancelados)
-                    State.products = JSON.parse(JSON.stringify(productsData));
-                    State.ordersHistory.forEach(order => {
-                        if (order.status !== 'Cancelado') {
-                            Object.keys(order.items).forEach(id => {
-                                const product = State.products.find(p => p.id === id);
-                                if (product) product.stock -= order.items[id];
-                            });
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error("Erro ao carregar do banco de dados:", error);
-            }
-        }
-
-        // Submeter Formulário de Login
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = els.loginEmail.value;
-            if(email) {
-                State.email = email;
-                
-                // Feedback visual de carregamento
-                const btn = els.loginForm.querySelector('button');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Conectando...';
-                btn.disabled = true;
-                lucide.createIcons();
+            const btn = els.loginForm.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Conectando...';
+            btn.disabled = true;
 
-                await saveToFirestore();
+            if (SUPABASE_URL !== "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: els.loginEmail.value,
+                    password: els.loginPassword.value,
+                });
+
+                if (error) {
+                    alert("E-mail ou senha incorretos.");
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
                 
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                checkAuthUI();
+                State.email = data.user.email;
+                userId = data.user.id;
+                await carregarDadosRelacionais();
+            } else {
+                // Fallback de teste local se a URL do Supabase não for inserida
+                State.email = els.loginEmail.value;
+                userId = 'mock-123';
+                State.userBalance = 3000;
+                State.products = [
+                    { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
+                    { id: "TER-002", category: "Bebidas", name: "Caneca Preta", stock: 13, price: 41.58, icon: "coffee" }
+                ];
+                State.categories = ["Todos", "Papelaria", "Bebidas"];
+                initDashboard();
+                renderCategories();
+                renderProducts();
             }
-        });
-
-        // Abrir modal de confirmação de logout
-        els.logoutBtn?.addEventListener('click', () => {
-            els.logoutConfirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        });
-
-        // Cancelar logout
-        els.logoutCancelBtn?.addEventListener('click', () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
-        });
-
-        // Confirmar logout e resetar estado
-        els.logoutConfirmBtn?.addEventListener('click', async () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             
-            State.email = null;
-            State.cart = {};
-            State.ordersHistory = [];
-            State.userBalance = 3000.00;
-            State.products = JSON.parse(JSON.stringify(productsData)); // Reseta estoque original
-            els.loginEmail.value = '';
-            if(els.loginPassword) els.loginPassword.value = '';
-            
-            await saveToFirestore();
-            
-            initDashboard();
-            renderProducts();
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             updateCartUI();
             checkAuthUI();
         });
 
-        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES ---
+        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES (Modais e Menus) ---
         let pendingActionCallback = null;
 
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
@@ -628,89 +533,77 @@
                 els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
                 els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
                 els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
-            } else { // warning
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm";
+            } else if (type === 'logout') {
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'log-out');
+                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm";
+            } else { 
                 els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
                 els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
                 els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg shadow-sm";
             }
             
-            lucide.createIcons(); // Recarrega o ícone injetado
+            lucide.createIcons();
             pendingActionCallback = callback;
 
             els.actionConfirmModal.classList.remove('hidden');
             setTimeout(() => {
                 els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
             }, 10);
         }
 
         els.actionCancelBtn?.addEventListener('click', () => {
-            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
             els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                els.actionConfirmModal.classList.add('hidden');
-                pendingActionCallback = null;
-            }, 300);
+            setTimeout(() => els.actionConfirmModal.classList.add('hidden'), 300);
+            pendingActionCallback = null;
         });
 
         els.actionConfirmBtn?.addEventListener('click', () => {
             if (pendingActionCallback) pendingActionCallback();
-            els.actionCancelBtn.click(); // Usa a lógica de fechar no botão de cancelar
+            els.actionCancelBtn.click();
         });
 
-        // --- SISTEMA DE MENU DE CONTEXTO PERSONALIZADO ---
+        els.logoutBtn?.addEventListener('click', () => {
+            showActionConfirm('Sair do sistema?', 'Sua sessão será encerrada no portal de brindes.', 'logout', 'Sim, sair', async () => {
+                if (SUPABASE_URL !== "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") await supabase.auth.signOut();
+                State.email = null; userId = null; State.cart = {}; State.ordersHistory = [];
+                els.loginEmail.value = ''; els.loginPassword.value = '';
+                checkAuthUI();
+            });
+        });
+
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
-                const menu = els.customContextMenu;
-                menu.classList.remove('hidden');
-                
-                const rect = menu.getBoundingClientRect();
-                let x = e.clientX;
-                let y = e.clientY;
-                
+                els.customContextMenu.classList.remove('hidden');
+                let x = e.clientX, y = e.clientY;
+                const rect = els.customContextMenu.getBoundingClientRect();
                 if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
                 if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
-                
-                menu.style.left = `${x}px`;
-                menu.style.top = `${y}px`;
+                els.customContextMenu.style.left = `${x}px`;
+                els.customContextMenu.style.top = `${y}px`;
             }
         });
-
         document.addEventListener('click', (e) => {
-            if (!els.customContextMenu.contains(e.target)) {
-                els.customContextMenu.classList.add('hidden');
-            }
+            if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden');
         });
-
         document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
-        document.getElementById('contextTheme')?.addEventListener('click', () => {
-            els.themeToggleBtn.click();
-            els.customContextMenu.classList.add('hidden');
-        });
-        document.getElementById('contextPrint')?.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            window.print();
-        });
+        document.getElementById('contextTheme')?.addEventListener('click', () => { els.themeToggleBtn.click(); els.customContextMenu.classList.add('hidden'); });
+        document.getElementById('contextPrint')?.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); window.print(); });
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO E NEGÓCIO ---
-        const formatMoney = (value) => {
-            if (value === null) return "Valor a confirmar";
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        };
+        // --- RENDERIZAÇÃO ---
+        const formatMoney = (value) => value === null || value === undefined ? "Confirmar Valor" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
         function initDashboard() {
-            const totalUnits = State.products.reduce((acc, curr) => acc + curr.stock, 0);
-            const totalInvested = State.products.reduce((acc, curr) => acc + (curr.price ? curr.price * curr.stock : 0), 0);
-            
-            els.statUnits.textContent = totalUnits;
-            els.statInvested.textContent = "R$ " + (totalInvested / 1000).toFixed(1).replace('.', ',') + "k";
-            els.statItems.textContent = productsData.length;
-            
-            if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
-            if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
+            els.statUnits.textContent = State.products.reduce((a, b) => a + (b.stock||0), 0);
+            const invested = State.products.reduce((a, b) => a + ((b.price||0) * (b.stock||0)), 0);
+            els.statInvested.textContent = "R$ " + (invested / 1000).toFixed(1).replace('.', ',') + "k";
+            els.statItems.textContent = State.products.length;
+            els.statBalance.textContent = formatMoney(State.userBalance);
+            els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
         }
 
         function renderCategories() {
@@ -718,538 +611,272 @@
             State.categories.forEach(cat => {
                 const isActive = State.selectedCategory === cat;
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
-                    isActive 
-                    ? 'bg-slate-900 dark:bg-brand-600 text-white border-slate-900 dark:border-brand-600 shadow-sm' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
-                }`;
+                btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border ${isActive ? 'bg-slate-900 dark:bg-brand-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`;
                 btn.textContent = cat;
-                btn.onclick = () => {
-                    State.selectedCategory = cat;
-                    renderCategories();
-                    renderProducts();
-                };
+                btn.onclick = () => { State.selectedCategory = cat; renderCategories(); renderProducts(); };
                 els.categoryFilters.appendChild(btn);
             });
         }
 
         function renderProducts() {
             els.productsGrid.innerHTML = '';
-            let filtered = State.products.filter(p => {
-                const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
-                const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || 
-                                    p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
-                return matchCategory && matchSearch;
-            });
-
+            let filtered = State.products.filter(p => (State.selectedCategory === 'Todos' || p.category === State.selectedCategory) && (p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase())));
             els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
-            if (filtered.length === 0) {
-                els.productsGrid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">
-                        <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                        <p>Nenhum brinde encontrado para sua busca.</p>
-                    </div>`;
-                lucide.createIcons();
-                return;
-            }
-
             filtered.forEach(product => {
-                const qtyInCart = State.cart[product.id] || 0;
-                const stockRemaining = product.stock - qtyInCart;
+                const stockRemaining = product.stock - (State.cart[product.id] || 0);
                 const isOutOfStock = stockRemaining <= 0;
-
                 const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
-                
+                card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col";
                 card.innerHTML = `
                     <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[160px]">
-                        <div class="absolute top-3 left-3 flex gap-2">
-                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
-                        </div>
-                        <div class="absolute top-3 right-3">
-                            <span class="bg-[#f0e6d2] dark:bg-amber-900/30 text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
-                                Estoque: ${product.stock} un.
-                            </span>
-                        </div>
-                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
-                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
+                        <span class="absolute top-3 right-3 bg-[#f0e6d2] dark:bg-amber-900/30 text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded border">Estoque: ${product.stock} un.</span>
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200">
+                            <i data-lucide="${product.icon}" class="w-8 h-8"></i>
                         </div>
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
-                        <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
-                        <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        <div class="mt-auto pt-3 flex items-end justify-between">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
-                                <strong class="text-brand-700 dark:text-brand-400 font-semibold text-sm">${formatMoney(product.price)}</strong>
-                            </div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase mb-1">${product.category}</span>
+                        <h3 class="text-slate-800 dark:text-white font-semibold text-sm mb-2">${product.name}</h3>
+                        <div class="mt-auto pt-3 flex flex-col">
+                            <span class="text-xs text-slate-500">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
+                            <strong class="text-brand-700 dark:text-brand-400 text-sm">${formatMoney(product.price)}</strong>
                         </div>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
-                                <button onclick="window.changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
-                                <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
-                                <button onclick="window.changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
-                            </div>
-                            <button onclick="window.addMultipleToCart('${product.id}')" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
-                                <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i>
-                                ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
-                            </button>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex gap-2">
+                        <div class="flex items-center bg-white dark:bg-slate-800 border rounded-lg w-24 overflow-hidden ${isOutOfStock?'opacity-50':''}">
+                            <button onclick="window.changeCardQty('${product.id}', -1)" class="w-8 h-9 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700">-</button>
+                            <input type="number" id="qty-${product.id}" value="1" min="1" class="w-full text-center text-sm font-semibold h-full focus:outline-none bg-transparent dark:text-white">
+                            <button onclick="window.changeCardQty('${product.id}', 1)" class="w-8 h-9 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700">+</button>
                         </div>
-                    </div>
-                `;
+                        <button onclick="window.addMulti('${product.id}')" class="flex-1 bg-slate-900 dark:bg-brand-600 text-white text-xs font-semibold rounded-lg shadow-sm ${isOutOfStock?'opacity-50 cursor-not-allowed':''}" ${isOutOfStock?'disabled':''}>${isOutOfStock?'ESGOTADO':'ADCIONAR'}</button>
+                    </div>`;
                 els.productsGrid.appendChild(card);
             });
             lucide.createIcons();
         }
 
-        // --- EXPORTANDO FUNÇÕES PARA O ESCOPO GLOBAL DO BROWSER (WINDOW) ---
-        window.changeCardQty = function(productId, delta) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            if(!input) return;
-            const product = State.products.find(p => p.id === productId);
-            const qtyInCart = State.cart[productId] || 0;
-            const stockRemaining = product.stock - qtyInCart;
-            let newVal = parseInt(input.value) + delta;
-            
-            if (newVal < 1) newVal = 1;
-            if (newVal > stockRemaining) newVal = stockRemaining;
-            input.value = newVal;
+        window.changeCardQty = (id, delta) => {
+            const input = document.getElementById(`qty-${id}`);
+            const prod = State.products.find(p => p.id === id);
+            let val = parseInt(input.value) + delta;
+            const max = prod.stock - (State.cart[id] || 0);
+            input.value = (val < 1) ? 1 : (val > max ? max : val);
         };
-
-        window.addMultipleToCart = function(productId) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            let qtyToAdd = input ? parseInt(input.value) : 1;
-            const product = State.products.find(p => p.id === productId);
-            const currentQty = State.cart[productId] || 0;
-            const stockRemaining = product.stock - currentQty;
-            
-            if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
-            if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
-            
-            if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
-                State.cart[productId] = currentQty + qtyToAdd;
-                updateCartUI();
-                renderProducts();
-                saveToFirestore();
-                
-                els.mobileCartBtn.classList.add('scale-110');
-                setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
+        window.addMulti = (id) => {
+            const input = document.getElementById(`qty-${id}`);
+            const prod = State.products.find(p => p.id === id);
+            let val = parseInt(input.value) || 1;
+            const max = prod.stock - (State.cart[id] || 0);
+            if (val > max) val = max;
+            if (val > 0) {
+                State.cart[id] = (State.cart[id] || 0) + val;
+                updateCartUI(); renderProducts();
+                els.mobileCartBtn.classList.add('scale-110'); setTimeout(()=>els.mobileCartBtn.classList.remove('scale-110'), 200);
             }
         };
-
-        window.updateQuantity = function(productId, delta) {
-            const product = State.products.find(p => p.id === productId);
-            let newQty = (State.cart[productId] || 0) + delta;
-            
-            if (newQty <= 0) delete State.cart[productId];
-            else if (newQty <= product.stock) State.cart[productId] = newQty;
-            else return;
-            
-            updateCartUI();
-            renderProducts();
-            saveToFirestore();
-        };
-
-        window.removeFromCart = function(productId) {
-            delete State.cart[productId];
-            updateCartUI();
-            renderProducts();
-            saveToFirestore();
+        window.updateQty = (id, delta) => {
+            const prod = State.products.find(p => p.id === id);
+            let n = (State.cart[id] || 0) + delta;
+            if (n <= 0) delete State.cart[id]; else if (n <= prod.stock) State.cart[id] = n;
+            updateCartUI(); renderProducts();
         };
 
         function updateCartUI() {
             els.cartItemsContainer.innerHTML = '';
-            let totalItems = 0;
-            let totalValue = 0;
-            const cartKeys = Object.keys(State.cart);
-
-            if (cartKeys.length === 0) {
+            let items = 0, val = 0;
+            const keys = Object.keys(State.cart);
+            
+            if (keys.length === 0) {
                 els.cartItemsContainer.appendChild(els.emptyCartState);
                 els.emptyCartState.classList.remove('hidden');
-                els.checkoutBtn.disabled = true;
                 els.checkoutForm.classList.add('hidden');
-                els.cartTotalItems.textContent = "0";
-                
-                if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
-                if (els.balanceWarning) els.balanceWarning.classList.add('hidden');
-                
-                els.mobileCartBadge.textContent = "0";
-                els.mobileCartBadge.classList.add('hidden');
+                els.checkoutBtn.disabled = true; els.cartTotalItems.textContent = "0"; els.cartTotalValue.textContent = "R$ 0,00";
+                els.balanceWarning.classList.add('hidden'); els.mobileCartBadge.classList.add('hidden');
                 return;
             }
 
-            els.emptyCartState.classList.add('hidden');
-            els.checkoutForm.classList.remove('hidden');
-
-            cartKeys.forEach(id => {
-                const product = State.products.find(p => p.id === id);
-                const qty = State.cart[id];
-                totalItems += qty;
-                if (product.price) totalValue += (product.price * qty);
-
-                const itemEl = document.createElement('div');
-                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
-                itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
-                        <i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+            els.emptyCartState.classList.add('hidden'); els.checkoutForm.classList.remove('hidden');
+            keys.forEach(id => {
+                const prod = State.products.find(p => p.id === id);
+                const q = State.cart[id];
+                items += q; if (prod.price) val += (prod.price * q);
+                const div = document.createElement('div');
+                div.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border shadow-sm relative group";
+                div.innerHTML = `
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border"><i data-lucide="${prod.icon}" class="w-5 h-5"></i></div>
+                    <div class="flex-1 flex flex-col justify-center min-w-0"><h4 class="text-sm font-semibold truncate dark:text-white">${prod.name}</h4></div>
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border rounded-lg p-1">
+                        <button onclick="window.updateQty('${id}', -1)" class="w-6 h-6 flex justify-center items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                        <span class="text-sm font-medium w-4 text-center dark:text-white">${q}</span>
+                        <button onclick="window.updateQty('${id}', 1)" class="w-6 h-6 flex justify-center items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
                     </div>
-                    <div class="flex-1 flex flex-col justify-center min-w-0">
-                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="window.updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
-                            <i data-lucide="minus" class="w-3 h-3"></i>
-                        </button>
-                        <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
-                        <button onclick="window.updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
-                            <i data-lucide="plus" class="w-3 h-3"></i>
-                        </button>
-                    </div>
-                    <button onclick="window.removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
-                        <i data-lucide="x" class="w-3 h-3"></i>
-                    </button>
+                    <button onclick="window.updateQty('${id}', -999)" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>
                 `;
-                els.cartItemsContainer.appendChild(itemEl);
+                els.cartItemsContainer.appendChild(div);
             });
 
-            els.cartTotalItems.textContent = totalItems;
-            
-            if (els.cartTotalValue) {
-                els.cartTotalValue.textContent = formatMoney(totalValue);
-                if (totalValue > State.userBalance) {
-                    els.cartTotalValue.classList.remove('text-brand-600');
-                    els.cartTotalValue.classList.add('text-red-600');
-                    els.balanceWarning.classList.remove('hidden');
-                    els.checkoutBtn.disabled = true;
-                    els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
-                } else {
-                    els.cartTotalValue.classList.remove('text-red-600');
-                    els.cartTotalValue.classList.add('text-brand-600');
-                    els.balanceWarning.classList.add('hidden');
-                    els.checkoutBtn.disabled = false;
-                    els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
-                }
+            els.cartTotalItems.textContent = items; els.cartTotalValue.textContent = formatMoney(val);
+            if (val > State.userBalance) {
+                els.cartTotalValue.className = "text-red-600 text-xl block"; els.balanceWarning.classList.remove('hidden');
+                els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
             } else {
-                 els.checkoutBtn.disabled = false;
+                els.cartTotalValue.className = "text-brand-600 text-xl block"; els.balanceWarning.classList.add('hidden');
+                els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
             }
-            
-            els.mobileCartBadge.textContent = totalItems;
-            if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
-
+            els.mobileCartBadge.textContent = items; els.mobileCartBadge.classList.remove('hidden');
             lucide.createIcons();
         }
+
+        els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
         
-        els.searchInput.addEventListener('input', (e) => {
-            State.searchQuery = e.target.value;
-            renderProducts();
-        });
-
         const toggleSidebar = () => {
-            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
-            if (isClosed) {
-                els.cartSidebar.classList.remove('translate-x-full');
-                els.cartOverlay.classList.remove('hidden');
-                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10);
-            } else {
-                els.cartSidebar.classList.add('translate-x-full');
-                els.cartOverlay.classList.remove('opacity-100');
-                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
-            }
+            const closed = els.cartSidebar.classList.contains('translate-x-full');
+            if (closed) { els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden'); } 
+            else { els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.add('hidden'); }
         };
-
-        els.mobileCartBtn.addEventListener('click', toggleSidebar);
-        els.closeCartBtn.addEventListener('click', toggleSidebar);
-        els.cartOverlay.addEventListener('click', toggleSidebar);
+        els.mobileCartBtn.addEventListener('click', toggleSidebar); els.closeCartBtn.addEventListener('click', toggleSidebar); els.cartOverlay.addEventListener('click', toggleSidebar);
 
         const setupDateInput = () => {
-            const today = new Date();
-            const tzOffset = today.getTimezoneOffset() * 60000;
-            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
-            
-            els.separationDate.min = localISOTime;
-            els.separationDate.value = "";
-
-            els.btnToday.addEventListener('click', () => {
-                els.separationDate.value = localISOTime;
-                els.separationDate.classList.remove('border-red-500', 'ring-red-500');
-                if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
-            });
-
-            els.separationDate.addEventListener('change', () => {
-                if (els.separationDate.value) {
-                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
-                    if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
-                }
-            });
+            const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+            const iso = today.toISOString().split('T')[0];
+            els.separationDate.min = iso; els.separationDate.value = "";
+            els.btnToday.onclick = () => { els.separationDate.value = iso; els.dateErrorMsg.classList.add('hidden'); els.separationDate.classList.remove('border-red-500'); };
+            els.separationDate.onchange = () => { els.dateErrorMsg.classList.add('hidden'); els.separationDate.classList.remove('border-red-500'); };
         };
 
-        els.checkoutBtn.addEventListener('click', () => {
+        els.checkoutBtn.addEventListener('click', async () => {
             if (!els.separationDate.value) {
-                els.separationDate.classList.add('border-red-500', 'ring-red-500');
-                els.dateErrorMsg.classList.remove('hidden');
-                els.separationDate.focus();
-                setTimeout(() => {
-                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
-                    els.dateErrorMsg.classList.add('hidden');
-                }, 3500);
+                els.separationDate.classList.add('border-red-500'); els.dateErrorMsg.classList.remove('hidden');
                 return;
             }
+            
+            const btnOrig = els.checkoutBtn.innerHTML;
+            els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...';
+            els.checkoutBtn.disabled = true;
+            lucide.createIcons();
 
+            const newId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             const newOrder = {
-                id: 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-                date: new Date().toISOString(),
-                separationDate: els.separationDate.value,
-                notes: els.orderNotes.value,
-                items: { ...State.cart },
-                status: 'Enviado para Separação'
+                id: newId, date: new Date().toISOString(), separationDate: els.separationDate.value,
+                notes: els.orderNotes.value, items: { ...State.cart }, status: 'Enviado para Separação'
             };
 
-            let orderTotalValue = 0;
+            let cost = 0;
             Object.keys(State.cart).forEach(id => {
-                const productIndex = State.products.findIndex(p => p.id === id);
-                if(productIndex > -1) {
-                    State.products[productIndex].stock -= State.cart[id];
-                    if (State.products[productIndex].price) {
-                        orderTotalValue += (State.products[productIndex].price * State.cart[id]);
-                    }
-                }
+                const prod = State.products.find(p => p.id === id);
+                if(prod) { prod.stock -= State.cart[id]; if (prod.price) cost += (prod.price * State.cart[id]); }
             });
-
-            State.userBalance -= orderTotalValue;
+            State.userBalance -= cost;
             State.ordersHistory.unshift(newOrder);
 
-            State.cart = {};
-            els.orderNotes.value = "";
-            setupDateInput();
-            
-            saveToFirestore(); // Dispara salvamento em nuvem
-            updateCartUI();
-            renderProducts();
-            initDashboard();
-            
-            els.successModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.successModalContent.classList.remove('scale-95', 'opacity-0');
-                els.successModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-            
-            if(!els.cartSidebar.classList.contains('translate-x-full')) {
-                toggleSidebar();
+            // Chama a integração com as tabelas do Supabase
+            if (SUPABASE_URL !== "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") {
+                await processarCheckoutNoBanco(newOrder, cost);
             }
-        });
 
+            State.cart = {}; els.orderNotes.value = ""; setupDateInput();
+            updateCartUI(); renderProducts(); initDashboard();
+            
+            els.successModal.classList.remove('hidden'); setTimeout(() => els.successModalContent.classList.remove('scale-95', 'opacity-0'), 10);
+            if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
+        });
         els.closeModalBtn.addEventListener('click', () => {
-            els.successModalContent.classList.remove('scale-100', 'opacity-100');
             els.successModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.successModal.classList.add('hidden'), 300);
         });
 
-        const renderOrdersHistory = () => {
-            els.ordersListContainer.innerHTML = '';
-            
-            if (State.ordersHistory.length === 0) {
-                els.ordersListContainer.innerHTML = `
-                    <div class="py-12 flex flex-col items-center text-center text-slate-400 dark:text-slate-500">
-                        <i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i>
-                        <p>Nenhuma solicitação realizada ainda.<br>Seus pedidos aparecerão aqui.</p>
-                    </div>`;
-                lucide.createIcons();
-                return;
+        const toggleOrders = () => {
+            if (els.ordersModal.classList.contains('hidden')) {
+                renderOrders(); els.ordersModal.classList.remove('hidden');
+                setTimeout(() => els.ordersModalContent.classList.remove('scale-95', 'opacity-0'), 10);
+            } else {
+                els.ordersModalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => els.ordersModal.classList.add('hidden'), 300);
             }
+        };
+        els.myOrdersBtn?.addEventListener('click', toggleOrders); els.closeOrdersBtn?.addEventListener('click', toggleOrders); els.ordersModalBg?.addEventListener('click', toggleOrders);
 
+        function renderOrders() {
+            els.ordersListContainer.innerHTML = '';
+            if (!State.ordersHistory.length) {
+                els.ordersListContainer.innerHTML = `<div class="py-12 text-center text-slate-400"><i data-lucide="package-search" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p>Nenhum pedido encontrado.</p></div>`; lucide.createIcons(); return;
+            }
             State.ordersHistory.forEach(order => {
-                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
-                const sepDateParts = order.separationDate.split('-');
-                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`;
-                const isCancelled = order.status === 'Cancelado';
-
+                const isCanceled = order.status === 'Cancelado';
                 const card = document.createElement('div');
-                card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors ${
-                    isCancelled 
-                    ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' 
-                    : 'bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'
-                }`;
-                
-                let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = productsData.find(p => p.id === id);
-                    const name = productInfo ? productInfo.name : id;
-                    return `
-                        <li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
-                            <span class="text-sm text-slate-600 dark:text-slate-300 truncate pr-4">${name}</span>
-                            <strong class="text-sm text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700">${order.items[id]} un.</strong>
-                        </li>`;
+                card.className = `border rounded-xl p-4 ${isCanceled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale' : 'bg-slate-50 dark:bg-slate-900/30'}`;
+                let liHTML = Object.keys(order.items).map(id => {
+                    const p = State.products.find(x => x.id === id) || {name: id};
+                    return `<li class="flex justify-between py-1 border-b dark:border-slate-700 last:border-0"><span class="text-sm dark:text-slate-300">${p.name}</span><strong class="text-sm dark:text-white">${order.items[id]} un.</strong></li>`;
                 }).join('');
-
-                const statusColorClass = isCancelled 
-                    ? 'text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/40' 
-                    : 'text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/50';
-
                 card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
+                    <div class="flex justify-between mb-4">
                         <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/50 px-2 py-1 rounded tracking-wider">${order.id}</span>
-                                <span class="text-[10px] font-medium ${statusColorClass} px-2 py-1 rounded">${order.status}</span>
-                            </div>
-                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
+                            <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-1 rounded">${order.id}</span>
+                            <span class="text-[10px] ml-2 font-medium px-2 py-1 rounded ${isCanceled?'bg-red-100 text-red-700':'bg-emerald-100 text-emerald-700'}">${order.status}</span>
+                            <div class="text-sm font-semibold dark:text-slate-200 mt-2">Separar em: <span class="text-brand-600">${order.separationDate.split('-').reverse().join('/')}</span></div>
                         </div>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                            Em: ${orderDate}
-                        </span>
                     </div>
-                    
-                    ${order.notes ? `
-                    <div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start">
-                        <i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p>
-                    </div>` : ''}
-                    
-                    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-                        <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
-                        <ul class="px-3 py-1">${itemsListHtml}</ul>
+                    <div class="bg-white dark:bg-slate-800 rounded-lg border overflow-hidden">
+                        <ul class="px-3 py-1">${liHTML}</ul>
                     </div>
-
-                    ${!isCancelled ? `
-                    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
-                        <button onclick="window.editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
-                            <i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar
-                        </button>
-                        <button onclick="window.cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
-                            <i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar
-                        </button>
+                    ${!isCanceled ? `
+                    <div class="mt-4 pt-3 border-t flex justify-end gap-2">
+                        <button onclick="window.editOrder('${order.id}')" class="px-3 py-1.5 text-xs bg-white border rounded hover:bg-slate-100 dark:bg-slate-800 dark:text-white dark:border-slate-600">Alterar</button>
+                        <button onclick="window.cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs text-red-600 bg-red-50 border border-red-200 rounded hover:bg-red-100">Cancelar</button>
                     </div>` : ''}
                 `;
                 els.ordersListContainer.appendChild(card);
             });
             lucide.createIcons();
-        };
+        }
 
-        const toggleOrdersModal = () => {
-            const isHidden = els.ordersModal.classList.contains('hidden');
-            if (isHidden) {
-                renderOrdersHistory();
-                els.ordersModal.classList.remove('hidden');
-                setTimeout(() => {
-                    els.ordersModalContent.classList.remove('scale-95', 'opacity-0');
-                    els.ordersModalContent.classList.add('scale-100', 'opacity-100');
-                }, 10);
-            } else {
-                els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
-                els.ordersModalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => els.ordersModal.classList.add('hidden'), 300);
-            }
-        };
-
-        window.cancelOrder = function(orderId) {
-            showActionConfirm(
-                'Cancelar Solicitação', 
-                'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.',
-                'danger',
-                'Sim, Cancelar',
-                () => {
-                    const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                    if(orderIndex === -1) return;
-                    const order = State.ordersHistory[orderIndex];
-                    
-                    let orderCost = 0;
-                    Object.keys(order.items).forEach(itemId => {
-                        const product = State.products.find(p => p.id === itemId);
-                        if (product) {
-                            product.stock += order.items[itemId];
-                            if (product.price) orderCost += (product.price * order.items[itemId]);
-                        }
-                    });
-                    
-                    State.userBalance += orderCost;
-                    order.status = 'Cancelado';
-                    
-                    saveToFirestore();
-                    renderOrdersHistory();
-                    renderProducts();
-                    initDashboard();
-                }
-            );
-        };
-
-        window.editOrder = function(orderId) {
-            const proceedWithEdit = () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex];
-                
-                let orderCost = 0;
-                Object.keys(order.items).forEach(itemId => {
-                    const product = State.products.find(p => p.id === itemId);
-                    if (product) {
-                        product.stock += order.items[itemId];
-                        if (product.price) orderCost += (product.price * order.items[itemId]);
-                    }
+        window.cancelOrder = (orderId) => {
+            showActionConfirm('Cancelar Pedido', 'O saldo e o estoque serão devolvidos.', 'danger', 'Sim, Cancelar', async () => {
+                const order = State.ordersHistory.find(o => o.id === orderId);
+                let cost = 0;
+                Object.keys(order.items).forEach(id => {
+                    const p = State.products.find(x => x.id === id);
+                    if (p) { p.stock += order.items[id]; if (p.price) cost += (p.price * order.items[id]); }
                 });
+                State.userBalance += cost; order.status = 'Cancelado';
                 
-                State.userBalance += orderCost;
-                
+                // Dispara o cancelamento no banco de dados real
+                if (SUPABASE_URL !== "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") {
+                    await cancelarPedidoNoBanco(orderId, cost, order.items);
+                }
+
+                renderOrders(); renderProducts(); initDashboard();
+            });
+        };
+
+        window.editOrder = (orderId) => {
+            const doEdit = () => {
+                const idx = State.ordersHistory.findIndex(o => o.id === orderId);
+                const order = State.ordersHistory[idx];
+                window.cancelOrder(orderId); // Reaproveita logica de devoluçao
                 State.cart = { ...order.items };
                 els.separationDate.value = order.separationDate;
                 els.orderNotes.value = order.notes || '';
-                
-                State.ordersHistory.splice(orderIndex, 1);
-                
-                saveToFirestore();
-                renderOrdersHistory();
-                renderProducts();
-                initDashboard();
-                updateCartUI();
-                
-                toggleOrdersModal(); 
-                if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
+                updateCartUI(); toggleOrders(); if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
             };
-
-            if(Object.keys(State.cart).length > 0) {
-                showActionConfirm(
-                    'Substituir Carrinho Atual',
-                    'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?',
-                    'warning',
-                    'Sim, Substituir',
-                    proceedWithEdit
-                );
-            } else {
-                proceedWithEdit();
-            }
+            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho', 'Os itens atuais serão perdidos.', 'warning', 'Substituir', doEdit);
+            else doEdit();
         };
 
-        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
-
-        // Inicialização Principal usando Firestore Nativo
         window.addEventListener('DOMContentLoaded', async () => {
             setupDateInput();
-            
-            // Autenticação na nuvem em background
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
+            if (SUPABASE_URL !== "COLOQUE_SUA_URL_DO_SUPABASE_AQUI") {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    State.email = session.user.email;
+                    userId = session.user.id;
+                    await carregarDadosRelacionais();
+                }
             }
-            userId = auth.currentUser?.uid;
-
-            // Carrega os dados reais atrelados à conta deste usuário na nuvem
-            await loadFromFirestore();
-            
-            // Renderiza a interface
-            initDashboard();
-            renderCategories();
-            renderProducts();
-            updateCartUI();
-            checkAuthUI(); 
-            lucide.createIcons();
+            checkAuthUI(); lucide.createIcons();
         });
-
     </script>
 </body>
 </html>
