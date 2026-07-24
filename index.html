@@ -284,9 +284,9 @@
         const SUPABASE_URL = "https://ykcqnzrcxrroahrqqnej.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4";
         
-        let supabase;
+        let supabaseClient;
         try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch(e) {
             console.error("Erro ao inicializar Supabase. Verifique a importação do script.", e);
         }
@@ -365,8 +365,8 @@
         // --- SISTEMA DE INTEGRAÇÃO RELACIONAL SUPABASE ---
 
         async function initAuth() {
-            if(!supabase) return;
-            const { data: { session } } = await supabase.auth.getSession();
+            if(!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 State.userId = session.user.id;
                 State.userEmail = session.user.email;
@@ -377,7 +377,7 @@
 
         els.loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!supabase) return;
+            if(!supabaseClient) return;
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -387,7 +387,7 @@
             btn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Entrando...`;
             err.classList.add('hidden');
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 err.classList.remove('hidden');
@@ -402,20 +402,20 @@
         });
 
         async function carregarDadosRelacionais() {
-            if (!State.userId || !supabase) return;
+            if (!State.userId || !supabaseClient) return;
             try {
                 // 1. Carregar Saldo
-                const { data: userData, error: errUser } = await supabase.from('usuarios').select('saldo').eq('id', State.userId).maybeSingle();
+                const { data: userData, error: errUser } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).maybeSingle();
                 if (userData && userData.saldo !== undefined) State.userBalance = parseFloat(userData.saldo);
                 if (errUser) console.warn("Aviso (Usuarios):", errUser.message);
 
                 // 2. Carregar Categorias
-                const { data: catData, error: errCat } = await supabase.from('categorias').select('*');
+                const { data: catData, error: errCat } = await supabaseClient.from('categorias').select('*');
                 if (catData && catData.length > 0) State.categories = ["Todos", ...catData.map(c => c.nome || c.id)];
                 if (errCat) console.warn("Aviso (Categorias):", errCat.message);
 
                 // 3. Carregar Produtos
-                const { data: prodData, error: errProd } = await supabase.from('produtos').select('*');
+                const { data: prodData, error: errProd } = await supabaseClient.from('produtos').select('*');
                 if (prodData) {
                     State.products = prodData.map(p => ({
                         id: p.id,
@@ -429,7 +429,7 @@
                 if (errProd) console.warn("Aviso (Produtos):", errProd.message);
 
                 // 4. Carregar Pedidos
-                const { data: ordersData, error: errOrd } = await supabase.from('pedidos')
+                const { data: ordersData, error: errOrd } = await supabaseClient.from('pedidos')
                     .select('*, itens:pedido-itens(*)')
                     .eq('usuario_id', State.userId)
                     .order('data_criacao', { ascending: false });
@@ -732,10 +732,10 @@
         }
 
         async function processarCheckoutNoBanco(newOrder, orderTotalValue) {
-            if(supabase && State.userId) {
+            if(supabaseClient && State.userId) {
                 try {
                     // 1. Criar pedido
-                    const { error: err1 } = await supabase.from('pedidos').insert({
+                    const { error: err1 } = await supabaseClient.from('pedidos').insert({
                         id: newOrder.id,
                         usuario_id: State.userId,
                         data_criacao: newOrder.date,
@@ -747,7 +747,7 @@
 
                     // 2. Criar itens do pedido & baixar estoque
                     for(const [prodId, qty] of Object.entries(newOrder.items)) {
-                        await supabase.from('pedido-itens').insert({
+                        await supabaseClient.from('pedido-itens').insert({
                             pedido_id: newOrder.id,
                             produto_id: prodId,
                             quantidade: qty
@@ -756,13 +756,13 @@
                         const prod = State.products.find(p => p.id === prodId);
                         if(prod) {
                             prod.stock -= qty; // Atualiza local
-                            await supabase.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
+                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
                         }
                     }
 
                     // 3. Atualizar saldo do usuário
                     State.userBalance -= orderTotalValue;
-                    await supabase.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
                     
                 } catch(e) {
                     console.error("Erro ao salvar pedido no DB:", e);
@@ -873,7 +873,7 @@
                 "Sair do Sistema", "Deseja encerrar sua sessão?", "log-out",
                 "text-slate-900 dark:text-slate-100", "bg-slate-200 dark:bg-slate-700",
                 async () => {
-                    if(supabase) await supabase.auth.signOut();
+                    if(supabaseClient) await supabaseClient.auth.signOut();
                     State.userId = null;
                     els.mainApp.classList.add('hidden');
                     els.loginScreen.classList.remove('hidden');
@@ -924,13 +924,13 @@
             order.status = 'Cancelado';
 
             // Devolve DB
-            if(supabase && State.userId) {
+            if(supabaseClient && State.userId) {
                 try {
-                    await supabase.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                    await supabase.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                    await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
                     for (const [prodId, qty] of Object.entries(order.items)) {
                         const p = State.products.find(pr => pr.id === prodId);
-                        if(p) await supabase.from('produtos').update({ estoque: p.stock }).eq('id', prodId);
+                        if(p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', prodId);
                     }
                 } catch(e) { console.error("Erro revertendo DB:", e); }
             }
