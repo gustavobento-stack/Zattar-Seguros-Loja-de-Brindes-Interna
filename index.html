@@ -1,352 +1,479 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="antialiased">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zattar Seguros - Loja de Brindes</title>
-    <!-- Tailwind CSS -->
+    <title>Portal de Brindes Comercial</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
-                        slate: { 800: '#1e293b', 900: '#0f172a' }
-                    },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Animações dos modais */
-        .modal-active { transform: scale(1) !important; opacity: 1 !important; }
-        .bg-active { opacity: 1 !important; }
-        
-        /* Oculta setas do input number */
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        /* Estilos personalizados para barra de rolagem e transições suaves */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .transition-all-ease {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Ocultar barra de rolagem no carrinho mas permitir scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Remover setas nativas do input number */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
     </style>
+
+    <!-- Script de inicialização do Tema (Evita piscar branco antes de carregar o dark mode) -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300 min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300">
 
-    <!-- Menu de Contexto Customizado (Botão Direito) -->
-    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 w-48 py-1 text-sm font-medium transition-colors">
-        <button onclick="location.reload()" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Recarregar
-        </button>
-        <button onclick="toggleTheme()" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200">
-            <i data-lucide="moon" class="w-4 h-4"></i> Alternar Tema
-        </button>
-        <div class="h-px bg-slate-200 dark:bg-slate-700 my-1"></div>
-        <button onclick="window.print()" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 text-slate-700 dark:text-slate-200">
-            <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Tela
-        </button>
-    </div>
-
-    <!-- TELA DE LOGIN (Preservada como solicitado) -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center transition-colors duration-300">
-        <div class="max-w-md w-full mx-4 bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 dark:border-slate-700 mx-4">
             <div class="flex justify-center mb-6">
-                <!-- Logos no Login -->
-                <img src="https://i.imgur.com/DeN7M4G.png" alt="Logo Zattar" class="h-12 block dark:hidden object-contain">
-                <img src="https://i.imgur.com/2HfPsZz.png" alt="Logo Zattar" class="h-12 hidden dark:block object-contain">
+                <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center">
+                    <i data-lucide="lock" class="w-8 h-8 text-brand-600 dark:text-brand-400"></i>
+                </div>
             </div>
-            
-            <h2 class="text-2xl font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Interno</h2>
-            <p class="text-center text-slate-500 mb-8 text-sm">Controle de Brindes - Comercial & Marketing</p>
+            <h2 class="text-2xl font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Restrito</h2>
+            <p class="text-center text-slate-500 dark:text-slate-400 text-sm mb-6">Portal de Brindes Comercial</p>
             
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail corporativo</label>
-                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail Corporativo</label>
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="nome.sobrenome@empresa.com">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
                 </div>
-                <div id="loginError" class="text-red-500 text-sm hidden font-medium text-center">Falha ao acessar. Verifique as credenciais.</div>
-                <button type="submit" id="loginBtn" class="w-full bg-slate-900 dark:bg-brand-600 text-white font-bold py-3 rounded-lg hover:bg-slate-800 dark:hover:bg-brand-500 transition-colors flex justify-center items-center gap-2">
-                    <i data-lucide="log-in" class="w-5 h-5"></i> Entrar no Sistema
+                <button type="submit" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    Entrar no Sistema
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- APLICAÇÃO PRINCIPAL (Escondida no início) -->
-    <div id="mainApp" class="hidden flex-1 flex flex-col w-full min-h-screen relative">
-        <!-- HEADER -->
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 transition-colors duration-300 shadow-sm">
-            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar Seguros" class="h-8 sm:h-10 block dark:hidden object-contain">
-                    <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar Seguros" class="h-8 sm:h-10 hidden dark:block object-contain">
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <div class="hidden sm:flex flex-col items-end mr-4">
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">Meu Saldo</span>
-                        <span class="text-lg font-black text-brand-600 dark:text-brand-400 leading-none" id="headerBalance">R$ 0,00</span>
-                    </div>
-
-                    <button onclick="toggleTheme()" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors" title="Alternar Tema">
-                        <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-                        <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
-                    </button>
-
-                    <div class="h-8 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
-
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-600" id="userAvatar">U</div>
-                        <div class="hidden md:block text-sm">
-                            <p class="font-bold text-slate-900 dark:text-white leading-none" id="userNameDisplay">Usuário</p>
-                            <p class="text-slate-500 text-xs">Comercial</p>
-                        </div>
-                        <button onclick="confirmLogout()" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors ml-2" title="Sair">
-                            <i data-lucide="log-out" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                </div>
+    <!-- CONTEÚDO PRINCIPAL (Esquerda) -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Header -->
+        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 transition-colors duration-300">
+            <div>
+                <!-- Logo Light Mode -->
+                <img src="https://i.imgur.com/DeN7M4G.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain block dark:hidden">
+                <!-- Logo Dark Mode -->
+                <img src="https://i.imgur.com/2HfPsZz.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain hidden dark:block">
             </div>
-        </header>
-
-        <!-- CONTEÚDO PRINCIPAL (Flex direction muda de linha no Desktop para coluna no Mobile) -->
-        <main class="flex-1 max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row items-start relative">
             
-            <!-- ESQUERDA: CATÁLOGO -->
-            <div class="flex-1 w-full p-4 sm:p-6 lg:p-8 flex flex-col min-h-0">
+            <div class="flex items-center gap-4 w-full md:w-auto">
                 
-                <!-- Dashboard Resumo -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <button onclick="openHistory()" class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-500 transition-all flex flex-col justify-center items-center text-center group cursor-pointer">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i data-lucide="history" class="w-5 h-5 text-brand-600 dark:text-brand-500"></i>
-                        </div>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Acessar</p>
-                        <p class="text-sm font-black text-slate-900 dark:text-white mt-1">Meus Pedidos</p>
-                    </button>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center text-center">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">Itens no Catálogo</p>
-                        <p class="text-2xl font-black text-slate-900 dark:text-white" id="totalCatalogItems">0</p>
-                    </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center text-center">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">Total em Estoque</p>
-                        <p class="text-2xl font-black text-slate-900 dark:text-white" id="totalStockUnits">0</p>
-                    </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center text-center sm:hidden">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">Meu Saldo Atual</p>
-                        <p class="text-xl font-black text-brand-600 dark:text-brand-400" id="mobileBalanceDisplay">R$ 0,00</p>
-                    </div>
+                <!-- Novo: Meu Saldo no Header -->
+                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                    <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
+                    <strong class="text-sm" id="headerBalanceDisplay">R$ 3.000,00</strong>
                 </div>
 
-                <!-- Controles: Busca e Filtros -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                    <div class="flex flex-wrap gap-2" id="categoryFilters">
-                        <!-- Filtros (via JS) -->
+                <!-- Info do Usuário e Logout -->
+                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
+                    <div class="text-right">
+                        <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
                     </div>
                     
-                    <div class="relative w-full md:w-72">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
-                        </div>
-                        <input type="text" id="searchInput" placeholder="Buscar item, código..." class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-shadow text-sm">
-                    </div>
-                </div>
+                    <!-- Botão de Alternar Tema -->
+                    <button id="themeToggleBtn" type="button" title="Mudar Tema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 transition-colors ml-1">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                    </button>
 
-                <div class="flex justify-between items-end mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
-                    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200">Itens Disponíveis</h2>
-                    <span class="text-xs font-bold text-slate-500 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-md" id="itemsCount">0 itens</span>
-                </div>
-
-                <!-- Grid de Produtos -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 pb-10" id="productsGrid">
-                    <!-- Cards (via JS) -->
-                </div>
-            </div>
-
-            <!-- DIREITA: CARRINHO (Sidebar Fixed on Desktop) -->
-            <div class="w-full lg:w-96 bg-white dark:bg-slate-800 lg:border-l border-t lg:border-t-0 border-slate-200 dark:border-slate-700 flex flex-col shadow-2xl lg:shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.05)] transition-colors duration-300 z-30 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)]">
-                
-                <div class="p-6 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 z-10">
-                    <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-600 dark:text-brand-500"></i>
-                        Sua Solicitação
-                    </h2>
-                </div>
-
-                <!-- Lista de itens no carrinho -->
-                <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-slate-900/50" id="cartItems">
-                    <!-- Itens (via JS) -->
-                </div>
-
-                <!-- Footer do Carrinho -->
-                <div class="p-6 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex flex-col gap-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.02)]">
-                    <div class="space-y-4 border-b border-slate-100 dark:border-slate-700 pb-4">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Data de Separação (Retirada)</label>
-                            <div class="flex gap-2">
-                                <input type="date" id="orderDate" class="flex-1 text-sm px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-colors">
-                                <button type="button" onclick="setToday()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-bold transition-colors">Hoje</button>
-                            </div>
-                            <p id="dateError" class="text-red-500 text-xs mt-1 hidden font-medium">Você precisa selecionar uma data.</p>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Observação / Destino</label>
-                            <input type="text" id="orderNotes" placeholder="Ex: Cliente XPTO ou Evento Y" class="w-full text-sm px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-colors">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-end">
-                        <span class="text-slate-500 text-sm font-bold uppercase tracking-wider">Total</span>
-                        <div class="text-right">
-                            <span class="text-2xl font-black text-slate-900 dark:text-white" id="cartTotal">R$ 0,00</span>
-                            <p class="text-[10px] font-bold text-slate-500 mt-1 uppercase" id="balanceWarning">Saldo após pedido: <span id="balanceAfter" class="text-sm">R$ 0,00</span></p>
-                        </div>
-                    </div>
-
-                    <button id="submitOrderBtn" onclick="submitOrder()" disabled class="w-full bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 dark:hover:bg-brand-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span>Enviar Solicitação</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    <button id="logoutBtn" type="button" title="Sair do sistema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 text-slate-400 transition-colors">
+                        <i data-lucide="power" class="w-4 h-4"></i>
                     </button>
                 </div>
-            </div>
-        </main>
-        
-        <!-- Rodapé -->
-        <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-4 text-center text-xs font-medium text-slate-400 transition-colors mt-auto z-40 relative">
-            Desenvolvido para uso interno | <b>criado pelo marketing da zattar seguros 2026</b>
-        </footer>
-    </div>
 
-    <!-- MODAIS -->
+                <!-- Botão de Histórico -->
+                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+                    <i data-lucide="list-ordered" class="w-4 h-4"></i>
+                    <span class="hidden md:inline">Histórico</span>
+                </button>
+                
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Buscar caneca, moleskine..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white"
+                    >
+                </div>
+            </div>
+
+            <!-- Botão mobile para abrir carrinho -->
+            <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2">
+                <i data-lucide="shopping-cart"></i>
+                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+            </button>
+        </header>
+
+        <!-- Área Rolável -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col">
+            
+            <!-- Info Banner -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
+                <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"></i>
+                <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na planilha de controle (Base 2026).</p>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
+                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-units">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Valor Investido</span>
+                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-invested">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
+                    <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
+                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="stat-balance">--</strong>
+                </div>
+            </div>
+
+            <!-- Filtros de Categoria -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters">
+                    <!-- Botões de categoria serão inseridos via JS -->
+                </div>
+                <span class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid">
+                <!-- Cards de produtos serão inseridos via JS -->
+            </div>
+
+            <!-- Novo: Rodapé -->
+            <footer class="mt-auto pt-10 pb-4 text-center w-full">
+                <p class="text-xs text-slate-400 dark:text-slate-500 font-medium tracking-wide">
+                    &copy; 2026 Zattar Seguros &bull; Desenvolvido pelo time de Marketing
+                </p>
+            </footer>
+        </div>
+    </main>
+
+    <!-- SIDEBAR - CARRINHO DE SOLICITAÇÃO -->
+    <aside id="cartSidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-2xl transform translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 z-40 flex flex-col">
+        
+        <!-- Header Sidebar -->
+        <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    Sua Solicitação
+                </h2>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Ref: ABA 2026</span>
+            </div>
+            <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <!-- Lista de Itens no Carrinho -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4" id="cartItemsContainer">
+            <!-- Estado Vazio -->
+            <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 space-y-3">
+                <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
+                <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo ao lado.</p>
+            </div>
+            
+            <!-- Itens serão renderizados aqui -->
+        </div>
+
+        <!-- Footer Sidebar (Resumo e Botão Finalizar) -->
+        <div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            
+            <!-- Novos Campos: Data e Observação -->
+            <div id="checkoutForm" class="mb-5 space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Data da Separação <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2">
+                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease text-slate-900 dark:text-white [color-scheme:light] dark:[color-scheme:dark]">
+                        <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors">Hoje</button>
+                    </div>
+                    <span id="dateErrorMsg" class="text-red-500 dark:text-red-400 text-xs mt-1 hidden block">⚠️ Por favor, selecione uma data de separação.</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Motivo / Cliente (Opcional)</label>
+                    <textarea id="orderNotes" rows="2" placeholder="Ex: Reunião com diretoria da XPTO..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease resize-none text-slate-900 dark:text-white"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4 text-sm">
+                <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
+                <strong class="text-slate-900 dark:text-white text-lg" id="cartTotalItems">0</strong>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+                <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
+                <div class="text-right">
+                    <strong class="text-brand-600 dark:text-brand-400 text-xl block" id="cartTotalValue">R$ 0,00</strong>
+                    <span id="balanceWarning" class="text-red-500 dark:text-red-400 text-[10px] hidden font-bold mt-1">Saldo insuficiente!</span>
+                </div>
+            </div>
+
+            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-lg font-semibold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
+                <i data-lucide="send" class="w-4 h-4"></i>
+                Enviar Solicitação
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay para mobile quando sidebar está aberta -->
+    <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
     <!-- Modal de Sucesso -->
     <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="successModalBg"></div>
-        <div id="successModalContent" class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
-            <button onclick="closeModal('successModal')" class="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="successModalContent">
+            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-6 mt-2">
-                <i data-lucide="check" class="h-8 w-8 text-green-600 dark:text-green-500"></i>
+                <i data-lucide="check" class="h-8 w-8 text-green-600 dark:text-green-400"></i>
             </div>
             <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Solicitação Enviada!</h3>
-            <p class="text-center text-slate-500 text-sm">Registrado no sistema e enviado para separação.</p>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-2 text-sm">Sua requisição de brindes foi registrada na planilha de controle e enviada para separação da equipe.</p>
         </div>
     </div>
 
-    <!-- Modal de Histórico -->
+    <!-- Modal de Histórico de Pedidos -->
     <div id="ordersModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="ordersModalBg"></div>
-        <div id="ordersModalContent" class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-700 pb-4">
-                <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <i data-lucide="history" class="w-5 h-5 text-brand-600 dark:text-brand-500"></i> Minhas Solicitações
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="ordersModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
+                    Histórico de Solicitações
                 </h3>
-                <button onclick="closeModal('ordersModal')" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
+            
             <div class="flex-1 overflow-y-auto pr-2 space-y-4" id="ordersListContainer">
-                <!-- Pedidos via JS -->
+                <!-- Pedidos serão listados aqui -->
             </div>
         </div>
     </div>
 
-    <!-- Modal de Confirmação (Logout, Cancelar) -->
-    <div id="actionConfirmModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="actionConfirmModalBg"></div>
-        <div id="actionConfirmModalContent" class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-orange-100 dark:bg-orange-900/30" id="actionConfirmIconContainer">
-                <i data-lucide="alert-triangle" class="h-6 w-6 text-orange-600 dark:text-orange-500" id="actionConfirmIcon"></i>
+    <!-- Modal de Confirmação de Logout -->
+    <div id="logoutConfirmModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="logoutConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4">
+                <i data-lucide="log-out" class="h-6 w-6 text-red-500 dark:text-red-400"></i>
             </div>
-            <h3 class="text-lg font-black text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
-            <p class="text-center text-slate-500 mb-6 text-sm font-medium" id="actionConfirmText">Tem certeza?</p>
+            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Tem certeza que deseja desconectar sua conta do Portal de Brindes?</p>
             <div class="flex gap-3">
-                <button onclick="closeModal('actionConfirmModal')" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-colors">Voltar</button>
-                <button id="actionConfirmBtn" class="flex-1 px-4 py-2 text-white font-bold rounded-xl transition-colors shadow-sm">Confirmar</button>
+                <button id="logoutCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button id="logoutConfirmBtn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm">
+                    Sim, sair
+                </button>
             </div>
         </div>
     </div>
 
-    <script>
-        // ==========================================
-        // CONFIGURAÇÕES DO SUPABASE (Sua conta real)
-        // ==========================================
-        const SUPABASE_URL = "https://ykcqnzrcxrroahrqqnej.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4";
-        
-        let supabaseClient;
-        try {
-            // Renomeado para evitar conflito com a importação global
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } catch(e) {
-            console.error("Erro ao inicializar Supabase.", e);
-        }
+    <!-- Modal de Confirmação de Ações Genéricas (Cancelar/Alterar) -->
+    <div id="actionConfirmModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4" id="actionConfirmIconContainer">
+                <i data-lucide="alert-triangle" class="h-6 w-6 text-amber-500 dark:text-amber-400" id="actionConfirmIcon"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm" id="actionConfirmText">Tem certeza que deseja realizar esta ação?</p>
+            <div class="flex gap-3">
+                <button id="actionCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
+                    Voltar
+                </button>
+                <button id="actionConfirmBtn" class="flex-1 px-4 py-2 text-white font-medium rounded-lg transition-colors shadow-sm">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
 
-        // Elementos DOM
+    <!-- Menu de Contexto Personalizado (Botão Direito) -->
+    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-lg py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextReload">
+            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
+        </button>
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextTheme">
+            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
+        </button>
+        <div class="h-px bg-slate-200 dark:bg-slate-700 my-1.5"></div>
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextPrint">
+            <i data-lucide="printer" class="w-4 h-4 text-slate-400"></i> Imprimir Tela
+        </button>
+    </div>
+
+    <!-- SCRIPT TIPO MODULE PARA O SUPABASE -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+        // --- CONFIGURAÇÃO DO SUPABASE ---
+        const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co'; 
+        const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        // Dados extraídos do documento PDF (Fallback)
+        const productsData = [
+            { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
+            { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
+            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" }, // null indica "Valor a confirmar"
+            { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
+            { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
+            { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
+            { id: "TER-002", category: "Térmicos & Bebidas", name: "Caneca — Preta", stock: 13, price: 41.58, icon: "coffee" },
+            { id: "TER-003", category: "Térmicos & Bebidas", name: "Caneca — Branca", stock: 25, price: 39.50, icon: "coffee" },
+            { id: "CUT-001", category: "Cutelaria", name: "Faca de Churrasco", stock: 17, price: 120.00, icon: "utensils" },
+            { id: "COL-001", category: "Colecionáveis", name: "Miniatura Caminhão", stock: 12, price: 240.00, icon: "truck" }
+        ];
+
+        const State = {
+            products: JSON.parse(JSON.stringify(productsData)),
+            cart: {}, 
+            searchQuery: "",
+            selectedCategory: "Todos",
+            categories: ["Todos", ...new Set(productsData.map(p => p.category))],
+            ordersHistory: [], 
+            userBalance: 3000.00, 
+            userSession: null,
+            userId: null
+        };
+
+        // Elementos do DOM
         const els = {
-            loginScreen: document.getElementById('loginScreen'),
-            mainApp: document.getElementById('mainApp'),
             productsGrid: document.getElementById('productsGrid'),
-            cartItems: document.getElementById('cartItems'),
-            cartTotal: document.getElementById('cartTotal'),
-            itemsCountLabel: document.getElementById('itemsCount'),
             categoryFilters: document.getElementById('categoryFilters'),
             searchInput: document.getElementById('searchInput'),
+            itemsCountLabel: document.getElementById('itemsCountLabel'),
+            cartItemsContainer: document.getElementById('cartItemsContainer'),
+            emptyCartState: document.getElementById('emptyCartState'),
+            cartTotalItems: document.getElementById('cartTotalItems'),
+            cartTotalValue: document.getElementById('cartTotalValue'),
+            balanceWarning: document.getElementById('balanceWarning'),
+            checkoutBtn: document.getElementById('checkoutBtn'),
+            checkoutForm: document.getElementById('checkoutForm'),
+            separationDate: document.getElementById('separationDate'),
+            dateErrorMsg: document.getElementById('dateErrorMsg'),
+            btnToday: document.getElementById('btnToday'),
+            orderNotes: document.getElementById('orderNotes'),
+            statUnits: document.getElementById('stat-units'),
+            statInvested: document.getElementById('stat-invested'),
+            statItems: document.getElementById('stat-items'),
+            statBalance: document.getElementById('stat-balance'),
+            headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
+            cartSidebar: document.getElementById('cartSidebar'),
+            cartOverlay: document.getElementById('cartOverlay'),
+            mobileCartBtn: document.getElementById('mobileCartBtn'),
+            mobileCartBadge: document.getElementById('mobileCartBadge'),
+            closeCartBtn: document.getElementById('closeCartBtn'),
+            successModal: document.getElementById('successModal'),
+            successModalContent: document.getElementById('successModalContent'),
+            closeModalBtn: document.getElementById('closeModalBtn'),
+            myOrdersBtn: document.getElementById('myOrdersBtn'),
+            ordersModal: document.getElementById('ordersModal'),
+            ordersModalBg: document.getElementById('ordersModalBg'),
+            ordersModalContent: document.getElementById('ordersModalContent'),
+            closeOrdersBtn: document.getElementById('closeOrdersBtn'),
+            ordersListContainer: document.getElementById('ordersListContainer'),
+            loginScreen: document.getElementById('loginScreen'),
             loginForm: document.getElementById('loginForm'),
-            submitOrderBtn: document.getElementById('submitOrderBtn'),
-            headerBalance: document.getElementById('headerBalance'),
-            mobileBalanceDisplay: document.getElementById('mobileBalanceDisplay'),
-            balanceAfter: document.getElementById('balanceAfter'),
+            loginEmail: document.getElementById('loginEmail'),
+            loginPassword: document.getElementById('loginPassword'),
             userNameDisplay: document.getElementById('userNameDisplay'),
-            userAvatar: document.getElementById('userAvatar')
+            logoutBtn: document.getElementById('logoutBtn'),
+            logoutConfirmModal: document.getElementById('logoutConfirmModal'),
+            logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'),
+            logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
+            logoutCancelBtn: document.getElementById('logoutCancelBtn'),
+            actionConfirmModal: document.getElementById('actionConfirmModal'),
+            actionConfirmModalContent: document.getElementById('actionConfirmModalContent'),
+            actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
+            actionConfirmIcon: document.getElementById('actionConfirmIcon'),
+            actionConfirmTitle: document.getElementById('actionConfirmTitle'),
+            actionConfirmText: document.getElementById('actionConfirmText'),
+            actionCancelBtn: document.getElementById('actionCancelBtn'),
+            actionConfirmBtn: document.getElementById('actionConfirmBtn'),
+            customContextMenu: document.getElementById('customContextMenu'),
+            themeToggleBtn: document.getElementById('themeToggleBtn')
         };
 
-        // Estado da Aplicação
-        const State = {
-            userId: null,
-            userEmail: "",
-            userBalance: 3000.00, // Budget fallback
-            products: [],
-            categories: ["Todos"],
-            selectedCategory: "Todos",
-            searchQuery: "",
-            cart: {}, 
-            ordersHistory: [],
-            qtySelectors: {}
-        };
-
-        const formatMoney = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-        const formatId = (id) => typeof id === 'string' ? id.substring(0, 7) : id;
-
-        // Tema (Dark/Light)
-        function initTheme() {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-        function toggleTheme() {
+        // --- SISTEMA DE TEMA (Dark/Light Mode) ---
+        els.themeToggleBtn?.addEventListener('click', () => {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.theme = 'light';
@@ -354,201 +481,537 @@
                 document.documentElement.classList.add('dark');
                 localStorage.theme = 'dark';
             }
-            closeContextMenu();
-        }
-        initTheme();
-
-        // Menu de Contexto
-        document.addEventListener('contextmenu', (e) => {
-            const menu = document.getElementById('customContextMenu');
-            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                menu.style.display = 'block';
-                menu.style.left = `${e.pageX}px`;
-                menu.style.top = `${e.pageY}px`;
-            }
-        });
-        document.addEventListener('click', () => { document.getElementById('customContextMenu').style.display = 'none'; });
-
-        async function initAuth() {
-            if(!supabaseClient) {
-                // Modo simulação caso erro na lib
-                State.userId = 'simulado';
-                State.userEmail = 'teste@simulado.com';
-                mockData();
-                showApp();
-                return;
-            }
-
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                State.userId = session.user.id;
-                State.userEmail = session.user.email;
-                await carregarDadosRelacionais();
-                showApp();
-            }
-        }
-
-        els.loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-            
-            btn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Entrando...`;
-            err.classList.add('hidden');
-
-            if(!supabaseClient) {
-                // Simulação sem banco
-                setTimeout(() => {
-                    State.userId = 'simulado';
-                    State.userEmail = email;
-                    mockData();
-                    showApp();
-                }, 800);
-                return;
-            }
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                err.classList.remove('hidden');
-                btn.innerHTML = `<i data-lucide="log-in" class="w-5 h-5"></i> Entrar no Sistema`;
-                lucide.createIcons();
-            } else {
-                State.userId = data.user.id;
-                State.userEmail = data.user.email;
-                await carregarDadosRelacionais();
-                showApp();
-            }
         });
 
-        async function carregarDadosRelacionais() {
-            if (!State.userId || !supabaseClient) return;
+        // --- SISTEMA DE LOGIN SUPABASE & FALLBACK ---
+        async function checkAuth() {
             try {
-                // 1. Saldo do Usuario (Tratando erro se a linha não existir)
-                const { data: userData } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).maybeSingle();
-                if (userData && userData.saldo !== undefined && userData.saldo !== null) {
-                    State.userBalance = parseFloat(userData.saldo);
-                }
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                State.userSession = session;
+                
+                if (session) {
+                    State.userId = session.user.id;
+                    els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
+                    
+                    let namePart = session.user.email.split('@')[0];
+                    let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                    els.userNameDisplay.textContent = formattedName;
 
-                // 2. Categorias
-                const { data: catData } = await supabaseClient.from('categorias').select('*');
-                if (catData && catData.length > 0) {
-                    State.categories = ["Todos", ...catData.map(c => c.nome || c.id)];
+                    await loadFromSupabase();
+                } else {
+                    els.loginScreen.classList.remove('hidden');
+                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
                 }
+            } catch (error) {
+                console.warn("Sem Supabase, usando Login Local");
+                const userEmail = localStorage.getItem('brindesUser');
+                if (userEmail) {
+                    State.userId = 'mock-user-id';
+                    els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
+                    let namePart = userEmail.split('@')[0];
+                    let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                    els.userNameDisplay.textContent = formattedName;
+                    await loadFromStorageLocal();
+                } else {
+                    els.loginScreen.classList.remove('hidden');
+                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
+                }
+            }
+        }
 
-                // 3. Produtos
-                const { data: prodData } = await supabaseClient.from('produtos').select('*');
-                if (prodData) {
-                    State.products = prodData.map(p => ({
+        els.loginForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = els.loginEmail.value;
+            const password = els.loginPassword.value;
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) throw error;
+                await checkAuth();
+            } catch (error) {
+                console.warn("Erro no Supabase Auth. Usando mock local.", error);
+                localStorage.setItem('brindesUser', email);
+                State.userId = 'mock-user-id';
+                checkAuth();
+            }
+        });
+
+        els.logoutBtn?.addEventListener('click', () => {
+            els.logoutConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        });
+
+        els.logoutCancelBtn?.addEventListener('click', () => {
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
+        });
+
+        els.logoutConfirmBtn?.addEventListener('click', async () => {
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
+            
+            try { await supabaseClient.auth.signOut(); } catch (e) {}
+            localStorage.removeItem('brindesUser');
+            els.loginEmail.value = '';
+            if(els.loginPassword) els.loginPassword.value = '';
+            checkAuth();
+        });
+
+        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES ---
+        let pendingActionCallback = null;
+
+        function showActionConfirm(title, text, type, confirmBtnText, callback) {
+            els.actionConfirmTitle.textContent = title;
+            els.actionConfirmText.textContent = text;
+            els.actionConfirmBtn.textContent = confirmBtnText;
+
+            if (type === 'danger') {
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
+                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
+            } else { 
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
+                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
+            }
+            
+            lucide.createIcons(); 
+            pendingActionCallback = callback;
+
+            els.actionConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        els.actionCancelBtn?.addEventListener('click', () => {
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                els.actionConfirmModal.classList.add('hidden');
+                pendingActionCallback = null;
+            }, 300);
+        });
+
+        els.actionConfirmBtn?.addEventListener('click', () => {
+            if (pendingActionCallback) pendingActionCallback();
+            els.actionCancelBtn.click(); 
+        });
+
+        // --- SISTEMA DE MENU DE CONTEXTO ---
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                const menu = els.customContextMenu;
+                menu.classList.remove('hidden');
+                const rect = menu.getBoundingClientRect();
+                let x = e.clientX;
+                let y = e.clientY;
+                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
+                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
+                menu.style.left = `${x}px`;
+                menu.style.top = `${y}px`;
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!els.customContextMenu.contains(e.target)) {
+                els.customContextMenu.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
+        document.getElementById('contextTheme')?.addEventListener('click', () => {
+            els.themeToggleBtn.click();
+            els.customContextMenu.classList.add('hidden');
+        });
+        document.getElementById('contextPrint')?.addEventListener('click', () => {
+            els.customContextMenu.classList.add('hidden');
+            window.print();
+        });
+
+        // --- INTEGRAÇÃO COM SUPABASE ---
+        async function loadFromSupabase() {
+            try {
+                // 1. Carrega Produtos
+                const { data: produtosData, error: errProd } = await supabaseClient.from('produtos').select('*');
+                if (produtosData && produtosData.length > 0) {
+                    State.products = produtosData.map(p => ({
                         id: p.id,
+                        category: p.categoria,
                         name: p.nome,
-                        category: p.categoria || 'Geral',
-                        stock: parseInt(p.estoque) || 0,
-                        price: parseFloat(p.preco) || 0,
-                        icon: p.icone || 'package'
+                        stock: p.estoque,
+                        price: p.preco,
+                        icon: p.icone || 'tag'
                     }));
                 }
 
-                // 4. Pedidos
-                const { data: ordersData } = await supabaseClient.from('pedidos')
-                    .select('*, itens:pedido-itens(*)')
+                // 2. Carrega Categorias
+                const { data: catData } = await supabaseClient.from('categorias').select('nome');
+                if (catData && catData.length > 0) {
+                    State.categories = ["Todos", ...catData.map(c => c.nome)];
+                } else {
+                    State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
+                }
+
+                // 3. Carrega Saldo do Usuário
+                const { data: userData, error: errUser } = await supabaseClient
+                    .from('usuarios')
+                    .select('saldo')
+                    .eq('id', State.userId)
+                    .maybeSingle(); 
+
+                if (userData) {
+                    State.userBalance = parseFloat(userData.saldo);
+                }
+
+                // 4. Carrega Histórico de Pedidos
+                const { data: pedidosData } = await supabaseClient
+                    .from('pedidos')
+                    .select(`id, data_criacao, data_separacao, observacao, status, pedido_itens ( produto_id, quantidade )`)
                     .eq('usuario_id', State.userId)
                     .order('data_criacao', { ascending: false });
 
-                if (ordersData) {
-                    State.ordersHistory = ordersData.map(o => {
-                        let parsedItems = {};
-                        if (o.itens) {
-                            o.itens.forEach(item => { parsedItems[item.produto_id] = parseInt(item.quantidade); });
-                        }
+                if (pedidosData) {
+                    State.ordersHistory = pedidosData.map(p => {
+                        const items = {};
+                        p.pedido_itens.forEach(item => {
+                            items[item.produto_id] = item.quantidade;
+                        });
                         return {
-                            id: o.id,
-                            date: o.data_criacao,
-                            separationDate: o.data_separacao,
-                            notes: o.observacao,
-                            status: o.status,
-                            items: parsedItems
+                            id: p.id,
+                            date: p.data_criacao,
+                            separationDate: p.data_separacao,
+                            notes: p.observacao,
+                            status: p.status,
+                            items: items
                         };
                     });
                 }
-            } catch (err) {
-                console.error("Aviso: Falha ao carregar banco real, carregando memoria.", err);
-                if(State.products.length === 0) mockData();
-            } finally {
-                initDashboard();
-                renderCategories();
-                renderProducts();
+                
+                finalizeDataLoad();
+            } catch (error) {
+                console.error("Erro ao carregar do Supabase. Caiu no Fallback.", error);
+                await loadFromStorageLocal();
             }
         }
 
-        function mockData() {
-            State.userBalance = 3000;
-            State.categories = ["Todos", "Papelaria", "Acessórios", "Térmicos", "Cutelaria"];
-            State.products = [
-                { id: 'PAP-001', name: 'Bloco de Anotações', category: 'Papelaria', stock: 280, price: 5.96, icon: 'book' },
-                { id: 'PAP-002', name: 'Caderno Moleskine', category: 'Papelaria', stock: 220, price: 23.12, icon: 'book-open' },
-                { id: 'ACS-001', name: 'Sacola Ecobag', category: 'Acessórios', stock: 125, price: 4.95, icon: 'shopping-bag' },
-                { id: 'TER-001', name: 'Garrafa Térmica', category: 'Térmicos', stock: 58, price: 20.95, icon: 'coffee' }
-            ];
+        async function loadFromStorageLocal() {
+            const savedCart = localStorage.getItem('brindesCart');
+            const savedOrders = localStorage.getItem('brindesOrders');
+            const savedBalance = localStorage.getItem('brindesBalance');
+            
+            if (savedCart) State.cart = JSON.parse(savedCart);
+            if (savedOrders) State.ordersHistory = JSON.parse(savedOrders);
+            if (savedBalance) State.userBalance = parseFloat(savedBalance);
+
+            State.ordersHistory.forEach(order => {
+                Object.keys(order.items).forEach(id => {
+                    const product = State.products.find(p => p.id === id);
+                    if (product) {
+                        product.stock -= order.items[id];
+                    }
+                });
+            });
+
+            finalizeDataLoad();
         }
 
-        function showApp() {
-            els.loginScreen.classList.add('hidden');
-            els.mainApp.classList.remove('hidden');
-            let nomeFormatado = State.userEmail.split('@')[0];
-            nomeFormatado = nomeFormatado.charAt(0).toUpperCase() + nomeFormatado.slice(1);
-            els.userNameDisplay.textContent = nomeFormatado;
-            els.userAvatar.textContent = nomeFormatado.charAt(0);
-            updateBalanceUI();
+        function finalizeDataLoad() {
+            initDashboard();
+            renderCategories();
+            renderProducts();
+            updateCartUI();
             lucide.createIcons();
         }
 
-        function updateBalanceUI() {
-            const totalCart = getCartTotalValue();
-            const after = State.userBalance - totalCart;
-            
-            els.headerBalance.textContent = formatMoney(State.userBalance);
-            els.mobileBalanceDisplay.textContent = formatMoney(State.userBalance);
-            els.balanceAfter.textContent = formatMoney(after);
-            
-            if(after < 0) {
-                els.balanceAfter.classList.add('text-red-500');
-                els.balanceAfter.classList.remove('text-slate-500');
-                els.submitOrderBtn.disabled = true;
-                els.submitOrderBtn.innerHTML = `Saldo Insuficiente`;
-            } else {
-                els.balanceAfter.classList.remove('text-red-500');
-                els.balanceAfter.classList.add('text-slate-500');
-                els.submitOrderBtn.disabled = Object.keys(State.cart).length === 0;
-                els.submitOrderBtn.innerHTML = `<span>Enviar Solicitação</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-            }
-            lucide.createIcons();
+        function saveLocalCart() {
+            localStorage.setItem('brindesCart', JSON.stringify(State.cart));
         }
+
+        // ------------------------------------------------------------
+        const formatMoney = (value) => {
+            if (value === null) return "Valor a confirmar";
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        };
+
+        const getCategoryIcon = (category) => {
+            const map = {
+                'Papelaria': 'pencil-ruler',
+                'Acessórios': 'gem',
+                'Térmicos & Bebidas': 'glass-water',
+                'Cutelaria': 'chef-hat',
+                'Colecionáveis': 'box'
+            };
+            return map[category] || 'tag';
+        };
 
         function initDashboard() {
-            document.getElementById('totalCatalogItems').textContent = State.products.length;
-            const totalStock = State.products.reduce((acc, p) => acc + p.stock, 0);
-            document.getElementById('totalStockUnits').textContent = totalStock;
+            const totalUnits = State.products.reduce((acc, curr) => acc + curr.stock, 0);
+            const totalInvested = State.products.reduce((acc, curr) => acc + (curr.price ? curr.price * curr.stock : 0), 0);
+            
+            els.statUnits.textContent = totalUnits;
+            els.statInvested.textContent = "R$ " + (totalInvested / 1000).toFixed(1).replace('.', ',') + "k";
+            els.statItems.textContent = State.products.length;
+            
+            if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
+            if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
         }
 
         function renderCategories() {
-            els.categoryFilters.innerHTML = State.categories.map(cat => `
-                <button onclick="setCategory('${cat}')" 
-                    class="px-4 py-1.5 rounded-full text-sm font-bold transition-all ${
-                    State.selectedCategory === cat 
-                    ? 'bg-slate-900 dark:bg-brand-600 text-white shadow-md' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
-                }">${cat}</button>
-            `).join('');
+            els.categoryFilters.innerHTML = '';
+            State.categories.forEach(cat => {
+                const isActive = State.selectedCategory === cat;
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
+                    isActive 
+                    ? 'bg-slate-900 dark:bg-brand-600 text-white border-slate-900 dark:border-brand-600 shadow-sm' 
+                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                }`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    State.selectedCategory = cat;
+                    renderCategories();
+                    renderProducts();
+                };
+                els.categoryFilters.appendChild(btn);
+            });
         }
 
-        function setCategory(cat) {
-            State.selectedCategory = cat;
-            renderCategories();
+        function renderProducts() {
+            els.productsGrid.innerHTML = '';
+            
+            let filtered = State.products.filter(p => {
+                const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
+                const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || 
+                                    p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
+                return matchCategory && matchSearch;
+            });
+
+            els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
+
+            if (filtered.length === 0) {
+                els.productsGrid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">
+                        <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                        <p>Nenhum brinde encontrado para sua busca.</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(product => {
+                const qtyInCart = State.cart[product.id] || 0;
+                const stockRemaining = product.stock - qtyInCart;
+                const isOutOfStock = stockRemaining <= 0;
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
+                
+                card.innerHTML = `
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[160px]">
+                        <div class="absolute top-3 left-3 flex gap-2">
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-[#f0e6d2] dark:bg-amber-900/30 text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
+                                Estoque: ${product.stock} un.
+                            </span>
+                        </div>
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
+                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col">
+                        <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
+                        <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
+                        
+                        <div class="mt-auto pt-3 flex items-end justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
+                                <strong class="text-brand-700 dark:text-brand-400 font-semibold text-sm">${formatMoney(product.price)}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
+                                <button onclick="window.changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
+                                <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
+                                <button onclick="window.changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
+                            </div>
+                            <button 
+                                onclick="window.addMultipleToCart('${product.id}')"
+                                class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}"
+                                ${isOutOfStock ? 'disabled' : ''}
+                            >
+                                <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i>
+                                ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                els.productsGrid.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        window.changeCardQty = function(productId, delta) {
+            const input = document.getElementById(`card-qty-${productId}`);
+            if(!input) return;
+            
+            const product = State.products.find(p => p.id === productId);
+            const qtyInCart = State.cart[productId] || 0;
+            const stockRemaining = product.stock - qtyInCart;
+            
+            let newVal = parseInt(input.value) + delta;
+            if (newVal < 1) newVal = 1;
+            if (newVal > stockRemaining) newVal = stockRemaining;
+            input.value = newVal;
+        };
+
+        window.addMultipleToCart = function(productId) {
+            const input = document.getElementById(`card-qty-${productId}`);
+            let qtyToAdd = input ? parseInt(input.value) : 1;
+            
+            const product = State.products.find(p => p.id === productId);
+            const currentQty = State.cart[productId] || 0;
+            const stockRemaining = product.stock - currentQty;
+            
+            if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
+            if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
+            
+            if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
+                State.cart[productId] = currentQty + qtyToAdd;
+                updateCartUI();
+                renderProducts();
+                saveLocalCart();
+                
+                els.mobileCartBtn.classList.add('scale-110');
+                setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
+            }
+        };
+
+        window.updateQuantity = function(productId, delta) {
+            const product = State.products.find(p => p.id === productId);
+            let newQty = (State.cart[productId] || 0) + delta;
+            
+            if (newQty <= 0) {
+                delete State.cart[productId];
+            } else if (newQty <= product.stock) {
+                State.cart[productId] = newQty;
+            } else {
+                return;
+            }
+            
+            updateCartUI();
             renderProducts();
+            saveLocalCart();
+        };
+
+        window.removeFromCart = function(productId) {
+            delete State.cart[productId];
+            updateCartUI();
+            renderProducts();
+            saveLocalCart();
+        };
+
+        function updateCartUI() {
+            els.cartItemsContainer.innerHTML = '';
+            let totalItems = 0;
+            let totalValue = 0;
+            const cartKeys = Object.keys(State.cart);
+
+            if (cartKeys.length === 0) {
+                els.cartItemsContainer.appendChild(els.emptyCartState);
+                els.emptyCartState.classList.remove('hidden');
+                els.checkoutBtn.disabled = true;
+                els.checkoutForm.classList.add('hidden'); 
+                els.cartTotalItems.textContent = "0";
+                
+                if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
+                if (els.balanceWarning) els.balanceWarning.classList.add('hidden');
+                
+                els.mobileCartBadge.textContent = "0";
+                els.mobileCartBadge.classList.add('hidden');
+                return;
+            }
+
+            els.emptyCartState.classList.add('hidden');
+            els.checkoutForm.classList.remove('hidden');
+
+            cartKeys.forEach(id => {
+                const product = State.products.find(p => p.id === id);
+                const qty = State.cart[id];
+                totalItems += qty;
+                if (product.price) totalValue += (product.price * qty);
+
+                const itemEl = document.createElement('div');
+                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
+                itemEl.innerHTML = `
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
+                        <i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center min-w-0">
+                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
+                        <button onclick="window.updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="minus" class="w-3 h-3"></i>
+                        </button>
+                        <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
+                        <button onclick="window.updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="plus" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+                    <button onclick="window.removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                `;
+                els.cartItemsContainer.appendChild(itemEl);
+            });
+
+            els.cartTotalItems.textContent = totalItems;
+            
+            if (els.cartTotalValue) {
+                els.cartTotalValue.textContent = formatMoney(totalValue);
+                if (totalValue > State.userBalance) {
+                    els.cartTotalValue.classList.remove('text-brand-600');
+                    els.cartTotalValue.classList.add('text-red-600');
+                    els.balanceWarning.classList.remove('hidden');
+                    els.checkoutBtn.disabled = true;
+                    els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
+                } else {
+                    els.cartTotalValue.classList.remove('text-red-600');
+                    els.cartTotalValue.classList.add('text-brand-600');
+                    els.balanceWarning.classList.add('hidden');
+                    els.checkoutBtn.disabled = false;
+                    els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
+                }
+            } else {
+                 els.checkoutBtn.disabled = false;
+            }
+            
+            els.mobileCartBadge.textContent = totalItems;
+            if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
+
+            lucide.createIcons();
         }
 
         els.searchInput.addEventListener('input', (e) => {
@@ -556,403 +1019,360 @@
             renderProducts();
         });
 
-        function changeLocalQty(prodId, delta) {
-            const product = State.products.find(p => p.id === prodId);
-            if(!product) return;
-            let current = State.qtySelectors[prodId] || 1;
-            let max = product.stock;
-            if(State.cart[prodId]) max -= State.cart[prodId]; 
-            
-            let novo = current + delta;
-            if(novo < 1) novo = 1;
-            if(novo > max) novo = max;
-            
-            State.qtySelectors[prodId] = novo;
-            document.getElementById(`qtyInput_${prodId}`).value = novo;
-        }
-
-        function addToCart(prodId) {
-            const product = State.products.find(p => p.id === prodId);
-            if(!product || product.stock === 0) return;
-
-            let qtyToAdd = parseInt(State.qtySelectors[prodId] || 1);
-            let currentInCart = State.cart[prodId] || 0;
-            
-            if (currentInCart + qtyToAdd > product.stock) {
-                qtyToAdd = product.stock - currentInCart; 
+        const toggleSidebar = () => {
+            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
+            if (isClosed) {
+                els.cartSidebar.classList.remove('translate-x-full');
+                els.cartOverlay.classList.remove('hidden');
+                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
+            } else {
+                els.cartSidebar.classList.add('translate-x-full');
+                els.cartOverlay.classList.remove('opacity-100');
+                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300); 
             }
+        };
 
-            if(qtyToAdd > 0) {
-                State.cart[prodId] = currentInCart + qtyToAdd;
-                State.qtySelectors[prodId] = 1; 
-                renderCart();
-                renderProducts();
-            }
-        }
+        els.mobileCartBtn.addEventListener('click', toggleSidebar);
+        els.closeCartBtn.addEventListener('click', toggleSidebar);
+        els.cartOverlay.addEventListener('click', toggleSidebar);
 
-        function updateCartQty(prodId, delta) {
-            const product = State.products.find(p => p.id === prodId);
-            let current = State.cart[prodId] || 0;
-            let novo = current + delta;
-
-            if (novo <= 0) delete State.cart[prodId];
-            else if (novo <= product.stock) State.cart[prodId] = novo;
+        const setupDateInput = () => {
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
             
-            renderCart();
-            renderProducts();
-        }
+            els.separationDate.min = localISOTime;
+            els.separationDate.value = ""; 
 
-        function renderProducts() {
-            els.productsGrid.innerHTML = '';
-            let filtered = State.products.filter(p => 
-                (State.selectedCategory === 'Todos' || p.category === State.selectedCategory) && 
-                (p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase()))
-            );
-            
-            els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
-
-            if (State.products.length === 0) {
-                els.productsGrid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-500">Nenhum produto.</div>`;
-                return;
-            }
-
-            filtered.forEach(product => {
-                let inCart = State.cart[product.id] || 0;
-                let available = product.stock - inCart;
-                let isEsgotado = available === 0;
-                let currentLocalQty = State.qtySelectors[product.id] || 1;
-                
-                if (currentLocalQty > available) currentLocalQty = available > 0 ? available : 1;
-                State.qtySelectors[product.id] = currentLocalQty;
-
-                let card = document.createElement('div');
-                card.className = `bg-white dark:bg-slate-800 rounded-2xl p-5 border transition-all duration-300 flex flex-col h-full ${isEsgotado ? 'border-red-200 dark:border-red-900/30 opacity-75' : 'border-slate-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1'}`;
-                
-                // Botão Empilhado e Elegante
-                let btnHtml = isEsgotado 
-                    ? `<button disabled class="w-full mt-4 bg-slate-100 dark:bg-slate-700 text-slate-400 py-2.5 rounded-xl font-bold cursor-not-allowed">Esgotado</button>`
-                    : `<div class="mt-4 flex flex-col gap-2">
-                        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
-                            <button onclick="changeLocalQty('${product.id}', -1)" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors font-bold text-xl">-</button>
-                            <input type="number" id="qtyInput_${product.id}" value="${currentLocalQty}" readonly class="w-12 text-center bg-transparent font-black text-slate-800 dark:text-white outline-none">
-                            <button onclick="changeLocalQty('${product.id}', 1)" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors font-bold text-xl">+</button>
-                        </div>
-                        <button onclick="addToCart('${product.id}')" class="w-full bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 dark:hover:bg-brand-500 text-white py-3 rounded-xl font-bold transition-all active:scale-95 text-sm shadow-md flex justify-center items-center gap-2">
-                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
-                        </button>
-                       </div>`;
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md uppercase tracking-wider">${formatId(product.id)}</span>
-                        ${inCart > 0 ? `<span class="text-[10px] font-bold text-white bg-brand-500 px-2 py-1 rounded-md shadow-sm">${inCart} no pedido</span>` : ''}
-                    </div>
-                    <div class="flex-1 flex flex-col items-center justify-center py-6 text-slate-800 dark:text-slate-200">
-                        <i data-lucide="${product.icon}" class="w-14 h-14 mb-4 text-slate-400 dark:text-slate-500 stroke-[1.5]"></i>
-                        <h3 class="font-black text-center text-slate-900 dark:text-white leading-tight">${product.name}</h3>
-                        <p class="text-xs font-medium text-slate-500 mt-1">${product.category}</p>
-                    </div>
-                    <div class="border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
-                        <div class="flex justify-between items-end mb-1">
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Estoque Livre</p>
-                            <p class="text-sm font-black ${isEsgotado ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}">${available} un.</p>
-                        </div>
-                        <p class="text-lg font-black text-brand-600 dark:text-brand-400">${formatMoney(product.price)}</p>
-                        ${btnHtml}
-                    </div>
-                `;
-                els.productsGrid.appendChild(card);
+            els.btnToday.addEventListener('click', () => {
+                els.separationDate.value = localISOTime;
+                els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
             });
-            lucide.createIcons();
-        }
 
-        function getCartTotalValue() {
-            let total = 0;
-            for (const [id, qty] of Object.entries(State.cart)) {
-                const prod = State.products.find(p => p.id === id);
-                if (prod) total += (prod.price * qty);
-            }
-            return total;
-        }
+            els.separationDate.addEventListener('change', () => {
+                if (els.separationDate.value) {
+                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                    if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
+                }
+            });
+        };
 
-        function renderCart() {
-            els.cartItems.innerHTML = '';
-            let hasItems = false;
-            
-            for (const [id, qty] of Object.entries(State.cart)) {
-                hasItems = true;
-                const prod = State.products.find(p => p.id === id);
-                if(!prod) continue;
-                
-                let itemEl = document.createElement('div');
-                itemEl.className = 'bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex justify-between items-center group';
-                itemEl.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
-                            <i data-lucide="${prod.icon}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-sm text-slate-900 dark:text-white leading-tight line-clamp-1">${prod.name}</p>
-                            <p class="text-xs font-black text-brand-600 dark:text-brand-400">${formatMoney(prod.price * qty)}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
-                        <button onclick="updateCartQty('${id}', -1)" class="w-6 h-6 flex items-center justify-center hover:bg-white dark:hover:bg-slate-600 rounded shadow-sm font-bold text-slate-600 dark:text-slate-300">-</button>
-                        <span class="w-6 text-center text-xs font-black text-slate-900 dark:text-white">${qty}</span>
-                        <button onclick="updateCartQty('${id}', 1)" class="w-6 h-6 flex items-center justify-center hover:bg-white dark:hover:bg-slate-600 rounded shadow-sm font-bold text-slate-600 dark:text-slate-300">+</button>
-                    </div>
-                `;
-                els.cartItems.appendChild(itemEl);
-            }
-
-            if (!hasItems) {
-                els.cartItems.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-slate-400 space-y-3 opacity-60">
-                        <i data-lucide="package-open" class="w-12 h-12"></i>
-                        <p class="text-sm font-bold">Nenhum item selecionado</p>
-                    </div>
-                `;
-            }
-            
-            els.cartTotal.textContent = formatMoney(getCartTotalValue());
-            updateBalanceUI();
-            lucide.createIcons();
-        }
-
-        function setToday() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('orderDate').value = today;
-            document.getElementById('dateError').classList.add('hidden');
-            document.getElementById('orderDate').classList.remove('border-red-500');
-        }
-
-        async function submitOrder() {
-            if(Object.keys(State.cart).length === 0) return;
-            
-            const dateInput = document.getElementById('orderDate');
-            const dateError = document.getElementById('dateError');
-            if(!dateInput.value) {
-                dateInput.classList.add('border-red-500');
-                dateError.classList.remove('hidden');
+        // FINALIZAR PEDIDO (SUPABASE / LOCAL)
+        els.checkoutBtn.addEventListener('click', async () => {
+            if (!els.separationDate.value) {
+                els.separationDate.classList.add('border-red-500', 'ring-red-500');
+                els.dateErrorMsg.classList.remove('hidden');
+                els.separationDate.focus();
+                setTimeout(() => {
+                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                    els.dateErrorMsg.classList.add('hidden');
+                }, 3500);
                 return;
             }
-            dateInput.classList.remove('border-red-500');
-            dateError.classList.add('hidden');
 
-            const orderTotalValue = getCartTotalValue();
-            if(orderTotalValue > State.userBalance) return; 
+            els.checkoutBtn.disabled = true;
+            els.checkoutBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...`;
+            lucide.createIcons();
 
-            els.submitOrderBtn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Processando...`;
-            els.submitOrderBtn.disabled = true;
+            const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
 
             const newOrder = {
-                id: 'PED-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                id: orderId,
                 date: new Date().toISOString(),
-                separationDate: dateInput.value,
-                notes: document.getElementById('orderNotes').value,
-                status: 'Pendente',
-                items: {...State.cart}
+                separationDate: els.separationDate.value,
+                notes: els.orderNotes.value,
+                items: { ...State.cart },
+                status: 'Enviado para Separação'
             };
 
-            if(supabaseClient && State.userId !== 'simulado') {
+            let orderTotalValue = 0;
+            Object.keys(State.cart).forEach(id => {
+                const productIndex = State.products.findIndex(p => p.id === id);
+                if(productIndex > -1) {
+                    State.products[productIndex].stock -= State.cart[id];
+                    if (State.products[productIndex].price) {
+                        orderTotalValue += (State.products[productIndex].price * State.cart[id]);
+                    }
+                }
+            });
+
+            State.userBalance -= orderTotalValue;
+            State.ordersHistory.unshift(newOrder);
+
+            // Supabase Integration
+            if (State.userId && State.userId !== 'mock-user-id') {
                 try {
                     await supabaseClient.from('pedidos').insert({
-                        id: newOrder.id,
+                        id: orderId,
                         usuario_id: State.userId,
-                        data_criacao: newOrder.date,
-                        data_separacao: newOrder.separationDate,
-                        observacao: newOrder.notes,
-                        status: newOrder.status
+                        data_separacao: els.separationDate.value,
+                        observacao: els.orderNotes.value,
+                        status: 'Enviado para Separação'
                     });
 
-                    for(const [prodId, qty] of Object.entries(newOrder.items)) {
-                        await supabaseClient.from('pedido-itens').insert({
-                            pedido_id: newOrder.id, produto_id: prodId, quantidade: qty
-                        });
+                    const orderItems = Object.keys(State.cart).map(prodId => ({
+                        pedido_id: orderId,
+                        produto_id: prodId,
+                        quantidade: State.cart[prodId]
+                    }));
+                    await supabaseClient.from('pedido_itens').insert(orderItems);
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+
+                    for (const prodId of Object.keys(State.cart)) {
                         const prod = State.products.find(p => p.id === prodId);
-                        if(prod) {
-                            prod.stock -= qty; 
+                        await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
+                    }
+                } catch (e) {
+                    console.error("Erro ao salvar no Supabase, salvando localmente", e);
+                    localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
+                    localStorage.setItem('brindesBalance', State.userBalance.toString());
+                }
+            } else {
+                 localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
+                 localStorage.setItem('brindesBalance', State.userBalance.toString());
+            }
+
+            State.cart = {};
+            els.orderNotes.value = "";
+            setupDateInput();
+            
+            saveLocalCart();
+            updateCartUI();
+            renderProducts();
+            initDashboard();
+            
+            els.successModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.successModalContent.classList.remove('scale-95', 'opacity-0');
+                els.successModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            if(!els.cartSidebar.classList.contains('translate-x-full')) {
+                toggleSidebar();
+            }
+        });
+
+        els.closeModalBtn.addEventListener('click', () => {
+            els.successModalContent.classList.remove('scale-100', 'opacity-100');
+            els.successModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.successModal.classList.add('hidden'), 300); 
+        });
+
+        const renderOrdersHistory = () => {
+            els.ordersListContainer.innerHTML = '';
+            
+            if (State.ordersHistory.length === 0) {
+                els.ordersListContainer.innerHTML = `
+                    <div class="py-12 flex flex-col items-center text-center text-slate-400 dark:text-slate-500">
+                        <i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i>
+                        <p>Nenhuma solicitação realizada ainda.<br>Seus pedidos aparecerão aqui.</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            State.ordersHistory.forEach(order => {
+                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
+                const sepDateParts = order.separationDate.split('-');
+                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
+                const isCancelled = order.status === 'Cancelado';
+
+                const card = document.createElement('div');
+                card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors ${
+                    isCancelled 
+                    ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' 
+                    : 'bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'
+                }`;
+                
+                let itemsListHtml = Object.keys(order.items).map(id => {
+                    const productInfo = State.products.find(p => p.id === id) || productsData.find(p => p.id === id);
+                    const name = productInfo ? productInfo.name : id;
+                    return `
+                        <li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
+                            <span class="text-sm text-slate-600 dark:text-slate-300 truncate pr-4">${name}</span>
+                            <strong class="text-sm text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700">${order.items[id]} un.</strong>
+                        </li>`;
+                }).join('');
+
+                const statusColorClass = isCancelled 
+                    ? 'text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/40' 
+                    : 'text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/50';
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/50 px-2 py-1 rounded tracking-wider">${order.id}</span>
+                                <span class="text-[10px] font-medium ${statusColorClass} px-2 py-1 rounded">${order.status}</span>
+                            </div>
+                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
+                        </div>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                            Em: ${orderDate}
+                        </span>
+                    </div>
+                    
+                    ${order.notes ? `
+                    <div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start">
+                        <i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p>
+                    </div>` : ''}
+                    
+                    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
+                        <ul class="px-3 py-1">${itemsListHtml}</ul>
+                    </div>
+
+                    ${!isCancelled ? `
+                    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+                        <button onclick="window.editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar
+                        </button>
+                        <button onclick="window.cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar
+                        </button>
+                    </div>` : ''}
+                `;
+                els.ordersListContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        };
+
+        const toggleOrdersModal = () => {
+            const isHidden = els.ordersModal.classList.contains('hidden');
+            if (isHidden) {
+                renderOrdersHistory();
+                els.ordersModal.classList.remove('hidden');
+                setTimeout(() => {
+                    els.ordersModalContent.classList.remove('scale-95', 'opacity-0');
+                    els.ordersModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
+                els.ordersModalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    els.ordersModal.classList.add('hidden');
+                }, 300);
+            }
+        };
+
+        window.cancelOrder = async function(orderId) {
+            showActionConfirm(
+                'Cancelar Solicitação', 
+                'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.',
+                'danger',
+                'Sim, Cancelar',
+                async () => {
+                    const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                    if(orderIndex === -1) return;
+                    
+                    const order = State.ordersHistory[orderIndex];
+                    let orderCost = 0;
+                    
+                    Object.keys(order.items).forEach(itemId => {
+                        const product = State.products.find(p => p.id === itemId);
+                        if (product) {
+                            product.stock += order.items[itemId];
+                            if (product.price) orderCost += (product.price * order.items[itemId]);
+                        }
+                    });
+                    
+                    State.userBalance += orderCost;
+                    order.status = 'Cancelado';
+
+                    if (State.userId && State.userId !== 'mock-user-id') {
+                        try{
+                            await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                            await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                            
+                            for (const prodId of Object.keys(order.items)) {
+                                const prod = State.products.find(p => p.id === prodId);
+                                await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
+                            }
+                        } catch(e) { console.error("Erro ao cancelar", e); }
+                    }
+                    
+                    localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
+                    localStorage.setItem('brindesBalance', State.userBalance.toString());
+                    renderOrdersHistory();
+                    renderProducts();
+                    initDashboard();
+                }
+            );
+        };
+
+        window.editOrder = async function(orderId) {
+            const proceedWithEdit = async () => {
+                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                if(orderIndex === -1) return;
+                const order = State.ordersHistory[orderIndex];
+                
+                let orderCost = 0;
+                Object.keys(order.items).forEach(itemId => {
+                    const product = State.products.find(p => p.id === itemId);
+                    if (product) {
+                        product.stock += order.items[itemId];
+                        if (product.price) orderCost += (product.price * order.items[itemId]);
+                    }
+                });
+                
+                State.userBalance += orderCost;
+                State.cart = { ...order.items };
+                els.separationDate.value = order.separationDate;
+                els.orderNotes.value = order.notes || '';
+
+                if (State.userId && State.userId !== 'mock-user-id') {
+                    try{
+                        await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                        
+                        for (const prodId of Object.keys(order.items)) {
+                            const prod = State.products.find(p => p.id === prodId);
                             await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
                         }
-                    }
-                    State.userBalance -= orderTotalValue;
-                    await supabaseClient.from('usuarios').upsert({ id: State.userId, saldo: State.userBalance });
-                } catch(e) { console.error("Erro banco:", e); }
-            } else {
-                State.userBalance -= orderTotalValue;
-                for(const [prodId, qty] of Object.entries(newOrder.items)) {
-                    const prod = State.products.find(p => p.id === prodId);
-                    if(prod) prod.stock -= qty;
+                    } catch(e) { console.error("Erro ao alterar", e); }
                 }
-            }
+                
+                State.ordersHistory.splice(orderIndex, 1);
+                
+                localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
+                localStorage.setItem('brindesBalance', State.userBalance.toString());
+                saveLocalCart();
 
-            State.ordersHistory.unshift(newOrder);
-            State.cart = {};
-            document.getElementById('orderDate').value = '';
-            document.getElementById('orderNotes').value = '';
-            
-            renderCart();
-            renderProducts();
-            initDashboard();
-            
-            els.submitOrderBtn.innerHTML = `<span>Enviar Solicitação</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-            openModal('successModal');
-        }
-
-        function openHistory() {
-            const container = document.getElementById('ordersListContainer');
-            container.innerHTML = '';
-
-            if (State.ordersHistory.length === 0) {
-                container.innerHTML = `<p class="text-center font-medium text-slate-500 py-8">Nenhuma solicitação encontrada.</p>`;
-            } else {
-                State.ordersHistory.forEach(order => {
-                    let totalVal = 0;
-                    let itemsHtml = Object.entries(order.items).map(([id, qty]) => {
-                        const p = State.products.find(pr => pr.id === id);
-                        if(p) totalVal += (p.price * qty);
-                        return p ? `<div class="text-sm flex justify-between"><span class="text-slate-600 dark:text-slate-300 font-medium">${qty}x ${p.name}</span> <span class="font-bold text-slate-800 dark:text-slate-200">${formatMoney(p.price * qty)}</span></div>` : '';
-                    }).join('');
-                    
-                    let dateStr = new Date(order.date).toLocaleDateString('pt-BR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-                    let sepDateStr = new Date(order.separationDate + 'T12:00:00').toLocaleDateString('pt-BR');
-                    
-                    let actionsHtml = order.status === 'Pendente' ? `
-                        <div class="flex gap-2 border-t border-slate-100 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/50">
-                            <button onclick="confirmEditOrder('${order.id}')" class="flex-1 text-xs font-black tracking-wide text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-900/40 rounded py-2 hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors">ALTERAR</button>
-                            <button onclick="confirmCancelOrder('${order.id}')" class="flex-1 text-xs font-black tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/40 rounded py-2 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">CANCELAR</button>
-                        </div>
-                    ` : '';
-
-                    let badgeClass = order.status === 'Cancelado' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
-
-                    container.innerHTML += `
-                        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden flex flex-col transition-colors shadow-sm">
-                            <div class="bg-slate-50 dark:bg-slate-900/50 p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
-                                <div>
-                                    <span class="font-black text-slate-900 dark:text-white">${order.id}</span>
-                                    <span class="text-xs font-medium text-slate-500 ml-2">${dateStr}</span>
-                                </div>
-                                <span class="text-xs font-bold px-2 py-1 rounded ${badgeClass}">${order.status}</span>
-                            </div>
-                            <div class="p-5 space-y-3 flex-1 bg-white dark:bg-slate-800">
-                                ${itemsHtml}
-                                <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                    <span class="text-sm font-bold text-slate-900 dark:text-white">Total Investido</span>
-                                    <span class="text-base font-black text-brand-600 dark:text-brand-400">${formatMoney(totalVal)}</span>
-                                </div>
-                                ${order.notes ? `<div class="mt-3 text-xs font-medium bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 p-3 rounded-lg border border-yellow-100 dark:border-yellow-900/30"><b>Obs:</b> ${order.notes}</div>` : ''}
-                                <div class="mt-2 text-xs font-bold text-slate-500 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> Separação: ${sepDateStr}</div>
-                            </div>
-                            ${actionsHtml}
-                        </div>
-                    `;
-                });
-            }
-            openModal('ordersModal');
-            lucide.createIcons();
-        }
-
-        // Modais de Confirmação Customizados
-        function openConfirmModal(title, text, icon, iconColorClass, bgIconClass, confirmCallback) {
-            document.getElementById('actionConfirmTitle').textContent = title;
-            document.getElementById('actionConfirmText').textContent = text;
-            
-            const iconEl = document.getElementById('actionConfirmIcon');
-            iconEl.setAttribute('data-lucide', icon);
-            iconEl.className = `h-6 w-6 ${iconColorClass}`;
-            
-            const iconContainer = document.getElementById('actionConfirmIconContainer');
-            iconContainer.className = `mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${bgIconClass}`;
-            
-            const btn = document.getElementById('actionConfirmBtn');
-            btn.className = `flex-1 px-4 py-2 font-bold rounded-xl transition-colors shadow-sm text-white ${iconColorClass.replace('text-', 'bg-').split(' ')[0]} hover:opacity-90`;
-            
-            btn.onclick = () => {
-                confirmCallback();
-                closeModal('actionConfirmModal');
+                renderOrdersHistory();
+                renderProducts();
+                initDashboard();
+                updateCartUI();
+                
+                toggleOrdersModal(); 
+                if(els.cartSidebar.classList.contains('translate-x-full')) {
+                    toggleSidebar();
+                }
             };
-            
-            lucide.createIcons();
-            openModal('actionConfirmModal');
-        }
 
-        function confirmLogout() {
-            openConfirmModal("Sair do Sistema", "Deseja encerrar sua sessão?", "log-out", "text-slate-900 dark:text-slate-100", "bg-slate-200 dark:bg-slate-700", async () => {
-                if(supabaseClient && State.userId !== 'simulado') await supabaseClient.auth.signOut();
-                State.userId = null;
-                els.mainApp.classList.add('hidden');
-                els.loginScreen.classList.remove('hidden');
-            });
-        }
-
-        function confirmCancelOrder(orderId) {
-            openConfirmModal("Cancelar Pedido", "O saldo e os itens voltarão ao estoque.", "trash-2", "text-red-600 dark:text-red-500", "bg-red-100 dark:bg-red-900/30", () => executeOrderCancel(orderId));
-        }
-
-        function confirmEditOrder(orderId) {
-            openConfirmModal("Alterar Pedido", "O pedido voltará para o carrinho para edição.", "edit", "text-brand-600 dark:text-brand-500", "bg-brand-100 dark:bg-brand-900/30", () => {
-                executeOrderCancel(orderId);
-                const order = State.ordersHistory.find(o => o.id === orderId);
-                if(order) {
-                    State.cart = {...order.items};
-                    document.getElementById('orderDate').value = order.separationDate;
-                    document.getElementById('orderNotes').value = order.notes;
-                    renderCart();
-                    closeModal('ordersModal');
-                }
-            });
-        }
-
-        async function executeOrderCancel(orderId) {
-            const order = State.ordersHistory.find(o => o.id === orderId);
-            if(!order || order.status === 'Cancelado') return;
-
-            let orderTotal = 0;
-            for (const [prodId, qty] of Object.entries(order.items)) {
-                const p = State.products.find(pr => pr.id === prodId);
-                if (p) {
-                    p.stock += qty;
-                    orderTotal += (p.price * qty);
-                }
+            if(Object.keys(State.cart).length > 0) {
+                showActionConfirm(
+                    'Substituir Carrinho Atual',
+                    'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?',
+                    'warning',
+                    'Sim, Substituir',
+                    proceedWithEdit
+                );
+            } else {
+                proceedWithEdit(); 
             }
-            State.userBalance += orderTotal;
-            order.status = 'Cancelado';
+        };
 
-            if(supabaseClient && State.userId !== 'simulado') {
-                try {
-                    await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                    await supabaseClient.from('usuarios').upsert({ id: State.userId, saldo: State.userBalance });
-                    for (const [prodId, qty] of Object.entries(order.items)) {
-                        const p = State.products.find(pr => pr.id === prodId);
-                        if(p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', prodId);
-                    }
-                } catch(e) { console.error("Erro revertendo DB:", e); }
-            }
+        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
 
-            renderProducts();
-            updateBalanceUI();
-            initDashboard();
-            openHistory(); 
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            setupDateInput();
+            checkAuth(); // Verifica auth (e se logado, puxa os dados do Supabase)
+        });
 
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById(id + 'Bg').classList.add('bg-active');
-                document.getElementById(id + 'Content').classList.add('modal-active');
-            }, 10);
-        }
-
-        function closeModal(id) {
-            document.getElementById(id + 'Bg').classList.remove('bg-active');
-            document.getElementById(id + 'Content').classList.remove('modal-active');
-            setTimeout(() => { document.getElementById(id).classList.add('hidden'); }, 300);
-        }
-
-        lucide.createIcons();
-        initAuth(); 
     </script>
 </body>
 </html>
