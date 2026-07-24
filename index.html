@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Brindes Comercial</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para barra de rolagem e transições suaves */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .transition-all-ease {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Ocultar barra de rolagem no carrinho mas permitir scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Remover setas nativas do input number */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
+    <!-- Script de inicialização do Tema (Evita piscar branco antes de carregar o dark mode) -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300">
+
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex items-center justify-center transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 dark:border-slate-700 mx-4">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center">
+                    <i data-lucide="lock" class="w-8 h-8 text-brand-600 dark:text-brand-400"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Restrito</h2>
+            <p class="text-center text-slate-500 dark:text-slate-400 text-sm mb-6">Portal de Brindes Comercial</p>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail Corporativo</label>
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="nome.sobrenome@empresa.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha</label>
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    Entrar no Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (Esquerda) -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Header -->
+        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 transition-colors duration-300">
+            <div>
+                <!-- Logo Light Mode -->
+                <img src="https://i.imgur.com/DeN7M4G.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain block dark:hidden">
+                <!-- Logo Dark Mode -->
+                <img src="https://i.imgur.com/2HfPsZz.png" alt="Logo Zattar" class="h-10 sm:h-12 w-auto object-contain hidden dark:block">
+            </div>
+            
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                
+                <!-- Novo: Meu Saldo no Header -->
+                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                    <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
+                    <strong class="text-sm" id="headerBalanceDisplay">R$ 3.000,00</strong>
+                </div>
+
+                <!-- Info do Usuário e Logout -->
+                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
+                    <div class="text-right">
+                        <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
+                    </div>
+                    
+                    <!-- Botão de Alternar Tema -->
+                    <button id="themeToggleBtn" type="button" title="Mudar Tema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 transition-colors ml-1">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                    </button>
+
+                    <button id="logoutBtn" type="button" title="Sair do sistema" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800 text-slate-400 transition-colors">
+                        <i data-lucide="power" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Botão de Histórico -->
+                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+                    <i data-lucide="list-ordered" class="w-4 h-4"></i>
+                    <span class="hidden md:inline">Histórico</span>
+                </button>
+                
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Buscar caneca, moleskine..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white"
+                    >
+                </div>
+            </div>
+
+            <!-- Botão mobile para abrir carrinho -->
+            <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2">
+                <i data-lucide="shopping-cart"></i>
+                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+            </button>
+        </header>
+
+        <!-- Área Rolável -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col">
+            
+            <!-- Info Banner -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
+                <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400"></i>
+                <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na planilha de controle (Base 2026).</p>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
+                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-units">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Valor Investido</span>
+                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-invested">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
+                    <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm flex flex-col justify-center transition-colors">
+                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
+                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="stat-balance">--</strong>
+                </div>
+            </div>
+
+            <!-- Filtros de Categoria -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters">
+                    <!-- Botões de categoria serão inseridos via JS -->
+                </div>
+                <span class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid">
+                <!-- Cards de produtos serão inseridos via JS -->
+            </div>
+
+            <!-- Novo: Rodapé -->
+            <footer class="mt-auto pt-10 pb-4 text-center w-full">
+                <p class="text-xs text-slate-400 dark:text-slate-500 font-medium tracking-wide">
+                    &copy; 2026 Zattar Seguros &bull; Desenvolvido pelo time de Marketing
+                </p>
+            </footer>
+        </div>
+    </main>
+
+    <!-- SIDEBAR - CARRINHO DE SOLICITAÇÃO -->
+    <aside id="cartSidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-2xl transform translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 z-40 flex flex-col">
+        
+        <!-- Header Sidebar -->
+        <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+            <div>
+                <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    Sua Solicitação
+                </h2>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Ref: ABA 2026</span>
+            </div>
+            <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <!-- Lista de Itens no Carrinho -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4" id="cartItemsContainer">
+            <!-- Estado Vazio -->
+            <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 space-y-3">
+                <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
+                <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo ao lado.</p>
+            </div>
+            
+            <!-- Itens serão renderizados aqui -->
+        </div>
+
+        <!-- Footer Sidebar (Resumo e Botão Finalizar) -->
+        <div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            
+            <!-- Novos Campos: Data e Observação -->
+            <div id="checkoutForm" class="mb-5 space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Data da Separação <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2">
+                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease text-slate-900 dark:text-white [color-scheme:light] dark:[color-scheme:dark]">
+                        <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors">Hoje</button>
+                    </div>
+                    <span id="dateErrorMsg" class="text-red-500 dark:text-red-400 text-xs mt-1 hidden block">⚠️ Por favor, selecione uma data de separação.</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Motivo / Cliente (Opcional)</label>
+                    <textarea id="orderNotes" rows="2" placeholder="Ex: Reunião com diretoria da XPTO..." class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:bg-white dark:focus:bg-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all-ease resize-none text-slate-900 dark:text-white"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4 text-sm">
+                <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
+                <strong class="text-slate-900 dark:text-white text-lg" id="cartTotalItems">0</strong>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+                <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
+                <div class="text-right">
+                    <strong class="text-brand-600 dark:text-brand-400 text-xl block" id="cartTotalValue">R$ 0,00</strong>
+                    <span id="balanceWarning" class="text-red-500 dark:text-red-400 text-[10px] hidden font-bold mt-1">Saldo insuficiente!</span>
+                </div>
+            </div>
+
+            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-lg font-semibold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
+                <i data-lucide="send" class="w-4 h-4"></i>
+                Enviar Solicitação
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay para mobile quando sidebar está aberta -->
+    <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Modal de Sucesso -->
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="successModalContent">
+            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-6 mt-2">
+                <i data-lucide="check" class="h-8 w-8 text-green-600 dark:text-green-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Solicitação Enviada!</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-2 text-sm">Sua requisição de brindes foi registrada na planilha de controle e enviada para separação da equipe.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Histórico de Pedidos -->
+    <div id="ordersModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="ordersModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
+                    Histórico de Solicitações
+                </h3>
+                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto pr-2 space-y-4" id="ordersListContainer">
+                <!-- Pedidos serão listados aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Logout -->
+    <div id="logoutConfirmModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="logoutConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4">
+                <i data-lucide="log-out" class="h-6 w-6 text-red-500 dark:text-red-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Tem certeza que deseja desconectar sua conta do Portal de Brindes?</p>
+            <div class="flex gap-3">
+                <button id="logoutCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button id="logoutConfirmBtn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm">
+                    Sim, sair
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Ações Genéricas (Cancelar/Alterar) -->
+    <div id="actionConfirmModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4" id="actionConfirmIconContainer">
+                <i data-lucide="alert-triangle" class="h-6 w-6 text-amber-500 dark:text-amber-400" id="actionConfirmIcon"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm" id="actionConfirmText">Tem certeza que deseja realizar esta ação?</p>
+            <div class="flex gap-3">
+                <button id="actionCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors">
+                    Voltar
+                </button>
+                <button id="actionConfirmBtn" class="flex-1 px-4 py-2 text-white font-medium rounded-lg transition-colors shadow-sm">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu de Contexto Personalizado (Botão Direito) -->
+    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-lg py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextReload">
+            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
+        </button>
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextTheme">
+            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
+        </button>
+        <div class="h-px bg-slate-200 dark:bg-slate-700 my-1.5"></div>
+        <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextPrint">
+            <i data-lucide="printer" class="w-4 h-4 text-slate-400"></i> Imprimir Tela
+        </button>
+    </div>
+
+
+    <script>
+        // Dados extraídos do documento PDF
+        const productsData = [
+            { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
+            { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
+            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" }, // null indica "Valor a confirmar"
+            { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
+            { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
+            { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
+            { id: "TER-002", category: "Térmicos & Bebidas", name: "Caneca — Preta", stock: 13, price: 41.58, icon: "coffee" },
+            { id: "TER-003", category: "Térmicos & Bebidas", name: "Caneca — Branca", stock: 25, price: 39.50, icon: "coffee" },
+            { id: "CUT-001", category: "Cutelaria", name: "Faca de Churrasco", stock: 17, price: 120.00, icon: "utensils" },
+            { id: "COL-001", category: "Colecionáveis", name: "Miniatura Caminhão", stock: 12, price: 240.00, icon: "truck" }
+        ];
+
+        const State = {
+            products: JSON.parse(JSON.stringify(productsData)),
+            cart: {}, 
+            searchQuery: "",
+            selectedCategory: "Todos",
+            categories: ["Todos", ...new Set(productsData.map(p => p.category))],
+            ordersHistory: [], 
+            userBalance: 3000.00 // Novo Saldo inicial do usuário (R$ 3.000,00)
+        };
+
+        // Elementos do DOM
+        const els = {
+            productsGrid: document.getElementById('productsGrid'),
+            categoryFilters: document.getElementById('categoryFilters'),
+            searchInput: document.getElementById('searchInput'),
+            itemsCountLabel: document.getElementById('itemsCountLabel'),
+            cartItemsContainer: document.getElementById('cartItemsContainer'),
+            emptyCartState: document.getElementById('emptyCartState'),
+            cartTotalItems: document.getElementById('cartTotalItems'),
+            cartTotalValue: document.getElementById('cartTotalValue'),
+            balanceWarning: document.getElementById('balanceWarning'),
+            checkoutBtn: document.getElementById('checkoutBtn'),
+            
+            // Novos Elementos Checkout
+            checkoutForm: document.getElementById('checkoutForm'),
+            separationDate: document.getElementById('separationDate'),
+            dateErrorMsg: document.getElementById('dateErrorMsg'),
+            btnToday: document.getElementById('btnToday'),
+            orderNotes: document.getElementById('orderNotes'),
+
+            // Dashboard
+            statUnits: document.getElementById('stat-units'),
+            statInvested: document.getElementById('stat-invested'),
+            statItems: document.getElementById('stat-items'),
+            statBalance: document.getElementById('stat-balance'),
+            headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
+            
+            // Mobile & Modals
+            cartSidebar: document.getElementById('cartSidebar'),
+            cartOverlay: document.getElementById('cartOverlay'),
+            mobileCartBtn: document.getElementById('mobileCartBtn'),
+            mobileCartBadge: document.getElementById('mobileCartBadge'),
+            closeCartBtn: document.getElementById('closeCartBtn'),
+            successModal: document.getElementById('successModal'),
+            successModalContent: document.getElementById('successModalContent'),
+            closeModalBtn: document.getElementById('closeModalBtn'),
+
+            // Novos Elementos Histórico
+            myOrdersBtn: document.getElementById('myOrdersBtn'),
+            ordersModal: document.getElementById('ordersModal'),
+            ordersModalBg: document.getElementById('ordersModalBg'),
+            ordersModalContent: document.getElementById('ordersModalContent'),
+            closeOrdersBtn: document.getElementById('closeOrdersBtn'),
+            ordersListContainer: document.getElementById('ordersListContainer'),
+
+            // Novos Elementos Login
+            loginScreen: document.getElementById('loginScreen'),
+            loginForm: document.getElementById('loginForm'),
+            loginEmail: document.getElementById('loginEmail'),
+            loginPassword: document.getElementById('loginPassword'),
+            userNameDisplay: document.getElementById('userNameDisplay'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            
+            // Novos Elementos Confirmação Logout
+            logoutConfirmModal: document.getElementById('logoutConfirmModal'),
+            logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'),
+            logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
+            logoutCancelBtn: document.getElementById('logoutCancelBtn'),
+            
+            // Novos Elementos Confirmação de Ações Genéricas
+            actionConfirmModal: document.getElementById('actionConfirmModal'),
+            actionConfirmModalContent: document.getElementById('actionConfirmModalContent'),
+            actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
+            actionConfirmIcon: document.getElementById('actionConfirmIcon'),
+            actionConfirmTitle: document.getElementById('actionConfirmTitle'),
+            actionConfirmText: document.getElementById('actionConfirmText'),
+            actionCancelBtn: document.getElementById('actionCancelBtn'),
+            actionConfirmBtn: document.getElementById('actionConfirmBtn'),
+
+            // Custom Context Menu
+            customContextMenu: document.getElementById('customContextMenu'),
+            
+            // Botão de Tema
+            themeToggleBtn: document.getElementById('themeToggleBtn')
+        };
+
+        // --- SISTEMA DE TEMA (Dark/Light Mode) ---
+        els.themeToggleBtn?.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        });
+
+        // --- SISTEMA DE LOGIN (Simulado) ---
+        function checkAuth() {
+            const userEmail = localStorage.getItem('brindesUser');
+            if (userEmail) {
+                // Usuário logado: esconde tela de login
+                els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
+                
+                // Formatar nome a partir do email (ex: joao.silva@ -> Joao Silva)
+                let namePart = userEmail.split('@')[0];
+                let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                els.userNameDisplay.textContent = formattedName;
+            } else {
+                // Usuário deslogado: mostra tela de login
+                els.loginScreen.classList.remove('hidden');
+                setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
+            }
+        }
+
+        els.loginForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = els.loginEmail.value;
+            if(email) {
+                localStorage.setItem('brindesUser', email);
+                checkAuth();
+            }
+        });
+
+        // Abrir modal de confirmação de logout
+        els.logoutBtn?.addEventListener('click', () => {
+            els.logoutConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        });
+
+        // Cancelar logout
+        els.logoutCancelBtn?.addEventListener('click', () => {
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
+        });
+
+        // Confirmar logout
+        els.logoutConfirmBtn?.addEventListener('click', () => {
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
+            
+            localStorage.removeItem('brindesUser');
+            els.loginEmail.value = '';
+            if(els.loginPassword) els.loginPassword.value = '';
+            checkAuth();
+        });
+
+        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES (Substitui o window.confirm) ---
+        let pendingActionCallback = null;
+
+        function showActionConfirm(title, text, type, confirmBtnText, callback) {
+            els.actionConfirmTitle.textContent = title;
+            els.actionConfirmText.textContent = text;
+            els.actionConfirmBtn.textContent = confirmBtnText;
+
+            if (type === 'danger') {
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
+                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
+            } else { // warning
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
+                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
+            }
+            
+            lucide.createIcons(); // Recarrega o ícone injetado
+            pendingActionCallback = callback;
+
+            els.actionConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        els.actionCancelBtn?.addEventListener('click', () => {
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                els.actionConfirmModal.classList.add('hidden');
+                pendingActionCallback = null;
+            }, 300);
+        });
+
+        els.actionConfirmBtn?.addEventListener('click', () => {
+            if (pendingActionCallback) pendingActionCallback();
+            els.actionCancelBtn.click(); // Usa a lógica de fechar no botão de cancelar
+        });
+
+        // --- SISTEMA DE MENU DE CONTEXTO PERSONALIZADO (Botão Direito) ---
+        document.addEventListener('contextmenu', (e) => {
+            // Previne o menu padrão só nas áreas do sistema, mas não em inputs se quiser permitir copiar/colar
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                
+                const menu = els.customContextMenu;
+                menu.classList.remove('hidden');
+                
+                // Calcula dimensões após remover a classe hidden
+                const rect = menu.getBoundingClientRect();
+                let x = e.clientX;
+                let y = e.clientY;
+                
+                // Impede que o menu saia da tela
+                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
+                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
+                
+                menu.style.left = `${x}px`;
+                menu.style.top = `${y}px`;
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!els.customContextMenu.contains(e.target)) {
+                els.customContextMenu.classList.add('hidden');
+            }
+        });
+
+        // Ações do Menu de Contexto
+        document.getElementById('contextReload')?.addEventListener('click', () => {
+            location.reload();
+        });
+        document.getElementById('contextTheme')?.addEventListener('click', () => {
+            els.themeToggleBtn.click();
+            els.customContextMenu.classList.add('hidden');
+        });
+        document.getElementById('contextPrint')?.addEventListener('click', () => {
+            els.customContextMenu.classList.add('hidden');
+            window.print();
+        });
+
+        // --- SISTEMA DE ARMAZENAMENTO LOCAL (Funcionalidade Real) ---
+        function saveToStorage() {
+            localStorage.setItem('brindesCart', JSON.stringify(State.cart));
+            localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
+            localStorage.setItem('brindesBalance', State.userBalance.toString());
+        }
+
+        function loadFromStorage() {
+            const savedCart = localStorage.getItem('brindesCart');
+            const savedOrders = localStorage.getItem('brindesOrders');
+            const savedBalance = localStorage.getItem('brindesBalance');
+            
+            if (savedCart) State.cart = JSON.parse(savedCart);
+            if (savedOrders) State.ordersHistory = JSON.parse(savedOrders);
+            if (savedBalance) State.userBalance = parseFloat(savedBalance);
+
+            // Recalcular o estoque real deduzindo os itens já solicitados no histórico
+            State.ordersHistory.forEach(order => {
+                Object.keys(order.items).forEach(id => {
+                    const product = State.products.find(p => p.id === id);
+                    if (product) {
+                        product.stock -= order.items[id];
+                    }
+                });
+            });
+        }
+        // ------------------------------------------------------------
+
+        const formatMoney = (value) => {
+            if (value === null) return "Valor a confirmar";
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        };
+
+        const getCategoryIcon = (category) => {
+            const map = {
+                'Papelaria': 'pencil-ruler',
+                'Acessórios': 'gem',
+                'Térmicos & Bebidas': 'glass-water',
+                'Cutelaria': 'chef-hat',
+                'Colecionáveis': 'box'
+            };
+            return map[category] || 'tag';
+        };
+
+        function initDashboard() {
+            const totalUnits = State.products.reduce((acc, curr) => acc + curr.stock, 0);
+            const totalInvested = State.products.reduce((acc, curr) => acc + (curr.price ? curr.price * curr.stock : 0), 0);
+            
+            els.statUnits.textContent = totalUnits;
+            // Formatação mais próxima do mockup para o valor investido
+            els.statInvested.textContent = "R$ " + (totalInvested / 1000).toFixed(1).replace('.', ',') + "k";
+            els.statItems.textContent = productsData.length;
+            
+            // Atualiza saldos visuais do comercial
+            if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
+            if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
+        }
+
+        function renderCategories() {
+            els.categoryFilters.innerHTML = '';
+            State.categories.forEach(cat => {
+                const isActive = State.selectedCategory === cat;
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
+                    isActive 
+                    ? 'bg-slate-900 dark:bg-brand-600 text-white border-slate-900 dark:border-brand-600 shadow-sm' 
+                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                }`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    State.selectedCategory = cat;
+                    renderCategories();
+                    renderProducts();
+                };
+                els.categoryFilters.appendChild(btn);
+            });
+        }
+
+        function renderProducts() {
+            els.productsGrid.innerHTML = '';
+            
+            // Filtrar
+            let filtered = State.products.filter(p => {
+                const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
+                const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || 
+                                    p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
+                return matchCategory && matchSearch;
+            });
+
+            els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
+
+            if (filtered.length === 0) {
+                els.productsGrid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">
+                        <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                        <p>Nenhum brinde encontrado para sua busca.</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(product => {
+                const qtyInCart = State.cart[product.id] || 0;
+                const stockRemaining = product.stock - qtyInCart;
+                const isOutOfStock = stockRemaining <= 0;
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
+                
+                card.innerHTML = `
+                    <!-- Top Area (Visual/Icon) -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[160px]">
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex gap-2">
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-[#f0e6d2] dark:bg-amber-900/30 text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
+                                Estoque: ${product.stock} un.
+                            </span>
+                        </div>
+                        
+                        <!-- Ícone Placeholder -->
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
+                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Area (Info) -->
+                    <div class="p-4 flex-1 flex flex-col">
+                        <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
+                        <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
+                        
+                        <div class="mt-auto pt-3 flex items-end justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
+                                <strong class="text-brand-700 dark:text-brand-400 font-semibold text-sm">${formatMoney(product.price)}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botão Adicionar com Seletor de Quantidade -->
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <!-- Seletor numérico -->
+                            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
+                                <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
+                                <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
+                                <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
+                            </div>
+                            <!-- Botão Adicionar -->
+                            <button 
+                                onclick="addMultipleToCart('${product.id}')"
+                                class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}"
+                                ${isOutOfStock ? 'disabled' : ''}
+                            >
+                                <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i>
+                                ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                els.productsGrid.appendChild(card);
+            });
+
+            // Recarregar ícones inseridos dinamicamente
+            lucide.createIcons();
+        }
+
+        // --- NOVAS FUNÇÕES: Controle de Quantidade no Card ---
+        window.changeCardQty = function(productId, delta) {
+            const input = document.getElementById(`card-qty-${productId}`);
+            if(!input) return;
+            
+            const product = State.products.find(p => p.id === productId);
+            const qtyInCart = State.cart[productId] || 0;
+            const stockRemaining = product.stock - qtyInCart;
+            
+            let newVal = parseInt(input.value) + delta;
+            
+            if (newVal < 1) newVal = 1;
+            if (newVal > stockRemaining) newVal = stockRemaining;
+            
+            input.value = newVal;
+        };
+
+        window.addMultipleToCart = function(productId) {
+            const input = document.getElementById(`card-qty-${productId}`);
+            let qtyToAdd = input ? parseInt(input.value) : 1;
+            
+            const product = State.products.find(p => p.id === productId);
+            const currentQty = State.cart[productId] || 0;
+            const stockRemaining = product.stock - currentQty;
+            
+            // Proteção contra valores digitados manualmente de forma errada
+            if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
+            if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
+            
+            if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
+                State.cart[productId] = currentQty + qtyToAdd;
+                updateCartUI();
+                renderProducts(); // Atualiza contador de estoque visual
+                saveToStorage();
+                
+                // Animação de feedback no botão carrinho mobile
+                els.mobileCartBtn.classList.add('scale-110');
+                setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
+            }
+        };
+
+        // Mantida para retrocompatibilidade
+        window.addToCart = function(productId) {
+            window.addMultipleToCart(productId);
+        };
+
+        window.updateQuantity = function(productId, delta) {
+            const product = State.products.find(p => p.id === productId);
+            let newQty = (State.cart[productId] || 0) + delta;
+            
+            if (newQty <= 0) {
+                delete State.cart[productId];
+            } else if (newQty <= product.stock) {
+                State.cart[productId] = newQty;
+            } else {
+                return; // Não permite ultrapassar estoque
+            }
+            
+            updateCartUI();
+            renderProducts();
+            saveToStorage();
+        };
+
+        window.removeFromCart = function(productId) {
+            delete State.cart[productId];
+            updateCartUI();
+            renderProducts();
+            saveToStorage();
+        };
+
+        function updateCartUI() {
+            els.cartItemsContainer.innerHTML = '';
+            let totalItems = 0;
+            let totalValue = 0;
+            const cartKeys = Object.keys(State.cart);
+
+            if (cartKeys.length === 0) {
+                els.cartItemsContainer.appendChild(els.emptyCartState);
+                els.emptyCartState.classList.remove('hidden');
+                els.checkoutBtn.disabled = true;
+                els.checkoutForm.classList.add('hidden'); // Oculta formulário de data
+                els.cartTotalItems.textContent = "0";
+                
+                if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
+                if (els.balanceWarning) els.balanceWarning.classList.add('hidden');
+                
+                els.mobileCartBadge.textContent = "0";
+                els.mobileCartBadge.classList.add('hidden');
+                return;
+            }
+
+            els.emptyCartState.classList.add('hidden');
+            els.checkoutForm.classList.remove('hidden'); // Exibe formulário de data
+
+            cartKeys.forEach(id => {
+                const product = State.products.find(p => p.id === id);
+                const qty = State.cart[id];
+                totalItems += qty;
+                if (product.price) totalValue += (product.price * qty);
+
+                const itemEl = document.createElement('div');
+                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
+                itemEl.innerHTML = `
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
+                        <i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center min-w-0">
+                        <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
+                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="minus" class="w-3 h-3"></i>
+                        </button>
+                        <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
+                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="plus" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+
+                    <!-- Botão remover -->
+                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                `;
+                els.cartItemsContainer.appendChild(itemEl);
+            });
+
+            els.cartTotalItems.textContent = totalItems;
+            
+            // Validação do Saldo do Usuário
+            if (els.cartTotalValue) {
+                els.cartTotalValue.textContent = formatMoney(totalValue);
+                if (totalValue > State.userBalance) {
+                    els.cartTotalValue.classList.remove('text-brand-600');
+                    els.cartTotalValue.classList.add('text-red-600');
+                    els.balanceWarning.classList.remove('hidden');
+                    els.checkoutBtn.disabled = true;
+                    els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
+                } else {
+                    els.cartTotalValue.classList.remove('text-red-600');
+                    els.cartTotalValue.classList.add('text-brand-600');
+                    els.balanceWarning.classList.add('hidden');
+                    els.checkoutBtn.disabled = false;
+                    els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
+                }
+            } else {
+                 els.checkoutBtn.disabled = false;
+            }
+            
+            // Atualiza badge mobile
+            els.mobileCartBadge.textContent = totalItems;
+            if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
+
+            lucide.createIcons();
+        }
+
+        
+        // Busca
+        els.searchInput.addEventListener('input', (e) => {
+            State.searchQuery = e.target.value;
+            renderProducts();
+        });
+
+        // Controles Sidebar Mobile
+        const toggleSidebar = () => {
+            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
+            if (isClosed) {
+                els.cartSidebar.classList.remove('translate-x-full');
+                els.cartOverlay.classList.remove('hidden');
+                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); // Trigger transition
+            } else {
+                els.cartSidebar.classList.add('translate-x-full');
+                els.cartOverlay.classList.remove('opacity-100');
+                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300); // Wait for transition
+            }
+        };
+
+        els.mobileCartBtn.addEventListener('click', toggleSidebar);
+        els.closeCartBtn.addEventListener('click', toggleSidebar);
+        els.cartOverlay.addEventListener('click', toggleSidebar);
+
+        // Configuração do Campo de Data
+        const setupDateInput = () => {
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
+            
+            els.separationDate.min = localISOTime;
+            els.separationDate.value = ""; // Removido o preenchimento padrão para forçar o usuário a escolher
+
+            els.btnToday.addEventListener('click', () => {
+                els.separationDate.value = localISOTime;
+                els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
+            });
+
+            // Limpa o erro caso o usuário selecione a data manualmente
+            els.separationDate.addEventListener('change', () => {
+                if (els.separationDate.value) {
+                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                    if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
+                }
+            });
+        };
+
+        // Lógica de Checkout (Finalizar Solicitação)
+        els.checkoutBtn.addEventListener('click', () => {
+            // Validação visual da data
+            if (!els.separationDate.value) {
+                els.separationDate.classList.add('border-red-500', 'ring-red-500');
+                els.dateErrorMsg.classList.remove('hidden');
+                els.separationDate.focus();
+                
+                // Ocultar mensagem e borda após alguns segundos
+                setTimeout(() => {
+                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                    els.dateErrorMsg.classList.add('hidden');
+                }, 3500);
+                return;
+            }
+
+            // Cria o objeto do novo pedido
+            const newOrder = {
+                id: 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+                date: new Date().toISOString(),
+                separationDate: els.separationDate.value,
+                notes: els.orderNotes.value,
+                items: { ...State.cart },
+                status: 'Enviado para Separação'
+            };
+
+            // Deduz estoque localmente para simular o banco de dados e calcula gasto
+            let orderTotalValue = 0;
+            Object.keys(State.cart).forEach(id => {
+                const productIndex = State.products.findIndex(p => p.id === id);
+                if(productIndex > -1) {
+                    State.products[productIndex].stock -= State.cart[id];
+                    if (State.products[productIndex].price) {
+                        orderTotalValue += (State.products[productIndex].price * State.cart[id]);
+                    }
+                }
+            });
+
+            // Deduz do saldo do usuário
+            State.userBalance -= orderTotalValue;
+
+            // Adiciona pedido ao histórico (no topo)
+            State.ordersHistory.unshift(newOrder);
+
+            // Resetar Carrinho e Form
+            State.cart = {};
+            els.orderNotes.value = "";
+            setupDateInput();
+            
+            // Persistir e atualizar tela
+            saveToStorage();
+            updateCartUI();
+            renderProducts();
+            initDashboard();
+            
+            // Mostrar Modal de Sucesso
+            els.successModal.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                els.successModalContent.classList.remove('scale-95', 'opacity-0');
+                els.successModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // Fechar sidebar no mobile se estiver aberta
+            if(!els.cartSidebar.classList.contains('translate-x-full')) {
+                toggleSidebar();
+            }
+        });
+
+        // Fechar Modal e Resetar
+        els.closeModalBtn.addEventListener('click', () => {
+            els.successModalContent.classList.remove('scale-100', 'opacity-100');
+            els.successModalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                els.successModal.classList.add('hidden');
+            }, 300); // Removemos o reset do carrinho daqui pois já ocorre na finalização
+        });
+
+        // --- SISTEMA DE HISTÓRICO DE PEDIDOS ---
+        const renderOrdersHistory = () => {
+            els.ordersListContainer.innerHTML = '';
+            
+            if (State.ordersHistory.length === 0) {
+                els.ordersListContainer.innerHTML = `
+                    <div class="py-12 flex flex-col items-center text-center text-slate-400 dark:text-slate-500">
+                        <i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i>
+                        <p>Nenhuma solicitação realizada ainda.<br>Seus pedidos aparecerão aqui.</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            State.ordersHistory.forEach(order => {
+                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
+                const sepDateParts = order.separationDate.split('-');
+                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; // Converter YYYY-MM-DD para DD/MM/YYYY
+                const isCancelled = order.status === 'Cancelado';
+
+                const card = document.createElement('div');
+                card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors ${
+                    isCancelled 
+                    ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' 
+                    : 'bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'
+                }`;
+                
+                // Montar lista de itens deste pedido
+                let itemsListHtml = Object.keys(order.items).map(id => {
+                    const productInfo = productsData.find(p => p.id === id); // Pega nome do dado estático original
+                    const name = productInfo ? productInfo.name : id;
+                    return `
+                        <li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
+                            <span class="text-sm text-slate-600 dark:text-slate-300 truncate pr-4">${name}</span>
+                            <strong class="text-sm text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700">${order.items[id]} un.</strong>
+                        </li>`;
+                }).join('');
+
+                const statusColorClass = isCancelled 
+                    ? 'text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/40' 
+                    : 'text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/50';
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/50 px-2 py-1 rounded tracking-wider">${order.id}</span>
+                                <span class="text-[10px] font-medium ${statusColorClass} px-2 py-1 rounded">${order.status}</span>
+                            </div>
+                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
+                        </div>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                            Em: ${orderDate}
+                        </span>
+                    </div>
+                    
+                    ${order.notes ? `
+                    <div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start">
+                        <i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p>
+                    </div>` : ''}
+                    
+                    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
+                        <ul class="px-3 py-1">${itemsListHtml}</ul>
+                    </div>
+
+                    ${!isCancelled ? `
+                    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+                        <button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar
+                        </button>
+                        <button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar
+                        </button>
+                    </div>` : ''}
+                `;
+                els.ordersListContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        };
+
+        const toggleOrdersModal = () => {
+            const isHidden = els.ordersModal.classList.contains('hidden');
+            if (isHidden) {
+                renderOrdersHistory();
+                els.ordersModal.classList.remove('hidden');
+                setTimeout(() => {
+                    els.ordersModalContent.classList.remove('scale-95', 'opacity-0');
+                    els.ordersModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
+                els.ordersModalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    els.ordersModal.classList.add('hidden');
+                }, 300);
+            }
+        };
+
+        // Função de Cancelar Pedido
+        window.cancelOrder = function(orderId) {
+            showActionConfirm(
+                'Cancelar Solicitação', 
+                'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.',
+                'danger',
+                'Sim, Cancelar',
+                () => {
+                    const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                    if(orderIndex === -1) return;
+                    
+                    const order = State.ordersHistory[orderIndex];
+                    
+                    // Restaurar Estoque e Saldo
+                    let orderCost = 0;
+                    Object.keys(order.items).forEach(itemId => {
+                        const product = State.products.find(p => p.id === itemId);
+                        if (product) {
+                            product.stock += order.items[itemId];
+                            if (product.price) orderCost += (product.price * order.items[itemId]);
+                        }
+                    });
+                    
+                    State.userBalance += orderCost;
+                    order.status = 'Cancelado';
+                    
+                    // Salvar e atualizar interface
+                    saveToStorage();
+                    renderOrdersHistory();
+                    renderProducts();
+                    initDashboard();
+                }
+            );
+        };
+
+        // Função de Alterar Pedido (Puxa pro Carrinho)
+        window.editOrder = function(orderId) {
+            const proceedWithEdit = () => {
+                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                if(orderIndex === -1) return;
+                const order = State.ordersHistory[orderIndex];
+                
+                // Reverter custos e estoque temporariamente
+                let orderCost = 0;
+                Object.keys(order.items).forEach(itemId => {
+                    const product = State.products.find(p => p.id === itemId);
+                    if (product) {
+                        product.stock += order.items[itemId];
+                        if (product.price) orderCost += (product.price * order.items[itemId]);
+                    }
+                });
+                
+                State.userBalance += orderCost;
+                
+                // Mover para o carrinho e preencher os dados
+                State.cart = { ...order.items };
+                els.separationDate.value = order.separationDate;
+                els.orderNotes.value = order.notes || '';
+                
+                // Remover o pedido original do histórico
+                State.ordersHistory.splice(orderIndex, 1);
+                
+                // Salvar e atualizar interface
+                saveToStorage();
+                renderOrdersHistory();
+                renderProducts();
+                initDashboard();
+                updateCartUI();
+                
+                // Fechar modal de histórico e abrir a sidebar do carrinho
+                toggleOrdersModal(); 
+                if(els.cartSidebar.classList.contains('translate-x-full')) {
+                    toggleSidebar();
+                }
+            };
+
+            if(Object.keys(State.cart).length > 0) {
+                showActionConfirm(
+                    'Substituir Carrinho Atual',
+                    'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?',
+                    'warning',
+                    'Sim, Substituir',
+                    proceedWithEdit
+                );
+            } else {
+                proceedWithEdit(); // Se o carrinho estiver vazio, puxa direto
+            }
+        };
+
+        // Eventos do Modal de Histórico
+        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth(); // Verifica o login antes de qualquer coisa
+            loadFromStorage();
+            setupDateInput();
+            initDashboard();
+            renderCategories();
+            renderProducts();
+            updateCartUI();
+            lucide.createIcons();
+        });
+
+    </script>
+</body>
+</html>
