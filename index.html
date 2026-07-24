@@ -679,7 +679,7 @@
                     State.userBalance = parseFloat(userData.saldo);
                 }
 
-                // 4. Carrega Histórico de Pedidos
+                // 4. Carrega Histórico de Pedidos (Filtrado pelo usuário logado)
                 const { data: pedidosData } = await supabaseClient
                     .from('pedidos')
                     .select(`id, data_criacao, data_separacao, observacao, status, pedido_itens ( produto_id, quantidade )`)
