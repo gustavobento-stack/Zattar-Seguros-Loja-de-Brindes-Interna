@@ -1555,32 +1555,33 @@
                     // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ---
                     try {
                         const webhookUrl = 'https://script.google.com/macros/s/AKfycbzPvcf-bi55q1DM1BxH8LtTKkNi4SLRH5E7Q0NpSJpfzSc2TUFdtaz-1L7PFBlnn91B8A/exec';
+                        
+                        // Objeto formatado EXATAMENTE como o Google Apps Script está esperando
                         const webhookData = {
-                            pedido_id: orderId,
-                            usuario_id: State.userId,
-                            usuario_nome: document.getElementById('userNameDisplay').textContent, // Nome limpo do form
-                            data_pedido: new Date().toISOString(),
-                            data_separacao: els.separationDate.value,
-                            observacoes: els.orderNotes.value,
-                            valor_total: orderTotalValue,
-                            itens: orderItems.map(item => {
+                            orderId: orderId,
+                            userName: document.getElementById('userNameDisplay').textContent,
+                            date: new Date().toISOString(),
+                            separationDate: els.separationDate.value,
+                            notes: els.orderNotes.value,
+                            status: 'Enviado para Separação',
+                            items: orderItems.map(item => {
                                 const prod = State.products.find(p => p.id === item.produto_id);
                                 return {
-                                    id: item.produto_id,
-                                    nome: prod ? prod.name : item.produto_id,
-                                    quantidade: item.quantidade,
-                                    preco_unitario: item.preco_unitario
+                                    name: prod ? prod.name : item.produto_id,
+                                    qty: item.quantidade,
+                                    unitPrice: item.preco_unitario
                                 };
                             })
                         };
 
-                        // Dispara fetch sem bloquear o andamento local
+                        // Dispara fetch (text/plain evita bloqueio de CORS do Google Apps Script)
                         fetch(webhookUrl, {
                             method: 'POST',
-                            mode: 'no-cors', 
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {
+                                'Content-Type': 'text/plain;charset=utf-8'
+                            },
                             body: JSON.stringify(webhookData)
-                        }).catch(e => console.log('Webhook silencioso finalizado.'));
+                        }).catch(e => console.log('Webhook disparado.'));
                     } catch(webhookErr) {
                         console.error('Falha ao acionar webhook Google', webhookErr);
                     }
