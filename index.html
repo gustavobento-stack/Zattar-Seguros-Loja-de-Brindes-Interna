@@ -149,9 +149,14 @@
                     <p class="text-[11px] text-brand-200 uppercase tracking-widest font-semibold flex items-center gap-1">Visão Global <span id="admSyncStatus" class="inline-block w-2 h-2 rounded-full bg-emerald-400 ml-2 animate-pulse" title="Sincronização em tempo real ativa"></span></p>
                 </div>
             </div>
-            <button id="closeAdminBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> Sair do ADM
-            </button>
+            <div class="flex items-center gap-3">
+                <button id="openAdminProductsBtn" class="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 border border-brand-500 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                    <i data-lucide="package" class="w-4 h-4"></i> Gerenciar Produtos
+                </button>
+                <button id="closeAdminBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Sair do ADM
+                </button>
+            </div>
         </header>
 
         <div class="flex-1 overflow-y-auto p-6 lg:p-10 relative">
@@ -412,20 +417,60 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Nome Completo</label>
-                    <input type="text" id="editUserName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none">
+                    <input type="text" id="editUserName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Cargo / Setor</label>
-                    <input type="text" id="editUserRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none">
+                    <input type="text" id="editUserRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Saldo (R$)</label>
-                    <input type="number" id="editUserBalance" step="0.01" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none">
+                    <input type="number" id="editUserBalance" step="0.01" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
-                <button id="cancelEditUserBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
+                <button id="cancelEditUserBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
                 <button id="saveEditUserBtn" class="flex-1 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center justify-center gap-2">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Produto ADM -->
+    <div id="adminEditProductModal" class="fixed inset-0 z-[1250] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg" id="adminEditProductModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminEditProductModalContent">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Editar Produto</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Nome do Produto</label>
+                    <input type="text" id="editProdName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Estoque Físico</label>
+                        <input type="number" id="editProdStock" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Preço Unit. (R$)</label>
+                        <input type="number" step="0.01" id="editProdPrice" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Ícone ou Link da Imagem</label>
+                    <input type="text" id="editProdIcon" placeholder="Ex: box ou https://i.imgur.com/img.png" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1">Cole um link de internet (HTTP) para mostrar imagem real.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status no Catálogo</label>
+                    <select id="editProdStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm dark:text-white focus:border-brand-500 outline-none">
+                        <option value="ativo">🟢 Ativo (Visível para o time)</option>
+                        <option value="pausado">🔴 Pausado (Oculto / Bloqueado)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button id="cancelEditProdBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
+                <button id="saveEditProdBtn" class="flex-1 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center justify-center gap-2">Salvar Alterações</button>
             </div>
         </div>
     </div>
@@ -487,6 +532,40 @@
             <div class="flex gap-3 mt-4">
                 <button id="adminPasswordCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold rounded-xl">Cancelar</button>
                 <button id="adminPasswordSubmitBtn" class="flex-1 px-4 py-3 bg-slate-900 dark:bg-brand-600 text-white font-semibold rounded-xl">Acessar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Produtos ADM -->
+    <div id="adminProductsModal" class="fixed inset-0 z-[1150] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminProductsModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-5xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminProductsModalContent">
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-700 pb-5">
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center border border-brand-100 dark:border-brand-800"><i data-lucide="package" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i></div>
+                        Gerenciamento de Catálogo
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2 ml-13">Altere nomes, preços, estoque ou pause produtos para removê-los da visão comercial.</p>
+                </div>
+                <button id="closeAdminProductsBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <!-- Table -->
+            <div class="flex-1 overflow-y-auto no-scrollbar border border-slate-200 dark:border-slate-700 rounded-xl relative bg-slate-50 dark:bg-slate-900/50">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-100 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
+                        <tr class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                            <th class="p-4 py-3">Produto</th>
+                            <th class="p-4 py-3 text-center">Estoque Atual</th>
+                            <th class="p-4 py-3 text-right">Preço (R$)</th>
+                            <th class="p-4 py-3 text-center">Status</th>
+                            <th class="p-4 py-3 text-right">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminProductsList" class="divide-y divide-slate-200 dark:divide-slate-700/50 text-sm bg-white dark:bg-slate-800"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -573,7 +652,8 @@
         let lastProductsHash = "";
         let lastOrdersHash = "";
         let lastAdminHash = "";
-        let editingUserId = null; // Guarda ID para o painel de edição do ADM
+        let editingUserId = null; 
+        let editingProductId = null; // Guarda ID para painel de produtos
 
         const els = {
             productsGrid: document.getElementById('productsGrid'),
@@ -661,7 +741,7 @@
             userSyncIcon: document.getElementById('userSyncIcon'),
             admSyncStatus: document.getElementById('admSyncStatus'),
 
-            // Modais de Edição ADM
+            // Modais de Edição ADM (Usuário)
             openEditUserBtn: document.getElementById('openEditUserBtn'),
             adminEditUserModal: document.getElementById('adminEditUserModal'),
             adminEditUserModalContent: document.getElementById('adminEditUserModalContent'),
@@ -669,7 +749,23 @@
             editUserRole: document.getElementById('editUserRole'),
             editUserBalance: document.getElementById('editUserBalance'),
             cancelEditUserBtn: document.getElementById('cancelEditUserBtn'),
-            saveEditUserBtn: document.getElementById('saveEditUserBtn')
+            saveEditUserBtn: document.getElementById('saveEditUserBtn'),
+
+            // Modais de Edição ADM (Produtos)
+            openAdminProductsBtn: document.getElementById('openAdminProductsBtn'),
+            adminProductsModal: document.getElementById('adminProductsModal'),
+            adminProductsModalContent: document.getElementById('adminProductsModalContent'),
+            closeAdminProductsBtn: document.getElementById('closeAdminProductsBtn'),
+            adminProductsList: document.getElementById('adminProductsList'),
+            adminEditProductModal: document.getElementById('adminEditProductModal'),
+            adminEditProductModalContent: document.getElementById('adminEditProductModalContent'),
+            editProdName: document.getElementById('editProdName'),
+            editProdStock: document.getElementById('editProdStock'),
+            editProdPrice: document.getElementById('editProdPrice'),
+            editProdIcon: document.getElementById('editProdIcon'),
+            editProdStatus: document.getElementById('editProdStatus'),
+            cancelEditProdBtn: document.getElementById('cancelEditProdBtn'),
+            saveEditProdBtn: document.getElementById('saveEditProdBtn')
         };
 
         const togglePasswordBtn = document.getElementById('togglePasswordBtn');
@@ -700,7 +796,7 @@
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 
-                // Buscar Dados do Usuário (Nome, Cargo, Saldo)
+                // Buscar Dados do Usuário
                 const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo').eq('id', State.userId).single();
                 if (userData) {
                     State.userBalance = parseFloat(userData.saldo || 0);
@@ -814,7 +910,6 @@
         // --- INTEGRAÇÃO COM SUPABASE ---
         
         async function fetchBaseData() {
-            // 1. Busca Categorias e cria mapa (categoria_id -> nome)
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
             if(cats) {
@@ -824,7 +919,6 @@
                 State.categories = ["Todos"];
             }
 
-            // 2. Busca Produtos e cruza com a categoria real (usando o id da categoria)
             const { data: prods } = await supabaseClient.from('produtos').select('*');
             if (prods) {
                 State.products = prods.map(p => ({
@@ -833,7 +927,8 @@
                     name: p.nome, 
                     stock: p.estoque, 
                     price: p.preco, 
-                    icon: p.icone || 'box'
+                    icon: p.icone || 'box',
+                    ativo: p.ativo !== false // Assume true se não existir
                 }));
             }
         }
@@ -841,7 +936,6 @@
         async function initialLoad() {
             await fetchBaseData();
             
-            // Histórico Pessoal (Somente do usuário logado)
             if (State.userId) {
                 const { data: pedidosData } = await supabaseClient.from('pedidos')
                     .select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`)
@@ -857,7 +951,6 @@
                 }
             }
             
-            // Hashes para evitar re-renders atoa
             lastProductsHash = JSON.stringify(State.products);
             lastOrdersHash = JSON.stringify(State.ordersHistory);
 
@@ -869,19 +962,17 @@
             lucide.createIcons();
         }
 
-        // --- MOTOR INVISÍVEL DE REFRESH (A cada 5 segundos verifica mudanças) ---
+        // --- MOTOR INVISÍVEL DE REFRESH ---
         async function backgroundRefresh() {
             if (!State.userId && els.adminScreen.classList.contains('hidden')) return;
 
             try {
-                // Animação visual sutil de sincronização (User e ADM)
                 els.userSyncIcon.classList.add('animate-spin', 'text-brand-500');
                 els.userSyncIcon.classList.remove('text-slate-300', 'dark:text-slate-600');
                 
-                await fetchBaseData(); // Atualiza produtos/estoque sempre
+                await fetchBaseData(); 
 
                 if (!els.adminScreen.classList.contains('hidden')) {
-                    // Refresh Admin: Puxa TODOS os dados de todos
                     const { data: users } = await supabaseClient.from('usuarios').select('*');
                     const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
                     
@@ -893,8 +984,12 @@
                         buildAndRenderAdminStats();
                         lastAdminHash = newAdminHash;
                     }
+
+                    // Se a tela de Gerenciamento de Produtos estiver aberta, atualiza ela
+                    if (!els.adminProductsModal.classList.contains('hidden')) {
+                        renderAdminProductsList();
+                    }
                 } else if (State.userId) {
-                    // Refresh Comercial: Puxa apenas os DADOS DELE
                     const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo').eq('id', State.userId).single();
                     if (userData) {
                         State.userBalance = parseFloat(userData.saldo || 0);
@@ -904,7 +999,6 @@
                         if(els.userRoleDisplay) els.userRoleDisplay.textContent = State.userRole;
                     }
 
-                    // A regra .eq('usuario_id', State.userId) faz ele olhar só os próprios pedidos
                     const { data: pedidosData } = await supabaseClient.from('pedidos')
                         .select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade, preco_unitario )`)
                         .eq('usuario_id', State.userId) 
@@ -918,7 +1012,6 @@
                         });
                     }
 
-                    // Atualiza a tela se algo mudou
                     const newProductsHash = JSON.stringify(State.products);
                     if(newProductsHash !== lastProductsHash) {
                         renderProducts();
@@ -1187,6 +1280,126 @@
             }
         };
 
+        // --- SISTEMA DE GERENCIAMENTO DE PRODUTOS (CATÁLOGO) ADM ---
+        function renderAdminProductsList() {
+            els.adminProductsList.innerHTML = '';
+            
+            State.products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors";
+                
+                // Tratar imagem/icone
+                const iconDisplay = p.icon.startsWith('http') 
+                    ? `<img src="${p.icon}" class="w-8 h-8 object-contain rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-0.5">`
+                    : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center border border-slate-200 dark:border-slate-600"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i></div>`;
+                
+                const statusBadge = p.ativo 
+                    ? `<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 px-2.5 py-1 rounded-md text-[10px] font-bold">Ativo</span>`
+                    : `<span class="bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400 border border-slate-300 dark:border-slate-600 px-2.5 py-1 rounded-md text-[10px] font-bold">Pausado</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-4 py-3">
+                        <div class="flex items-center gap-3">
+                            ${iconDisplay}
+                            <div class="flex flex-col">
+                                <strong class="text-sm text-slate-800 dark:text-white">${p.name}</strong>
+                                <span class="text-[10px] text-slate-400 tracking-wider">${p.id}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 py-3 text-center font-bold text-slate-700 dark:text-slate-200">${p.stock}</td>
+                    <td class="p-4 py-3 text-right font-semibold text-brand-600 dark:text-brand-400">${formatMoney(p.price)}</td>
+                    <td class="p-4 py-3 text-center">${statusBadge}</td>
+                    <td class="p-4 py-3 text-right">
+                        <button onclick="openAdminEditProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition-colors border border-transparent shadow-sm inline-flex items-center gap-1.5"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button>
+                    </td>
+                `;
+                els.adminProductsList.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        els.openAdminProductsBtn.addEventListener('click', () => {
+            renderAdminProductsList();
+            els.adminProductsModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.adminProductsModalContent.classList.remove('scale-95', 'opacity-0');
+                els.adminProductsModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        });
+
+        els.closeAdminProductsBtn.addEventListener('click', () => {
+            els.adminProductsModalContent.classList.remove('scale-100', 'opacity-100');
+            els.adminProductsModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.adminProductsModal.classList.add('hidden'), 300);
+        });
+
+        window.openAdminEditProduct = function(productId) {
+            const product = State.products.find(p => p.id === productId);
+            if (!product) return;
+            
+            editingProductId = productId;
+            
+            els.editProdName.value = product.name;
+            els.editProdStock.value = product.stock;
+            els.editProdPrice.value = product.price ? product.price.toFixed(2) : 0;
+            els.editProdIcon.value = product.icon;
+            els.editProdStatus.value = product.ativo ? "ativo" : "pausado";
+            
+            els.adminEditProductModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.adminEditProductModalContent.classList.remove('scale-95', 'opacity-0');
+                els.adminEditProductModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        els.cancelEditProdBtn.addEventListener('click', () => {
+            els.adminEditProductModalContent.classList.remove('scale-100', 'opacity-100');
+            els.adminEditProductModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => els.adminEditProductModal.classList.add('hidden'), 300);
+        });
+
+        els.saveEditProdBtn.addEventListener('click', async () => {
+            if (!editingProductId) return;
+            
+            const newName = els.editProdName.value;
+            const newStock = parseInt(els.editProdStock.value) || 0;
+            const newPrice = parseFloat(els.editProdPrice.value) || 0;
+            const newIcon = els.editProdIcon.value || "box";
+            const newActive = els.editProdStatus.value === "ativo";
+            
+            els.saveEditProdBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
+            lucide.createIcons();
+            
+            try {
+                await supabaseClient.from('produtos').update({ 
+                    nome: newName, 
+                    estoque: newStock, 
+                    preco: newPrice, 
+                    icone: newIcon,
+                    ativo: newActive // Grava status no banco de dados!
+                }).eq('id', editingProductId);
+                
+                const productIndex = State.products.findIndex(p => p.id === editingProductId);
+                if (productIndex !== -1) {
+                    State.products[productIndex].name = newName;
+                    State.products[productIndex].stock = newStock;
+                    State.products[productIndex].price = newPrice;
+                    State.products[productIndex].icon = newIcon;
+                    State.products[productIndex].ativo = newActive;
+                }
+                
+                els.cancelEditProdBtn.click();
+                renderAdminProductsList(); // Atualiza a tabela do modal ADM
+                backgroundRefresh(); // Dispara atualização visual da tela comercial que estiver aberta no fundo
+
+            } catch (err) {
+                console.error("Erro ao atualizar produto:", err);
+            } finally {
+                els.saveEditProdBtn.innerHTML = 'Salvar Alterações';
+            }
+        });
+
         // Modal: Editar Usuário no ADM
         els.openEditUserBtn?.addEventListener('click', () => {
             if (!editingUserId) return;
@@ -1220,14 +1433,12 @@
             lucide.createIcons();
             
             try {
-                // Atualiza no Supabase
                 await supabaseClient.from('usuarios').update({ 
                     nome: newName, 
                     cargo: newRole, 
                     saldo: newBalance 
                 }).eq('id', editingUserId);
                 
-                // Atualiza localmente para resposta rápida visual
                 if (AdminState.userStats[editingUserId]) {
                     AdminState.userStats[editingUserId].name = newName;
                     AdminState.userStats[editingUserId].cargo = newRole;
@@ -1235,8 +1446,8 @@
                 }
                 
                 els.cancelEditUserBtn.click();
-                window.openAdminUserDetails(editingUserId, true); // Atualiza os dados no modal do usuário aberto
-                backgroundRefresh(); // Força update global e refaz cálculos globais de balanço geral
+                window.openAdminUserDetails(editingUserId, true); 
+                backgroundRefresh(); 
 
             } catch (err) {
                 console.error("Erro ao atualizar usuário:", err);
@@ -1253,29 +1464,13 @@
 
         window.adminCompleteOrder = function(orderId, userId) {
             showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado.', 'warning', 'Sim, Concluir', async () => {
-                
-                // 1. Atualiza no banco de dados Supabase
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 
-                // 2. Avisa o Google Sheets para atualizar a linha
                 try {
                     const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
-                    const webhookData = {
-                        action: "updateStatus",
-                        orderId: orderId,
-                        status: 'Separação Concluída'
-                    };
-
-                    fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify(webhookData)
-                    }).catch(e => console.log('Webhook de atualização disparado.'));
-                } catch (webhookErr) {
-                    console.error('Falha ao acionar webhook Google', webhookErr);
-                }
+                    const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
+                    fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
+                } catch (webhookErr) { }
 
                 backgroundRefresh(); 
             });
@@ -1311,9 +1506,11 @@
         };
 
         function initDashboard() {
-            const totalUnits = State.products.reduce((acc, curr) => acc + curr.stock, 0);
+            // Filtra o catálogo contando apenas itens ATIVOS
+            const activeProducts = State.products.filter(p => p.ativo);
+            const totalUnits = activeProducts.reduce((acc, curr) => acc + curr.stock, 0);
             els.statUnits.textContent = totalUnits;
-            els.statItems.textContent = State.products.length;
+            els.statItems.textContent = activeProducts.length;
             if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
             if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
         }
@@ -1337,6 +1534,8 @@
         function renderProducts() {
             els.productsGrid.innerHTML = '';
             let filtered = State.products.filter(p => {
+                if (!p.ativo) return false; // Impede que o comercial veja produtos pausados!
+                
                 const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
                 const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
                 return matchCategory && matchSearch;
@@ -1353,6 +1552,10 @@
                 const stockRemaining = product.stock - qtyInCart;
                 const isOutOfStock = stockRemaining <= 0;
 
+                const iconHtml = product.icon.startsWith('http') 
+                    ? `<img src="${product.icon}" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-110 transition-transform">`
+                    : `<i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5] group-hover:scale-110 transition-transform"></i>`;
+
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
@@ -1365,8 +1568,8 @@
                                 Estoque: ${product.stock} un.
                             </span>
                         </div>
-                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
-                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden">
+                            ${iconHtml}
                         </div>
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
@@ -1469,11 +1672,15 @@
                 totalItems += qty;
                 if (product.price) totalValue += (product.price * qty);
 
+                const iconCartHtml = product.icon.startsWith('http') 
+                    ? `<img src="${product.icon}" class="w-6 h-6 object-contain">`
+                    : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
+
                 const itemEl = document.createElement('div');
                 itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
                 itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
-                        <i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">
+                        ${iconCartHtml}
                     </div>
                     <div class="flex-1 flex flex-col justify-center min-w-0">
                         <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
@@ -1554,7 +1761,6 @@
 
             if (State.userId) {
                 try {
-                    // Gravar no Supabase
                     await supabaseClient.from('pedidos').insert({ id: orderId, usuario_id: State.userId, data_pedido: new Date().toISOString(), data_separacao: els.separationDate.value, observacoes: els.orderNotes.value, status: 'Enviado para Separação', valor_total: orderTotalValue });
                     
                     orderItems = Object.keys(State.cart).map(prodId => {
@@ -1575,39 +1781,22 @@
                         }
                     }
 
-                    // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ---
                     try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbzPvcf-bi55q1DM1BxH8LtTKkNi4SLRH5E7Q0NpSJpfzSc2TUFdtaz-1L7PFBlnn91B8A/exec';
-                        
-                        // Objeto formatado EXATAMENTE como o Google Apps Script está esperando
+                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                         const webhookData = {
                             orderId: orderId,
-                            userName: document.getElementById('userNameDisplay').textContent,
+                            userName: State.userName,
                             date: new Date().toISOString(),
                             separationDate: els.separationDate.value,
                             notes: els.orderNotes.value,
                             status: 'Enviado para Separação',
                             items: orderItems.map(item => {
                                 const prod = State.products.find(p => p.id === item.produto_id);
-                                return {
-                                    name: prod ? prod.name : item.produto_id,
-                                    qty: item.quantidade,
-                                    unitPrice: item.preco_unitario
-                                };
+                                return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario };
                             })
                         };
-
-                        // Dispara fetch (text/plain evita bloqueio de CORS do Google Apps Script)
-                        fetch(webhookUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'text/plain;charset=utf-8'
-                            },
-                            body: JSON.stringify(webhookData)
-                        }).catch(e => console.log('Webhook disparado.'));
-                    } catch(webhookErr) {
-                        console.error('Falha ao acionar webhook Google', webhookErr);
-                    }
+                        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook ok'));
+                    } catch(webhookErr) { }
 
                 } catch (error) { console.error("Erro banco", error); }
             }
@@ -1711,6 +1900,12 @@
                             const product = State.products.find(p => p.id === itemId);
                             if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
                         }
+                        try {
+                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                            const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
+                            fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
+                        } catch (e) { }
+
                     } catch(err) { console.error('Erro banco', err); }
                 }
                 
