@@ -31,16 +31,38 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .transition-all-ease { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Estilos personalizados para barra de rolagem e transições suaves */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .transition-all-ease {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
         
         /* Fundo moderno para a tela de login dividida */
         .login-bg-pattern {
@@ -206,7 +228,7 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-white dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
                                     <tr class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
-                                        <th class="p-4">ID Usuário</th>
+                                        <th class="p-4">Usuário</th>
                                         <th class="p-4 text-right">Saldo Restante</th>
                                         <th class="p-4 text-right">Total Gasto</th>
                                     </tr>
@@ -215,6 +237,9 @@
                                     <!-- Preenchido via JS -->
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 p-3 text-center">
+                            <p class="text-xs text-slate-400">Dica: Clique na linha do usuário para ver e gerenciar os pedidos dele.</p>
                         </div>
                     </div>
 
@@ -300,7 +325,7 @@
                 <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na planilha de controle (Base 2026).</p>
             </div>
 
-            <!-- DASHBOARD COMERCIAL (Agora com apenas 3 cards, sem o Valor Investido) -->
+            <!-- DASHBOARD COMERCIAL (Sem Valor Investido) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
@@ -387,7 +412,7 @@
 
     <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- Modais (Mantidos os originais de sucesso, histórico, e actions) -->
+    <!-- Modais de Interface do Comercial -->
     <div id="successModal" class="fixed inset-0 z-[150] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="successModalContent">
@@ -435,6 +460,57 @@
         </div>
     </div>
 
+    <!-- NOVOS MODAIS DO SISTEMA ADM -->
+
+    <!-- 1. Modal de Senha ADM -->
+    <div id="adminPasswordModal" class="fixed inset-0 z-[300] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="adminPasswordModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-xl transform scale-95 opacity-0 transition-all duration-300" id="adminPasswordModalContent">
+            <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Restrito ADM</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-4 text-sm">Insira a senha administrativa.</p>
+            <input type="password" id="adminPasswordInput" class="w-full px-4 py-3 mb-4 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none text-slate-900 dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-900/30" placeholder="Senha...">
+            <div id="adminPasswordError" class="hidden text-red-500 text-xs text-center mb-4 font-medium">Senha incorreta.</div>
+            <div class="flex gap-3">
+                <button id="adminPasswordCancelBtn" class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition-colors">Cancelar</button>
+                <button id="adminPasswordSubmitBtn" class="flex-1 px-4 py-2 bg-slate-900 dark:bg-brand-600 text-white font-semibold rounded-xl transition-colors">Acessar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modal de Detalhes do Usuário (Painel ADM) -->
+    <div id="adminUserDetailsModal" class="fixed inset-0 z-[250] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="adminUserDetailsModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-300" id="adminUserDetailsModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="user" class="w-5 h-5 text-brand-600"></i>
+                        <span id="adminUserDetailName">Nome do Usuário</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Detalhes e Gerenciamento de Pedidos</p>
+                </div>
+                <button id="closeAdminUserModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="flex gap-4 mb-6">
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50 flex-1">
+                    <p class="text-xs text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">Saldo Restante</p>
+                    <p class="text-xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="adminUserDetailBalance">R$ 0,00</p>
+                </div>
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50 flex-1">
+                    <p class="text-xs text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">Total Gasto</p>
+                    <p class="text-xl font-bold text-red-800 dark:text-red-300 mt-1" id="adminUserDetailSpent">R$ 0,00</p>
+                </div>
+            </div>
+
+            <h4 class="font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-slate-400"></i> Todos os Pedidos</h4>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-4" id="adminUserOrdersList">
+                <!-- Pedidos renderizados aqui via JS -->
+            </div>
+        </div>
+    </div>
+
+
     <!-- Menu de Contexto (Adicionado o Botão ADM, inicialmente oculto) -->
     <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-lg py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
         <button class="w-full text-left px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors" id="contextReload">
@@ -478,6 +554,14 @@
             categories: ["Todos"],
             ordersHistory: [], 
             userBalance: 0
+        };
+
+        // Estado Exclusivo do ADM para não precisar recarregar o banco a cada clique
+        const AdminState = {
+            users: [],
+            orders: [],
+            userStats: {},
+            itemStats: {}
         };
 
         const els = {
@@ -537,7 +621,7 @@
             customContextMenu: document.getElementById('customContextMenu'),
             themeToggleBtn: document.getElementById('themeToggleBtn'),
             
-            // Elementos ADM
+            // Elementos ADM Principal
             contextAdminMode: document.getElementById('contextAdminMode'),
             adminScreen: document.getElementById('adminScreen'),
             closeAdminBtn: document.getElementById('closeAdminBtn'),
@@ -547,7 +631,24 @@
             admTotalOrders: document.getElementById('admTotalOrders'),
             admTotalItems: document.getElementById('admTotalItems'),
             admUsersTable: document.getElementById('admUsersTable'),
-            admProductsTable: document.getElementById('admProductsTable')
+            admProductsTable: document.getElementById('admProductsTable'),
+
+            // Elementos ADM Senha
+            adminPasswordModal: document.getElementById('adminPasswordModal'),
+            adminPasswordModalContent: document.getElementById('adminPasswordModalContent'),
+            adminPasswordInput: document.getElementById('adminPasswordInput'),
+            adminPasswordError: document.getElementById('adminPasswordError'),
+            adminPasswordSubmitBtn: document.getElementById('adminPasswordSubmitBtn'),
+            adminPasswordCancelBtn: document.getElementById('adminPasswordCancelBtn'),
+
+            // Elementos ADM Detalhe Usuário
+            adminUserDetailsModal: document.getElementById('adminUserDetailsModal'),
+            adminUserDetailsModalContent: document.getElementById('adminUserDetailsModalContent'),
+            closeAdminUserModalBtn: document.getElementById('closeAdminUserModalBtn'),
+            adminUserDetailName: document.getElementById('adminUserDetailName'),
+            adminUserDetailBalance: document.getElementById('adminUserDetailBalance'),
+            adminUserDetailSpent: document.getElementById('adminUserDetailSpent'),
+            adminUserOrdersList: document.getElementById('adminUserOrdersList')
         };
 
         const togglePasswordBtn = document.getElementById('togglePasswordBtn');
@@ -729,7 +830,6 @@
                 e.preventDefault();
                 const menu = els.customContextMenu;
                 
-                // Mostrar botão ADM apenas se a tela de login estiver visível (Oculta nos demais lugares)
                 if(!els.loginScreen.classList.contains('hidden')) {
                     els.contextAdminMode.classList.remove('hidden');
                 } else {
@@ -751,80 +851,126 @@
         document.getElementById('contextPrint')?.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); window.print(); });
 
         // --- SISTEMA DA ÁREA ADMINISTRATIVA ---
+        
+        // 1. Abrir Modal de Senha ADM
         els.contextAdminMode.addEventListener('click', () => {
             els.customContextMenu.classList.add('hidden');
-            els.adminScreen.classList.remove('hidden');
-            loadAdminDashboard(); // Carrega os dados reais de todos
+            els.adminPasswordInput.value = '';
+            els.adminPasswordError.classList.add('hidden');
+            els.adminPasswordModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.adminPasswordModalContent.classList.remove('scale-95', 'opacity-0');
+                els.adminPasswordModalContent.classList.add('scale-100', 'opacity-100');
+                els.adminPasswordInput.focus();
+            }, 10);
+        });
+
+        els.adminPasswordCancelBtn.addEventListener('click', () => {
+            els.adminPasswordModalContent.classList.remove('scale-100', 'opacity-100');
+            els.adminPasswordModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { els.adminPasswordModal.classList.add('hidden'); }, 300);
+        });
+
+        // 2. Validar Senha e Entrar no Dashboard
+        els.adminPasswordSubmitBtn.addEventListener('click', () => {
+            if(els.adminPasswordInput.value === 'ADMZattar2026@') {
+                els.adminPasswordCancelBtn.click();
+                els.adminScreen.classList.remove('hidden');
+                loadAdminDashboard();
+            } else {
+                els.adminPasswordError.classList.remove('hidden');
+            }
         });
 
         els.closeAdminBtn.addEventListener('click', () => {
             els.adminScreen.classList.add('hidden');
         });
 
+        // 3. Carregar e Processar Dados ADM
         async function loadAdminDashboard() {
             els.adminContent.classList.add('hidden');
             els.adminLoading.classList.remove('hidden');
 
             try {
-                // Como RLS está desativado, pegamos TODOS os usuários e TODOS os pedidos
-                const { data: users } = await supabaseClient.from('usuarios').select('*');
-                const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)');
+                // Previne re-render do catálogo original caso a State.products não exista
+                if (State.products.length === 0) {
+                     const { data: prods } = await supabaseClient.from('produtos').select('*');
+                     State.products = prods ? prods.map(p => ({ id: p.id, category: p.categoria, name: p.nome, stock: p.estoque, price: p.preco, icon: p.icone || 'box' })) : fallbackProductsData;
+                }
 
+                const { data: users } = await supabaseClient.from('usuarios').select('*');
+                const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
+
+                AdminState.users = users || [];
+                AdminState.orders = orders || [];
+                
                 let totalSpentGlobal = 0;
                 let totalItemsGlobal = 0;
-                let userStats = {};
-                let itemStats = {};
+                AdminState.userStats = {};
+                AdminState.itemStats = {};
 
-                // Inicia contadores de usuário
                 if(users) {
                     users.forEach(u => {
-                        userStats[u.id] = { id: u.id, balance: parseFloat(u.saldo || 0), spent: 0 };
+                        // Tenta achar o nome ou email, senao usa ID. Formata bonitinho
+                        let userName = u.nome || u.email || `ID: ${u.id.split('-')[0]}`;
+                        if (userName.includes('@')) {
+                            let namePart = userName.split('@')[0];
+                            userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                        }
+                        AdminState.userStats[u.id] = { id: u.id, name: userName, balance: parseFloat(u.saldo || 0), spent: 0 };
                     });
                 }
 
-                // Processa cada pedido
                 if(orders) {
                     orders.forEach(o => {
                         if (o.status !== 'Cancelado') {
                             const vTotal = parseFloat(o.valor_total || 0);
                             totalSpentGlobal += vTotal;
 
-                            if (!userStats[o.usuario_id]) userStats[o.usuario_id] = { id: o.usuario_id, balance: 0, spent: 0 };
-                            userStats[o.usuario_id].spent += vTotal;
+                            if (!AdminState.userStats[o.usuario_id]) {
+                                AdminState.userStats[o.usuario_id] = { id: o.usuario_id, name: `ID: ${o.usuario_id.split('-')[0]}`, balance: 0, spent: 0 };
+                            }
+                            AdminState.userStats[o.usuario_id].spent += vTotal;
 
                             if (o.pedido_itens) {
                                 o.pedido_itens.forEach(item => {
                                     totalItemsGlobal += item.quantidade;
-                                    if (!itemStats[item.produto_id]) itemStats[item.produto_id] = { name: item.produto_id, qty: 0, value: 0 };
-                                    itemStats[item.produto_id].qty += item.quantidade;
-                                    itemStats[item.produto_id].value += (item.quantidade * parseFloat(item.preco_unitario || 0));
+                                    
+                                    // Puxar NOME real do produto em vez de ID
+                                    const productInfo = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
+                                    const productName = productInfo ? productInfo.name : item.produto_id;
+
+                                    if (!AdminState.itemStats[item.produto_id]) AdminState.itemStats[item.produto_id] = { name: productName, qty: 0, value: 0 };
+                                    AdminState.itemStats[item.produto_id].qty += item.quantidade;
+                                    AdminState.itemStats[item.produto_id].value += (item.quantidade * parseFloat(item.preco_unitario || 0));
                                 });
                             }
                         }
                     });
                 }
 
-                // --- Atualiza Tela ADM ---
+                // Atualiza Interface Superior
                 els.admTotalSpent.textContent = formatMoney(totalSpentGlobal);
                 els.admTotalOrders.textContent = (orders ? orders.filter(o => o.status !== 'Cancelado').length : 0);
                 els.admTotalItems.textContent = totalItemsGlobal + ' un.';
 
-                // Tabela Usuários
+                // Tabela Usuários (Clicável)
                 els.admUsersTable.innerHTML = '';
-                Object.values(userStats).forEach(u => {
+                Object.values(AdminState.userStats).forEach(u => {
                     const tr = document.createElement('tr');
-                    const shortId = u.id.split('-')[0]; // Encurta o UUID na tabela para ficar elegante
+                    tr.className = "cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group";
+                    tr.onclick = () => window.openAdminUserDetails(u.id);
                     tr.innerHTML = `
-                        <td class="p-4 font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">ID: ${shortId}***</td>
-                        <td class="p-4 text-right font-medium text-slate-900 dark:text-white">${formatMoney(u.balance)}</td>
+                        <td class="p-4 font-semibold text-slate-700 dark:text-slate-200 group-hover:text-brand-600 dark:group-hover:text-brand-400">${u.name}</td>
+                        <td class="p-4 text-right font-medium text-emerald-600 dark:text-emerald-400">${formatMoney(u.balance)}</td>
                         <td class="p-4 text-right font-bold text-red-600 dark:text-red-400">${formatMoney(u.spent)}</td>
                     `;
                     els.admUsersTable.appendChild(tr);
                 });
 
-                // Tabela Produtos (Ranking)
+                // Tabela Produtos (Nomes Reais)
                 els.admProductsTable.innerHTML = '';
-                const sortedItems = Object.values(itemStats).sort((a, b) => b.qty - a.qty); // Ordena por quantidade solicitada
+                const sortedItems = Object.values(AdminState.itemStats).sort((a, b) => b.qty - a.qty);
                 sortedItems.forEach(i => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -843,6 +989,119 @@
                 els.adminLoading.innerHTML = `<span class="text-red-500">Falha ao conectar com banco de dados.</span>`;
             }
         }
+
+        // 4. Modal de Detalhes do Usuário Específico
+        window.openAdminUserDetails = function(userId) {
+            const uStats = AdminState.userStats[userId];
+            if(!uStats) return;
+
+            els.adminUserDetailName.textContent = uStats.name;
+            els.adminUserDetailBalance.textContent = formatMoney(uStats.balance);
+            els.adminUserDetailSpent.textContent = formatMoney(uStats.spent);
+
+            // Filtrar pedidos deste usuário
+            const userOrders = AdminState.orders.filter(o => o.usuario_id === userId);
+            
+            els.adminUserOrdersList.innerHTML = '';
+            if (userOrders.length === 0) {
+                els.adminUserOrdersList.innerHTML = `<p class="text-slate-500 text-sm text-center py-6">Nenhum pedido encontrado para este usuário.</p>`;
+            } else {
+                userOrders.forEach(order => {
+                    const orderDate = new Date(order.data_pedido).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
+                    const sepDateParts = order.data_separacao.split('-');
+                    const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
+                    
+                    let itemsHtml = order.pedido_itens.map(item => {
+                        const productInfo = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
+                        const pName = productInfo ? productInfo.name : item.produto_id;
+                        return `<li class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700 last:border-0 text-sm"><span class="text-slate-600 dark:text-slate-300">${pName}</span><strong class="text-slate-800 dark:text-slate-200">${item.quantidade} un.</strong></li>`;
+                    }).join('');
+
+                    let statusClass = 'bg-slate-100 text-slate-700';
+                    if(order.status === 'Separação Concluída') statusClass = 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                    else if(order.status === 'Cancelado') statusClass = 'bg-red-100 text-red-700 border-red-200';
+                    else statusClass = 'bg-brand-100 text-brand-700 border-brand-200';
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-xs font-bold ${statusClass} px-2 py-1 rounded border">${order.status}</span>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-2">Feito em: ${orderDate} | <b class="text-brand-600 dark:text-brand-400">Separar: ${sepDate}</b></div>
+                            </div>
+                            <strong class="text-slate-900 dark:text-white">${formatMoney(order.valor_total)}</strong>
+                        </div>
+                        ${order.observacoes ? `<div class="text-xs text-slate-500 italic bg-slate-50 dark:bg-slate-900/50 p-2 rounded mb-3">"${order.observacoes}"</div>` : ''}
+                        <ul class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">${itemsHtml}</ul>
+                        
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-2">
+                            ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `
+                                <button onclick="adminCompleteOrder('${order.id}', '${userId}')" class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm flex items-center gap-1.5">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Concluir Separação
+                                </button>
+                            ` : ''}
+                            <button onclick="adminDeleteOrder('${order.id}', '${userId}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-lg shadow-sm flex items-center gap-1.5">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Excluir
+                            </button>
+                        </div>
+                    `;
+                    els.adminUserOrdersList.appendChild(card);
+                });
+            }
+            lucide.createIcons();
+
+            els.adminUserDetailsModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.adminUserDetailsModalContent.classList.remove('scale-95', 'opacity-0');
+                els.adminUserDetailsModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        els.closeAdminUserModalBtn.addEventListener('click', () => {
+            els.adminUserDetailsModalContent.classList.remove('scale-100', 'opacity-100');
+            els.adminUserDetailsModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { els.adminUserDetailsModal.classList.add('hidden'); }, 300);
+        });
+
+        // 5. Funções de Ação do ADM (Concluir e Excluir)
+        window.adminCompleteOrder = function(orderId, userId) {
+            showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O comercial verá o status atualizado no histórico.', 'warning', 'Sim, Concluir', async () => {
+                await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
+                await loadAdminDashboard();
+                if (!els.adminUserDetailsModal.classList.contains('hidden')) window.openAdminUserDetails(userId);
+                if (State.userId === userId) loadFromSupabase(); // Se estiver alterando a si mesmo
+            });
+        };
+
+        window.adminDeleteOrder = function(orderId, userId) {
+            showActionConfirm('Excluir Pedido', 'Deseja apagar totalmente este registro? O valor e as unidades serão devolvidos ao estoque/saldo do usuário.', 'danger', 'Sim, Excluir', async () => {
+                const order = AdminState.orders.find(o => o.id === orderId);
+                if (!order) return;
+                
+                // Estornar valor para o usuário
+                let uStats = AdminState.userStats[userId];
+                let newBalance = uStats.balance + parseFloat(order.valor_total || 0);
+                await supabaseClient.from('usuarios').update({ saldo: newBalance }).eq('id', userId);
+                
+                // Estornar estoque
+                if(order.pedido_itens) {
+                    for(let item of order.pedido_itens) {
+                        const product = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
+                        if (product) {
+                            await supabaseClient.from('produtos').update({ estoque: product.stock + item.quantidade }).eq('id', item.produto_id);
+                        }
+                    }
+                }
+                
+                // Apagar de fato
+                await supabaseClient.from('pedidos').delete().eq('id', orderId);
+
+                await loadAdminDashboard();
+                if (!els.adminUserDetailsModal.classList.contains('hidden')) window.openAdminUserDetails(userId);
+                if (State.userId === userId) loadFromSupabase();
+            });
+        };
 
 
         // --- FORMATAÇÃO & DASHBOARD COMERCIAL ---
@@ -1139,6 +1398,7 @@
                 const sepDateParts = order.separationDate.split('-');
                 const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
                 const isCancelled = order.status === 'Cancelado';
+                const isCompleted = order.status === 'Separação Concluída';
                 const card = document.createElement('div');
                 card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors ${isCancelled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' : 'bg-slate-50 dark:bg-slate-900/30'}`;
                 
@@ -1148,17 +1408,21 @@
                     return `<li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0"><span class="text-sm text-slate-600 dark:text-slate-300 truncate pr-4">${name}</span><strong class="text-sm">${order.items[id]} un.</strong></li>`;
                 }).join('');
 
+                let statusBadge = `<span class="text-[10px] font-medium text-brand-700 bg-brand-100 px-2 py-1 rounded border border-brand-200">${order.status}</span>`;
+                if(isCancelled) statusBadge = `<span class="text-[10px] font-medium text-red-700 bg-red-100 px-2 py-1 rounded border border-red-200">${order.status}</span>`;
+                if(isCompleted) statusBadge = `<span class="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded border border-emerald-200">${order.status}</span>`;
+
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                         <div>
-                            <div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-1 rounded">${order.id}</span><span class="text-[10px] font-medium ${isCancelled?'text-red-700 bg-red-100':'text-emerald-700 bg-emerald-100'} px-2 py-1 rounded">${order.status}</span></div>
+                            <div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-700 bg-white border px-2 py-1 rounded">${order.id}</span> ${statusBadge}</div>
                             <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600">${sepDate}</span></div>
                         </div>
                         <span class="text-[11px] text-slate-500 bg-white px-2 py-1 rounded-md border">${orderDate}</span>
                     </div>
                     ${order.notes ? `<div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border flex gap-2 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5"></i><p class="text-xs text-slate-600 dark:text-slate-300 italic">"${order.notes}"</p></div>` : ''}
                     <div class="bg-white dark:bg-slate-800 rounded-lg border overflow-hidden"><div class="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500 uppercase border-b">Itens Solicitados</div><ul class="px-3 py-1">${itemsListHtml}</ul></div>
-                    ${!isCancelled ? `<div class="mt-4 pt-3 border-t flex justify-end gap-2"><button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium bg-white border rounded-lg shadow-sm flex items-center gap-1.5"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg shadow-sm flex items-center gap-1.5"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button></div>` : ''}
+                    ${!isCancelled && !isCompleted ? `<div class="mt-4 pt-3 border-t flex justify-end gap-2"><button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium bg-white border rounded-lg shadow-sm flex items-center gap-1.5"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg shadow-sm flex items-center gap-1.5"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button></div>` : ''}
                 `;
                 els.ordersListContainer.appendChild(card);
             });
