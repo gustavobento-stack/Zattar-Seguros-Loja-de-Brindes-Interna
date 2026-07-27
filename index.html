@@ -9,6 +9,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- hCaptcha Script -->
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -97,7 +100,7 @@
                     <p class="text-slate-500 dark:text-slate-400 text-sm">Insira suas credenciais corporativas.</p>
                 </div>
                 
-                <form id="loginForm" class="space-y-5">
+                <form id="loginForm" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">E-mail</label>
                         <div class="relative">
@@ -121,12 +124,17 @@
                         </div>
                     </div>
 
-                    <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4">
+                    <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2">
                         <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                         <span>E-mail ou senha incorretos.</span>
                     </div>
                     
-                    <div class="pt-2">
+                    <!-- Validação hCaptcha -->
+                    <div class="flex justify-center mt-2">
+                        <div class="h-captcha" data-sitekey="926c870e-f0c2-46c6-b18c-9bd4fff83cc6"></div>
+                    </div>
+                    
+                    <div class="pt-1">
                         <button type="submit" id="loginSubmitBtn" class="w-full py-3.5 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-xl font-semibold shadow-md transition-all flex justify-center items-center gap-2">
                             <span>Acessar Portal</span>
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -264,7 +272,6 @@
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <!-- Mostrador de Saldo no Header restaurado -->
                 <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg shadow-sm">
                     <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none mb-0.5">Meu Saldo</span>
                     <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
@@ -307,7 +314,6 @@
                 <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na base de controle.</p>
             </div>
 
-            <!-- DASHBOARD COMERCIAL (Modificado) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
@@ -396,7 +402,7 @@
 
     <!-- MODAIS GLOBAIS (Z-INDEX 1000+) -->
 
-    <!-- Modal de Ação Global (Fica na frente de TODOS) -->
+    <!-- Modal de Ação Global -->
     <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
@@ -490,9 +496,7 @@
                 <button id="closeSingleOrderModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <!-- Corpo renderizado dinamicamente -->
-            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody">
-                <!-- Conteúdo do pedido vai aqui -->
-            </div>
+            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody"></div>
         </div>
     </div>
 
@@ -895,21 +899,59 @@
 
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Restaura o visual de erro padrão caso estivesse como inativo
-            els.loginErrorMsg.className = "hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-            els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
             
+            // Validação local do hCaptcha
+            const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
+            if (!hcaptchaResponse) {
+                els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Por favor, resolva o Captcha antes de acessar.</span>';
+                els.loginErrorMsg.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            els.loginErrorMsg.classList.add('hidden');
             els.loginSubmitBtn.disabled = true;
             els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Aguarde...</span>';
             lucide.createIcons();
             
+            // Opcional: Requisição fetch para o siteverify 
+            // (Na prática, o Supabase fará isso nativamente se o captchaToken for passado)
+            try {
+                const verifyParams = new URLSearchParams();
+                verifyParams.append('secret', 'ES_3ae6b560901544ae944fc526eb384dcb');
+                verifyParams.append('response', hcaptchaResponse);
+
+                const verifyRes = await fetch('https://api.hcaptcha.com/siteverify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: verifyParams.toString()
+                });
+                
+                const verifyData = await verifyRes.json();
+                if (verifyData && verifyData.success === false) {
+                    throw new Error("Captcha inválido de acordo com a verificação da API.");
+                }
+            } catch (err) {
+                console.warn("Aviso na verificação client-side do hCaptcha:", err);
+                // Continua o fluxo para deixar a segurança baseada no provedor Supabase 
+            }
+            
+            // Envia o login pro Supabase passando o token
             const { error } = await supabaseClient.auth.signInWithPassword({
                 email: els.loginEmail.value,
-                password: els.loginPassword.value
+                password: els.loginPassword.value,
+                options: {
+                    captchaToken: hcaptchaResponse // Validação nativa caso configurado no backend
+                }
             });
             
             if (error) {
+                if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); // Reseta para nova tentativa
+                els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
                 els.loginErrorMsg.classList.remove('hidden');
+                
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
@@ -941,6 +983,7 @@
             await supabaseClient.auth.signOut();
             els.loginEmail.value = '';
             els.loginPassword.value = '';
+            if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
             els.loginSubmitBtn.disabled = false;
             els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
             checkAuth(); 
