@@ -31,41 +31,20 @@
         }
     </script>
     <style>
-        /* Estilos personalizados para barra de rolagem e transições suaves */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-        .transition-all-ease {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        /* Estilos personalizados */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        .transition-all-ease { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
         
         /* Fundo corporativo premium do login */
         .login-bg-pattern {
@@ -86,7 +65,7 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300">
 
-    <!-- NOVA TELA DE LOGIN CORPORATIVA -->
+    <!-- TELA DE LOGIN CORPORATIVA -->
     <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex items-center justify-center transition-opacity duration-300 p-4">
         <div class="bg-white dark:bg-slate-800 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-100 dark:border-slate-700 min-h-[500px]">
             
@@ -167,7 +146,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold leading-tight">Centro de Comando ADM</h1>
-                    <p class="text-[11px] text-brand-200 uppercase tracking-widest font-semibold">Visão Global de Consumo e Controle</p>
+                    <p class="text-[11px] text-brand-200 uppercase tracking-widest font-semibold flex items-center gap-1">Visão Global <span id="admSyncStatus" class="inline-block w-2 h-2 rounded-full bg-emerald-400 ml-2 animate-pulse" title="Sincronização em tempo real ativa"></span></p>
                 </div>
             </div>
             <button id="closeAdminBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
@@ -175,16 +154,13 @@
             </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 lg:p-10">
-            <!-- Loading do ADM -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 relative">
             <div id="adminLoading" class="flex flex-col justify-center items-center h-40 gap-3">
                 <i data-lucide="loader-2" class="w-8 h-8 text-brand-500 animate-spin"></i>
-                <span class="text-slate-500 text-sm font-medium">Sincronizando dados com o servidor...</span>
+                <span class="text-slate-500 text-sm font-medium">Sincronizando dados globais...</span>
             </div>
 
-            <!-- Conteúdo do ADM -->
             <div id="adminContent" class="hidden max-w-7xl mx-auto space-y-8">
-                
                 <!-- Cards ADM -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 relative overflow-hidden">
@@ -221,13 +197,11 @@
 
                 <!-- Tabelas Detalhadas -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    
                     <!-- Consumo por Usuário -->
                     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[550px]">
                         <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
                             <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <i data-lucide="users" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
-                                Desempenho por Usuário
+                                <i data-lucide="users" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Desempenho por Usuário
                             </h3>
                             <p class="text-xs text-slate-500 mt-1">Clique em uma linha para ver e gerenciar os pedidos</p>
                         </div>
@@ -240,9 +214,7 @@
                                         <th class="p-4 py-3 text-right">Custo Gerado</th>
                                     </tr>
                                 </thead>
-                                <tbody id="admUsersTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
+                                <tbody id="admUsersTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
@@ -251,10 +223,9 @@
                     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[550px]">
                         <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
                             <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
-                                Ranking de Brindes Mais Solicitados
+                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Ranking de Produtos
                             </h3>
-                            <p class="text-xs text-slate-500 mt-1">Produtos que mais saíram do estoque</p>
+                            <p class="text-xs text-slate-500 mt-1">Itens que mais saíram do estoque interno</p>
                         </div>
                         <div class="flex-1 overflow-y-auto p-0 no-scrollbar relative">
                             <table class="w-full text-left border-collapse">
@@ -265,29 +236,28 @@
                                         <th class="p-4 py-3 text-right">Custo Total</th>
                                     </tr>
                                 </thead>
-                                <tbody id="admProductsTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm">
-                                    <!-- Preenchido via JS -->
-                                </tbody>
+                                <tbody id="admProductsTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
 
-    <!-- CONTEÚDO PRINCIPAL DO COMERCIAL (Esquerda) -->
+    <!-- CONTEÚDO PRINCIPAL COMERCIAL -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
         <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 transition-colors duration-300">
-            <div>
+            <div class="flex items-center gap-3">
                 <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 sm:h-12 w-auto object-contain block dark:hidden">
                 <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 sm:h-12 w-auto object-contain hidden dark:block">
+                <!-- Sync indicator icon -->
+                <i data-lucide="refresh-cw" id="userSyncIcon" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden md:block" title="Sincronização em tempo real"></i>
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg shadow-sm">
+                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
                     <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
                     <strong class="text-sm" id="headerBalanceDisplay">R$ 0,00</strong>
@@ -307,14 +277,14 @@
                     </button>
                 </div>
 
-                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shadow-sm">
+                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
                     <i data-lucide="list-ordered" class="w-4 h-4"></i>
                     <span class="hidden md:inline">Histórico</span>
                 </button>
                 
                 <div class="relative w-full md:w-80">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar brindes..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent dark:border-slate-600 rounded-lg text-sm outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500/50 transition-shadow">
+                    <input type="text" id="searchInput" placeholder="Buscar brindes..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 border-transparent dark:border-slate-600 rounded-lg text-sm outline-none text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500/50">
                 </div>
             </div>
 
@@ -325,33 +295,30 @@
         </header>
 
         <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col">
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300 shadow-sm">
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
                 <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400 mt-0.5"></i>
                 <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na planilha de controle (Base 2026).</p>
             </div>
 
-            <!-- DASHBOARD COMERCIAL (3 Cards) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-slate-50 dark:bg-slate-700/30 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                    <span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider relative z-10">Unidades em Estoque</span>
-                    <strong class="text-3xl font-black text-slate-800 dark:text-white mt-1 relative z-10" id="stat-units">--</strong>
+            <!-- DASHBOARD COMERCIAL -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
+                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-units">--</strong>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 dark:bg-brand-900/20 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                    <span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider relative z-10">Itens no Catálogo</span>
-                    <strong class="text-3xl font-black text-brand-600 dark:text-brand-400 mt-1 relative z-10" id="stat-items">--</strong>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+                    <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
+                    <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
                 </div>
-                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-100 dark:bg-emerald-800/30 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
-                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider relative z-10">Meu Saldo Disponível</span>
-                    <strong class="text-3xl font-black text-emerald-800 dark:text-emerald-300 mt-1 relative z-10" id="stat-balance">--</strong>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm flex flex-col justify-center">
+                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
+                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="stat-balance">--</strong>
                 </div>
             </div>
 
             <div class="flex items-center justify-between mb-6">
                 <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters"></div>
-                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block bg-white dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700" id="itemsCountLabel">0 itens</span>
+                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid"></div>
@@ -369,51 +336,50 @@
         <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
             <div>
                 <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i data-lucide="clipboard-list" class="w-5 h-5 text-brand-600"></i>
-                    Sua Solicitação
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Sua Solicitação
                 </h2>
-                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-wider uppercase bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded mt-1 inline-block">Ref: ABA 2026</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Ref: ABA 2026</span>
             </div>
             <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"><i data-lucide="x"></i></button>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 space-y-4" id="cartItemsContainer">
             <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 dark:text-slate-500 space-y-3">
-                <i data-lucide="package-open" class="w-16 h-16 opacity-30"></i>
-                <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo ao lado.</p>
+                <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
+                <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo.</p>
             </div>
         </div>
 
         <div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div id="checkoutForm" class="mb-5 space-y-4 hidden">
+            <div id="checkoutForm" class="mb-5 space-y-3 hidden">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Data da Separação <span class="text-red-500">*</span></label>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Data da Separação <span class="text-red-500">*</span></label>
                     <div class="flex gap-2">
-                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500 transition-colors [color-scheme:light] dark:[color-scheme:dark]">
+                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-slate-900 dark:text-white [color-scheme:light] dark:[color-scheme:dark]">
                         <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium transition-colors border border-slate-200 dark:border-slate-600">Hoje</button>
                     </div>
-                    <span id="dateErrorMsg" class="text-red-500 text-xs mt-1.5 hidden font-medium">⚠️ Por favor, selecione uma data.</span>
+                    <span id="dateErrorMsg" class="text-red-500 dark:text-red-400 text-xs mt-1 hidden block">⚠️ Selecione uma data.</span>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Motivo / Cliente (Opcional)</label>
-                    <textarea id="orderNotes" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-white outline-none resize-none focus:border-brand-500 transition-colors" placeholder="Ex: Brindes para evento XPTO..."></textarea>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Motivo / Cliente (Opcional)</label>
+                    <textarea id="orderNotes" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none resize-none focus:border-brand-500 text-slate-900 dark:text-white" placeholder="Ex: Brindes para reunião..."></textarea>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center mb-4 text-sm bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
-                <span class="text-slate-600 dark:text-slate-400 font-medium">Total de unidades:</span>
+            <div class="flex justify-between items-center mb-4 text-sm">
+                <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
                 <strong class="text-slate-900 dark:text-white text-lg" id="cartTotalItems">0</strong>
             </div>
             
-            <div class="flex justify-between items-center mb-5 text-sm pt-2">
-                <span class="text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wide text-xs">Custo Estimado:</span>
+            <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
+                <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
                 <div class="text-right">
-                    <strong class="text-brand-600 dark:text-brand-400 text-2xl block leading-none" id="cartTotalValue">R$ 0,00</strong>
+                    <strong class="text-brand-600 dark:text-brand-400 text-xl block" id="cartTotalValue">R$ 0,00</strong>
                     <span id="balanceWarning" class="text-red-500 text-[10px] hidden font-bold mt-1 uppercase tracking-wider">Saldo insuficiente!</span>
                 </div>
             </div>
 
-            <button id="checkoutBtn" class="w-full py-3.5 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-xl font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
+            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-lg font-semibold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
                 <i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação
             </button>
         </div>
@@ -421,54 +387,12 @@
 
     <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- MODAIS DE INTERFACE (Z-INDEX PADRONIZADO E HIERÁRQUICO) -->
+    <!-- MODAIS GLOBAIS (Z-INDEX 1000+) -->
 
-    <!-- Modal de Sucesso (z-150) -->
-    <div id="successModal" class="fixed inset-0 z-[150] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700 text-center" id="successModalContent">
-            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 mb-6 mt-2">
-                <i data-lucide="check-circle-2" class="h-10 w-10 text-emerald-500 dark:text-emerald-400"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Enviado!</h3>
-            <p class="text-slate-500 dark:text-slate-400 mb-2 text-sm leading-relaxed">Sua requisição foi registrada na planilha de controle e enviada para separação.</p>
-        </div>
-    </div>
-
-    <!-- Modal de Histórico de Pedidos (Comercial) (z-110) -->
-    <div id="ordersModal" class="fixed inset-0 z-[110] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="ordersModalContent">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
-                <div>
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2"><i data-lucide="history" class="w-6 h-6 text-brand-600 dark:text-brand-400"></i> Histórico de Solicitações</h3>
-                    <p class="text-xs text-slate-500 mt-1">Gerencie seus pedidos enviados para a base.</p>
-                </div>
-                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="flex-1 overflow-y-auto pr-2 space-y-5" id="ordersListContainer"></div>
-        </div>
-    </div>
-
-    <!-- Modal de Logout (z-120) -->
-    <div id="logoutConfirmModal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="logoutConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800/50 mb-4"><i data-lucide="log-out" class="h-8 w-8 text-red-500"></i></div>
-            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Tem certeza que deseja desconectar sua conta?</p>
-            <div class="flex gap-3">
-                <button id="logoutCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition-colors">Cancelar</button>
-                <button id="logoutConfirmBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-sm">Sim, sair</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- *** MODAL DE AÇÃO GLOBAL (Z-INDEX 400 - FICA NA FRENTE DE TUDO INCLUSIVE ADM) *** -->
-    <div id="actionConfirmModal" class="fixed inset-0 z-[400] flex items-center justify-center hidden">
+    <!-- Modal de Ação Global (Fica na frente de TODOS) -->
+    <div id="actionConfirmModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer">
                 <i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i>
             </div>
@@ -481,10 +405,51 @@
         </div>
     </div>
 
-    <!-- MODAIS DO SISTEMA ADM -->
+    <!-- Modal de Sucesso -->
+    <div id="successModal" class="fixed inset-0 z-[1200] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700 text-center" id="successModalContent">
+            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 mb-6 mt-2">
+                <i data-lucide="check-circle-2" class="h-10 w-10 text-emerald-500 dark:text-emerald-400"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Enviado!</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-2 text-sm leading-relaxed">Sua requisição foi registrada na base e enviada para separação.</p>
+        </div>
+    </div>
 
-    <!-- 1. Modal de Senha ADM (z-300) -->
-    <div id="adminPasswordModal" class="fixed inset-0 z-[300] flex items-center justify-center hidden">
+    <!-- Modal de Logout -->
+    <div id="logoutConfirmModal" class="fixed inset-0 z-[1200] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="logoutConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800/50 mb-4"><i data-lucide="log-out" class="h-8 w-8 text-red-500"></i></div>
+            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Tem certeza que deseja desconectar sua conta?</p>
+            <div class="flex gap-3">
+                <button id="logoutCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition-colors">Cancelar</button>
+                <button id="logoutConfirmBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-sm">Sim, sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Histórico de Pedidos (Comercial) -->
+    <div id="ordersModal" class="fixed inset-0 z-[1100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="ordersModalContent">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2"><i data-lucide="history" class="w-6 h-6 text-brand-600 dark:text-brand-400"></i> Histórico de Solicitações</h3>
+                    <p class="text-xs text-slate-500 mt-1">Gerencie seus pedidos enviados para a base.</p>
+                </div>
+                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors border border-transparent"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-5" id="ordersListContainer"></div>
+        </div>
+    </div>
+
+    <!-- Modais ADM -->
+    <!-- Modal Senha ADM -->
+    <div id="adminPasswordModal" class="fixed inset-0 z-[1200] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminPasswordModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminPasswordModalContent">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4 border border-slate-200 dark:border-slate-600">
@@ -492,92 +457,69 @@
             </div>
             <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Restrito</h3>
             <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm">Insira a credencial de administrador.</p>
-            <input type="password" id="adminPasswordInput" class="w-full px-4 py-3.5 mb-2 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none text-slate-900 dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-900/30 text-center tracking-widest font-mono" placeholder="••••••••">
+            <input type="password" id="adminPasswordInput" class="w-full px-4 py-3 mb-2 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl outline-none text-center tracking-widest font-mono text-slate-900 dark:text-white" placeholder="••••••••">
             <div id="adminPasswordError" class="hidden text-red-500 text-xs text-center mb-4 font-bold">Credencial inválida.</div>
             <div class="flex gap-3 mt-4">
-                <button id="adminPasswordCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition-colors">Cancelar</button>
-                <button id="adminPasswordSubmitBtn" class="flex-1 px-4 py-3 bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 hover:dark:bg-brand-500 text-white font-semibold rounded-xl transition-colors">Acessar</button>
+                <button id="adminPasswordCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-semibold rounded-xl">Cancelar</button>
+                <button id="adminPasswordSubmitBtn" class="flex-1 px-4 py-3 bg-slate-900 dark:bg-brand-600 text-white font-semibold rounded-xl">Acessar</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. Modal de Detalhes do Usuário ADM (z-250) -->
-    <div id="adminUserDetailsModal" class="fixed inset-0 z-[250] flex items-center justify-center hidden">
+    <!-- Modal Detalhes do Usuário ADM -->
+    <div id="adminUserDetailsModal" class="fixed inset-0 z-[1100] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminUserDetailsModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-4xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[90vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminUserDetailsModalContent">
-            
             <div class="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-700 pb-5">
                 <div>
                     <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center border border-brand-100 dark:border-brand-800">
-                            <i data-lucide="user" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>
-                        </div>
-                        <span id="adminUserDetailName">Nome do Usuário</span>
+                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center border border-brand-100 dark:border-brand-800"><i data-lucide="user" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i></div>
+                        <span id="adminUserDetailName">Usuário</span>
                     </h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 ml-13">Histórico completo e gerenciamento de pedidos.</p>
+                    <p class="text-sm text-slate-500 mt-2 ml-13">Gerenciamento completo de pedidos do usuário.</p>
                 </div>
-                <button id="closeAdminUserModalBtn" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button id="closeAdminUserModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
             <div class="flex flex-col sm:flex-row gap-4 mb-6 shrink-0">
-                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-800/50 flex-1 relative overflow-hidden">
-                    <i data-lucide="wallet" class="absolute -right-4 -bottom-4 w-24 h-24 text-emerald-500/10 dark:text-emerald-500/5 pointer-events-none"></i>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 flex-1 relative overflow-hidden">
                     <p class="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-widest">Saldo Restante</p>
                     <p class="text-3xl font-black text-emerald-800 dark:text-emerald-300 mt-1" id="adminUserDetailBalance">R$ 0,00</p>
                 </div>
-                <div class="bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-red-100 dark:border-red-800/50 flex-1 relative overflow-hidden">
-                    <i data-lucide="trending-down" class="absolute -right-4 -bottom-4 w-24 h-24 text-red-500/10 dark:text-red-500/5 pointer-events-none"></i>
+                <div class="bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-red-100 flex-1 relative overflow-hidden">
                     <p class="text-[11px] text-red-700 dark:text-red-400 font-bold uppercase tracking-widest">Custo Gerado</p>
                     <p class="text-3xl font-black text-red-800 dark:text-red-300 mt-1" id="adminUserDetailSpent">R$ 0,00</p>
                 </div>
             </div>
 
             <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 tracking-wide shrink-0"><i data-lucide="list-ordered" class="w-5 h-5 text-slate-400"></i> Pedidos Solicitados</h4>
-            
-            <div class="flex-1 overflow-y-auto pr-2 space-y-5 rounded-xl" id="adminUserOrdersList">
-                <!-- Pedidos renderizados aqui via JS -->
-            </div>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-5 rounded-xl" id="adminUserOrdersList"></div>
         </div>
     </div>
 
 
-    <!-- Menu de Contexto (Botão Direito - z-9999) -->
+    <!-- Menu de Contexto (Botão Direito) -->
     <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
-        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors font-medium" id="contextReload">
+        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextReload">
             <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
         </button>
-        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 transition-colors font-medium" id="contextTheme">
+        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextTheme">
             <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
         </button>
         <div class="h-px bg-slate-100 dark:bg-slate-700/50 my-1"></div>
-        
-        <!-- Botão Secreto ADM -->
-        <button class="w-full text-left px-4 py-2.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 flex items-center gap-3 transition-colors font-bold hidden" id="contextAdminMode">
+        <button class="w-full text-left px-4 py-2.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 hover:dark:bg-brand-900/20 flex items-center gap-3 font-bold hidden" id="contextAdminMode">
             <i data-lucide="shield-alert" class="w-4 h-4"></i> Acesso ADM
         </button>
     </div>
 
-    <!-- SCRIPT SUPABASE & LOGICA -->
+    <!-- SCRIPT SUPABASE & LOGICA GERAL -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // === CONEXÃO SUPABASE (SUBSTITUA A URL AQUI) ===
+        // === CONEXÃO SUPABASE ===
         const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
-
-        const fallbackProductsData = [
-            { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
-            { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
-            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" },
-            { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
-            { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
-            { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
-            { id: "TER-002", category: "Térmicos & Bebidas", name: "Caneca — Preta", stock: 13, price: 41.58, icon: "coffee" },
-            { id: "TER-003", category: "Térmicos & Bebidas", name: "Caneca — Branca", stock: 25, price: 39.50, icon: "coffee" },
-            { id: "CUT-001", category: "Cutelaria", name: "Faca de Churrasco", stock: 17, price: 120.00, icon: "utensils" },
-            { id: "COL-001", category: "Colecionáveis", name: "Miniatura Caminhão", stock: 12, price: 240.00, icon: "truck" }
-        ];
 
         const State = {
             userId: null,
@@ -596,6 +538,11 @@
             userStats: {},
             itemStats: {}
         };
+
+        // Checksums para saber se houve mudança real nos dados (evita piscar a tela no background refresh)
+        let lastProductsHash = "";
+        let lastOrdersHash = "";
+        let lastAdminHash = "";
 
         const els = {
             productsGrid: document.getElementById('productsGrid'),
@@ -677,7 +624,10 @@
             adminUserDetailName: document.getElementById('adminUserDetailName'),
             adminUserDetailBalance: document.getElementById('adminUserDetailBalance'),
             adminUserDetailSpent: document.getElementById('adminUserDetailSpent'),
-            adminUserOrdersList: document.getElementById('adminUserOrdersList')
+            adminUserOrdersList: document.getElementById('adminUserOrdersList'),
+            
+            userSyncIcon: document.getElementById('userSyncIcon'),
+            admSyncStatus: document.getElementById('admSyncStatus')
         };
 
         const togglePasswordBtn = document.getElementById('togglePasswordBtn');
@@ -709,7 +659,7 @@
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 els.userNameDisplay.textContent = formattedName;
-                await loadFromSupabase();
+                await initialLoad();
             } else {
                 State.userId = null;
                 els.loginScreen.classList.remove('hidden');
@@ -741,6 +691,7 @@
             }
         });
 
+        // Logout
         els.logoutBtn?.addEventListener('click', () => {
             els.logoutConfirmModal.classList.remove('hidden');
             setTimeout(() => {
@@ -767,7 +718,7 @@
             checkAuth(); 
         });
 
-        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES GLOBAL (Z-INDEX 400) ---
+        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES GLOBAL (Z-INDEX 1500) ---
         let pendingActionCallback = null;
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
             els.actionConfirmTitle.textContent = title;
@@ -802,31 +753,99 @@
             els.actionCancelBtn.click(); 
         });
 
-        // --- INTEGRAÇÃO COM SUPABASE ---
-        async function loadFromSupabase() {
+        // --- INTEGRAÇÃO COM SUPABASE E ATUALIZAÇÃO EM TEMPO REAL ---
+        
+        async function fetchBaseData() {
+            // 1. Busca Categorias e cria mapa (categoria_id -> nome)
+            const { data: cats } = await supabaseClient.from('categorias').select('*');
+            let catMap = {};
+            if(cats) {
+                cats.forEach(c => catMap[c.id] = c.nome);
+                State.categories = ["Todos", ...cats.map(c => c.nome)];
+            } else {
+                State.categories = ["Todos"];
+            }
+
+            // 2. Busca Produtos e cruza com a categoria real
+            const { data: prods } = await supabaseClient.from('produtos').select('*');
+            if (prods) {
+                State.products = prods.map(p => ({
+                    id: p.id, 
+                    category: catMap[p.categoria_id] || 'Outros', // CRUZAMENTO DE DADOS AQUI
+                    name: p.nome, 
+                    stock: p.estoque, 
+                    price: p.preco, 
+                    icon: p.icone || 'box'
+                }));
+            }
+        }
+
+        async function initialLoad() {
+            await fetchBaseData();
+            
+            // Saldo
+            if (State.userId) {
+                const { data: userData } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).single();
+                State.userBalance = userData ? parseFloat(userData.saldo) : 0;
+            }
+
+            // Histórico Pessoal
+            if (State.userId) {
+                const { data: pedidosData } = await supabaseClient.from('pedidos')
+                    .select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`)
+                    .eq('usuario_id', State.userId) 
+                    .order('data_pedido', { ascending: false });
+
+                if (pedidosData) {
+                    State.ordersHistory = pedidosData.map(p => {
+                        const items = {};
+                        if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
+                        return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items };
+                    });
+                }
+            }
+            
+            // Hash inicial para evitar re-renders atoa
+            lastProductsHash = JSON.stringify(State.products);
+            lastOrdersHash = JSON.stringify(State.ordersHistory);
+
+            setupDateInput();
+            initDashboard();
+            renderCategories();
+            renderProducts();
+            updateCartUI();
+            lucide.createIcons();
+        }
+
+        // MOTOR INVISÍVEL DE REFRESH (A cada 8 segundos verifica se algo mudou no banco)
+        async function backgroundRefresh() {
+            if (!State.userId && els.adminScreen.classList.contains('hidden')) return;
+
             try {
-                // Produtos
-                const { data: prods } = await supabaseClient.from('produtos').select('*');
-                if (prods) {
-                    State.products = prods.map(p => ({
-                        id: p.id, category: p.categoria, name: p.nome, stock: p.estoque, price: p.preco, icon: p.icone || 'box'
-                    }));
-                } else {
-                    State.products = JSON.parse(JSON.stringify(fallbackProductsData));
-                }
+                // Animação visual sutil de sincronização (User e ADM)
+                els.userSyncIcon.classList.add('animate-spin', 'text-brand-500');
+                els.userSyncIcon.classList.remove('text-slate-300', 'dark:text-slate-600');
+                
+                await fetchBaseData();
 
-                // Categorias
-                const { data: cats } = await supabaseClient.from('categorias').select('nome');
-                State.categories = (cats && cats.length > 0) ? ["Todos", ...cats.map(c => c.nome)] : ["Todos", ...new Set(State.products.map(p => p.category))];
-
-                // Saldo
-                if (State.userId) {
+                if (!els.adminScreen.classList.contains('hidden')) {
+                    // Refresh Admin
+                    const { data: users } = await supabaseClient.from('usuarios').select('*');
+                    const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
+                    
+                    AdminState.users = users || [];
+                    AdminState.orders = orders || [];
+                    
+                    const newAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
+                    if(newAdminHash !== lastAdminHash) {
+                        buildAndRenderAdminStats();
+                        lastAdminHash = newAdminHash;
+                    }
+                } else if (State.userId) {
+                    // Refresh Comercial
                     const { data: userData } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).single();
-                    State.userBalance = userData ? parseFloat(userData.saldo) : 3000.00;
-                }
+                    if (userData) State.userBalance = parseFloat(userData.saldo);
 
-                // Histórico de Pedidos (Filtrado apenas para o usuário atual)
-                if (State.userId) {
                     const { data: pedidosData } = await supabaseClient.from('pedidos')
                         .select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade, preco_unitario )`)
                         .eq('usuario_id', State.userId) 
@@ -836,34 +855,38 @@
                         State.ordersHistory = pedidosData.map(p => {
                             const items = {};
                             if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
-                            return { 
-                                id: p.id, 
-                                date: p.data_pedido, 
-                                separationDate: p.data_separacao, 
-                                notes: p.observacoes, 
-                                status: p.status, 
-                                items: items 
-                            };
+                            return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items };
                         });
                     }
-                }
-            } catch (error) {
-                console.warn("Erro ao conectar, usando fallback.", error);
-                if(State.products.length === 0) State.products = JSON.parse(JSON.stringify(fallbackProductsData));
-                State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
-                if(State.userBalance === 0) State.userBalance = 3000.00;
-            }
-            finalizeDataLoad();
-        }
 
-        function finalizeDataLoad() {
-            setupDateInput();
-            initDashboard();
-            renderCategories();
-            renderProducts();
-            updateCartUI();
-            lucide.createIcons();
+                    // Se houve mudança, atualiza a tela
+                    const newProductsHash = JSON.stringify(State.products);
+                    if(newProductsHash !== lastProductsHash) {
+                        renderProducts();
+                        lastProductsHash = newProductsHash;
+                    }
+
+                    const newOrdersHash = JSON.stringify(State.ordersHistory);
+                    if(newOrdersHash !== lastOrdersHash) {
+                        if (!els.ordersModal.classList.contains('hidden')) renderOrdersHistory();
+                        lastOrdersHash = newOrdersHash;
+                    }
+                    
+                    initDashboard(); // Atualiza dashboard counters fast
+                }
+
+                setTimeout(() => {
+                    els.userSyncIcon.classList.remove('animate-spin', 'text-brand-500');
+                    els.userSyncIcon.classList.add('text-slate-300', 'dark:text-slate-600');
+                }, 1000);
+
+            } catch (err) {
+                console.warn("Erro no sync de background", err);
+            }
         }
+        
+        // Ativa o Refresh a cada 8 segundos
+        setInterval(backgroundRefresh, 8000);
 
         // --- SISTEMA DA ÁREA ADMINISTRATIVA ---
         
@@ -911,7 +934,7 @@
             if(els.adminPasswordInput.value === 'ADMZattar2026@') {
                 els.adminPasswordCancelBtn.click();
                 els.adminScreen.classList.remove('hidden');
-                loadAdminDashboard();
+                initialAdminLoad();
             } else {
                 els.adminPasswordError.classList.remove('hidden');
             }
@@ -921,15 +944,12 @@
             els.adminScreen.classList.add('hidden');
         });
 
-        async function loadAdminDashboard() {
+        async function initialAdminLoad() {
             els.adminContent.classList.add('hidden');
             els.adminLoading.classList.remove('hidden');
 
             try {
-                if (State.products.length === 0) {
-                     const { data: prods } = await supabaseClient.from('produtos').select('*');
-                     State.products = prods ? prods.map(p => ({ id: p.id, category: p.categoria, name: p.nome, stock: p.estoque, price: p.preco, icon: p.icone || 'box' })) : fallbackProductsData;
-                }
+                await fetchBaseData();
 
                 const { data: users } = await supabaseClient.from('usuarios').select('*');
                 const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
@@ -937,77 +957,8 @@
                 AdminState.users = users || [];
                 AdminState.orders = orders || [];
                 
-                let totalSpentGlobal = 0;
-                let totalItemsGlobal = 0;
-                AdminState.userStats = {};
-                AdminState.itemStats = {};
-
-                if(users) {
-                    users.forEach(u => {
-                        let userName = u.nome || u.email || `ID: ${u.id.split('-')[0]}`;
-                        if (userName.includes('@')) {
-                            let namePart = userName.split('@')[0];
-                            userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                        }
-                        AdminState.userStats[u.id] = { id: u.id, name: userName, balance: parseFloat(u.saldo || 0), spent: 0 };
-                    });
-                }
-
-                if(orders) {
-                    orders.forEach(o => {
-                        if (o.status !== 'Cancelado') {
-                            const vTotal = parseFloat(o.valor_total || 0);
-                            totalSpentGlobal += vTotal;
-
-                            if (!AdminState.userStats[o.usuario_id]) {
-                                AdminState.userStats[o.usuario_id] = { id: o.usuario_id, name: `ID: ${o.usuario_id.split('-')[0]}`, balance: 0, spent: 0 };
-                            }
-                            AdminState.userStats[o.usuario_id].spent += vTotal;
-
-                            if (o.pedido_itens) {
-                                o.pedido_itens.forEach(item => {
-                                    totalItemsGlobal += item.quantidade;
-                                    const productInfo = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
-                                    const productName = productInfo ? productInfo.name : item.produto_id;
-
-                                    if (!AdminState.itemStats[item.produto_id]) AdminState.itemStats[item.produto_id] = { name: productName, qty: 0, value: 0 };
-                                    AdminState.itemStats[item.produto_id].qty += item.quantidade;
-                                    AdminState.itemStats[item.produto_id].value += (item.quantidade * parseFloat(item.preco_unitario || 0));
-                                });
-                            }
-                        }
-                    });
-                }
-
-                els.admTotalSpent.textContent = formatMoney(totalSpentGlobal);
-                els.admTotalOrders.textContent = (orders ? orders.filter(o => o.status !== 'Cancelado').length : 0);
-                els.admTotalItems.textContent = totalItemsGlobal + ' un.';
-
-                els.admUsersTable.innerHTML = '';
-                Object.values(AdminState.userStats).forEach(u => {
-                    const tr = document.createElement('tr');
-                    tr.className = "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group";
-                    tr.onclick = () => window.openAdminUserDetails(u.id);
-                    tr.innerHTML = `
-                        <td class="p-4 py-3 font-semibold text-slate-700 dark:text-slate-200 group-hover:text-brand-600 dark:group-hover:text-brand-400 flex items-center gap-2"><div class="w-6 h-6 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center"><i data-lucide="user" class="w-3 h-3"></i></div>${u.name}</td>
-                        <td class="p-4 py-3 text-right font-medium text-emerald-600 dark:text-emerald-400">${formatMoney(u.balance)}</td>
-                        <td class="p-4 py-3 text-right font-bold text-slate-800 dark:text-white">${formatMoney(u.spent)}</td>
-                    `;
-                    els.admUsersTable.appendChild(tr);
-                });
-
-                els.admProductsTable.innerHTML = '';
-                const sortedItems = Object.values(AdminState.itemStats).sort((a, b) => b.qty - a.qty);
-                sortedItems.forEach(i => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors";
-                    tr.innerHTML = `
-                        <td class="p-4 py-3 font-medium text-slate-700 dark:text-slate-300 text-xs">${i.name}</td>
-                        <td class="p-4 py-3 text-center"><span class="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">${i.qty}</span></td>
-                        <td class="p-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400">${formatMoney(i.value)}</td>
-                    `;
-                    els.admProductsTable.appendChild(tr);
-                });
+                buildAndRenderAdminStats();
+                lastAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
 
                 els.adminLoading.classList.add('hidden');
                 els.adminContent.classList.remove('hidden');
@@ -1018,10 +969,92 @@
             }
         }
 
-        window.openAdminUserDetails = function(userId) {
+        function buildAndRenderAdminStats() {
+            let totalSpentGlobal = 0;
+            let totalItemsGlobal = 0;
+            AdminState.userStats = {};
+            AdminState.itemStats = {};
+
+            if(AdminState.users) {
+                AdminState.users.forEach(u => {
+                    let userName = u.nome || u.email || `ID: ${u.id.split('-')[0]}`;
+                    if (userName.includes('@')) {
+                        let namePart = userName.split('@')[0];
+                        userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                    }
+                    AdminState.userStats[u.id] = { id: u.id, name: userName, balance: parseFloat(u.saldo || 0), spent: 0 };
+                });
+            }
+
+            if(AdminState.orders) {
+                AdminState.orders.forEach(o => {
+                    if (o.status !== 'Cancelado') {
+                        const vTotal = parseFloat(o.valor_total || 0);
+                        totalSpentGlobal += vTotal;
+
+                        if (!AdminState.userStats[o.usuario_id]) {
+                            AdminState.userStats[o.usuario_id] = { id: o.usuario_id, name: `ID: ${o.usuario_id.split('-')[0]}`, balance: 0, spent: 0 };
+                        }
+                        AdminState.userStats[o.usuario_id].spent += vTotal;
+
+                        if (o.pedido_itens) {
+                            o.pedido_itens.forEach(item => {
+                                totalItemsGlobal += item.quantidade;
+                                const productInfo = State.products.find(p => p.id === item.produto_id);
+                                const productName = productInfo ? productInfo.name : item.produto_id;
+
+                                if (!AdminState.itemStats[item.produto_id]) AdminState.itemStats[item.produto_id] = { name: productName, qty: 0, value: 0 };
+                                AdminState.itemStats[item.produto_id].qty += item.quantidade;
+                                AdminState.itemStats[item.produto_id].value += (item.quantidade * parseFloat(item.preco_unitario || 0));
+                            });
+                        }
+                    }
+                });
+            }
+
+            els.admTotalSpent.textContent = formatMoney(totalSpentGlobal);
+            els.admTotalOrders.textContent = (AdminState.orders ? AdminState.orders.filter(o => o.status !== 'Cancelado').length : 0);
+            els.admTotalItems.textContent = totalItemsGlobal + ' un.';
+
+            els.admUsersTable.innerHTML = '';
+            Object.values(AdminState.userStats).forEach(u => {
+                const tr = document.createElement('tr');
+                tr.className = "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group";
+                tr.onclick = () => window.openAdminUserDetails(u.id);
+                tr.innerHTML = `
+                    <td class="p-4 py-3 font-semibold text-slate-700 dark:text-slate-200 group-hover:text-brand-600 dark:group-hover:text-brand-400 flex items-center gap-2"><div class="w-6 h-6 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center"><i data-lucide="user" class="w-3 h-3"></i></div>${u.name}</td>
+                    <td class="p-4 py-3 text-right font-medium text-emerald-600 dark:text-emerald-400">${formatMoney(u.balance)}</td>
+                    <td class="p-4 py-3 text-right font-bold text-slate-800 dark:text-white">${formatMoney(u.spent)}</td>
+                `;
+                els.admUsersTable.appendChild(tr);
+            });
+
+            els.admProductsTable.innerHTML = '';
+            const sortedItems = Object.values(AdminState.itemStats).sort((a, b) => b.qty - a.qty);
+            sortedItems.forEach(i => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 py-3 font-medium text-slate-700 dark:text-slate-300 text-xs">${i.name}</td>
+                    <td class="p-4 py-3 text-center"><span class="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">${i.qty}</span></td>
+                    <td class="p-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400">${formatMoney(i.value)}</td>
+                `;
+                els.admProductsTable.appendChild(tr);
+            });
+            lucide.createIcons();
+            
+            // Se o modal de usuário estiver aberto, atualiza também
+            if(!els.adminUserDetailsModal.classList.contains('hidden')) {
+                const openUserId = els.adminUserDetailsModal.getAttribute('data-open-user');
+                if(openUserId) window.openAdminUserDetails(openUserId, true);
+            }
+        }
+
+        window.openAdminUserDetails = function(userId, isSilentRefresh = false) {
             const uStats = AdminState.userStats[userId];
             if(!uStats) return;
 
+            els.adminUserDetailsModal.setAttribute('data-open-user', userId);
             els.adminUserDetailName.textContent = uStats.name;
             els.adminUserDetailBalance.textContent = formatMoney(uStats.balance);
             els.adminUserDetailSpent.textContent = formatMoney(uStats.spent);
@@ -1038,7 +1071,7 @@
                     const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
                     
                     let itemsHtml = order.pedido_itens.map(item => {
-                        const productInfo = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
+                        const productInfo = State.products.find(p => p.id === item.produto_id);
                         const pName = productInfo ? productInfo.name : item.produto_id;
                         return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium text-slate-700 dark:text-slate-300">${pName}</span><strong class="text-sm text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600">${item.quantidade} un.</strong></li>`;
                     }).join('');
@@ -1085,30 +1118,30 @@
             }
             lucide.createIcons();
 
-            els.adminUserDetailsModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.adminUserDetailsModalContent.classList.remove('scale-95', 'opacity-0');
-                els.adminUserDetailsModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            if(!isSilentRefresh) {
+                els.adminUserDetailsModal.classList.remove('hidden');
+                setTimeout(() => {
+                    els.adminUserDetailsModalContent.classList.remove('scale-95', 'opacity-0');
+                    els.adminUserDetailsModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
         };
 
         els.closeAdminUserModalBtn.addEventListener('click', () => {
             els.adminUserDetailsModalContent.classList.remove('scale-100', 'opacity-100');
             els.adminUserDetailsModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.adminUserDetailsModal.classList.add('hidden'); }, 300);
+            setTimeout(() => { els.adminUserDetailsModal.classList.add('hidden'); els.adminUserDetailsModal.removeAttribute('data-open-user'); }, 300);
         });
 
         window.adminCompleteOrder = function(orderId, userId) {
-            showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado no histórico dele.', 'warning', 'Sim, Concluir', async () => {
+            showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado.', 'warning', 'Sim, Concluir', async () => {
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
-                await loadAdminDashboard();
-                if (!els.adminUserDetailsModal.classList.contains('hidden')) window.openAdminUserDetails(userId);
-                if (State.userId === userId) loadFromSupabase(); 
+                backgroundRefresh(); // Força update global e reconstrói tela silenciosamente
             });
         };
 
         window.adminDeleteOrder = function(orderId, userId) {
-            showActionConfirm('Excluir Registro Totalmente', 'Deseja apagar este registro da base de dados? O valor em reais será devolvido ao usuário e os brindes retornarão ao estoque central.', 'danger', 'Sim, Excluir', async () => {
+            showActionConfirm('Excluir Registro Totalmente', 'Deseja apagar este registro da base de dados? O valor em reais será devolvido ao usuário e os brindes retornarão ao estoque.', 'danger', 'Sim, Excluir', async () => {
                 const order = AdminState.orders.find(o => o.id === orderId);
                 if (!order) return;
                 
@@ -1118,7 +1151,7 @@
                 
                 if(order.pedido_itens) {
                     for(let item of order.pedido_itens) {
-                        const product = State.products.find(p => p.id === item.produto_id) || fallbackProductsData.find(p => p.id === item.produto_id);
+                        const product = State.products.find(p => p.id === item.produto_id);
                         if (product) {
                             await supabaseClient.from('produtos').update({ estoque: product.stock + item.quantidade }).eq('id', item.produto_id);
                         }
@@ -1126,10 +1159,7 @@
                 }
                 
                 await supabaseClient.from('pedidos').delete().eq('id', orderId);
-
-                await loadAdminDashboard();
-                if (!els.adminUserDetailsModal.classList.contains('hidden')) window.openAdminUserDetails(userId);
-                if (State.userId === userId) loadFromSupabase();
+                backgroundRefresh();
             });
         };
 
@@ -1184,18 +1214,18 @@
                 const isOutOfStock = stockRemaining <= 0;
 
                 const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group relative";
+                card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
                     <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[160px]">
                         <div class="absolute top-3 left-3 flex gap-2">
-                            <span class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-black tracking-widest px-2.5 py-1 rounded-md shadow-sm border border-slate-200 dark:border-slate-600">${product.id}</span>
+                            <span class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
                         </div>
                         <div class="absolute top-3 right-3">
-                            <span class="bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1 border border-amber-200 dark:border-amber-800/50">
+                            <span class="bg-[#f0e6d2] dark:bg-amber-900/30 text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
                                 Estoque: ${product.stock} un.
                             </span>
                         </div>
-                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 group-hover:scale-110 transition-transform">
                             <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
                         </div>
                     </div>
@@ -1204,19 +1234,19 @@
                         <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
                         <div class="mt-auto pt-3 flex items-end justify-between">
                             <div class="flex flex-col">
-                                <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-200'}">${stockRemaining} un.</b></span>
-                                <strong class="text-brand-700 dark:text-brand-400 font-bold text-sm">${formatMoney(product.price)}</strong>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
+                                <strong class="text-brand-700 dark:text-brand-400 font-semibold text-sm">${formatMoney(product.price)}</strong>
                             </div>
                         </div>
                     </div>
                     <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl h-10 w-28 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
-                                <button onclick="changeCardQty('${product.id}', -1)" class="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
-                                <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-bold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
-                                <button onclick="changeCardQty('${product.id}', 1)" class="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
+                            <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
+                                <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
+                                <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
+                                <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
                             </div>
-                            <button onclick="addMultipleToCart('${product.id}')" class="flex-1 h-10 bg-slate-900 dark:bg-brand-600 hover:bg-slate-800 dark:hover:bg-brand-500 text-white text-[11px] font-bold tracking-wide rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
+                            <button onclick="addMultipleToCart('${product.id}')" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
                                 <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i> ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
                             </button>
                         </div>
@@ -1300,21 +1330,21 @@
                 if (product.price) totalValue += (product.price * qty);
 
                 const itemEl = document.createElement('div');
-                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
+                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
                 itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-xl flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0">
                         <i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
                     </div>
                     <div class="flex-1 flex flex-col justify-center min-w-0">
                         <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
-                        <span class="text-[10px] font-bold tracking-widest text-slate-400 dark:text-slate-500">${product.id}</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
                     </div>
-                    <div class="flex items-center gap-1 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm rounded transition-all"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                        <span class="text-sm font-bold w-5 text-center text-slate-900 dark:text-white">${qty}</span>
-                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm rounded transition-all"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
+                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                        <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
+                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
                     </div>
-                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border border-white dark:border-slate-800 shadow-sm sm:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>
                 `;
                 els.cartItemsContainer.appendChild(itemEl);
             });
@@ -1323,11 +1353,11 @@
             if (els.cartTotalValue) {
                 els.cartTotalValue.textContent = formatMoney(totalValue);
                 if (totalValue > State.userBalance) {
-                    els.cartTotalValue.classList.remove('text-brand-600', 'dark:text-brand-400'); els.cartTotalValue.classList.add('text-red-600', 'dark:text-red-400');
+                    els.cartTotalValue.classList.remove('text-brand-600'); els.cartTotalValue.classList.add('text-red-600');
                     els.balanceWarning.classList.remove('hidden');
                     els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
                 } else {
-                    els.cartTotalValue.classList.remove('text-red-600', 'dark:text-red-400'); els.cartTotalValue.classList.add('text-brand-600', 'dark:text-brand-400');
+                    els.cartTotalValue.classList.remove('text-red-600'); els.cartTotalValue.classList.add('text-brand-600');
                     els.balanceWarning.classList.add('hidden');
                     els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
                 }
@@ -1358,16 +1388,17 @@
 
         const setupDateInput = () => {
             const today = new Date();
-            const localISOTime = (new Date(today - today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
             els.separationDate.min = localISOTime; els.separationDate.value = ""; 
-            els.btnToday.addEventListener('click', () => { els.separationDate.value = localISOTime; els.separationDate.classList.remove('border-red-500'); els.dateErrorMsg.classList.add('hidden'); });
-            els.separationDate.addEventListener('change', () => { if (els.separationDate.value) { els.separationDate.classList.remove('border-red-500'); els.dateErrorMsg.classList.add('hidden'); } });
+            els.btnToday.addEventListener('click', () => { els.separationDate.value = localISOTime; els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); });
+            els.separationDate.addEventListener('change', () => { if (els.separationDate.value) { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); } });
         };
 
         els.checkoutBtn.addEventListener('click', async () => {
             if (!els.separationDate.value) {
-                els.separationDate.classList.add('border-red-500'); els.dateErrorMsg.classList.remove('hidden'); els.separationDate.focus();
-                setTimeout(() => { els.separationDate.classList.remove('border-red-500'); els.dateErrorMsg.classList.add('hidden'); }, 3500); return;
+                els.separationDate.classList.add('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.remove('hidden'); els.separationDate.focus();
+                setTimeout(() => { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.add('hidden'); }, 3500); return;
             }
 
             let orderTotalValue = 0;
@@ -1406,6 +1437,9 @@
             State.cart = {}; els.orderNotes.value = ""; setupDateInput();
             updateCartUI(); renderProducts(); initDashboard();
             
+            // Força push da nova order hash local para evitar double reload visual
+            lastOrdersHash = JSON.stringify(State.ordersHistory);
+            
             els.successModal.classList.remove('hidden');
             setTimeout(() => { els.successModalContent.classList.remove('scale-95', 'opacity-0'); els.successModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
             if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
@@ -1420,7 +1454,7 @@
         const renderOrdersHistory = () => {
             els.ordersListContainer.innerHTML = '';
             if (State.ordersHistory.length === 0) {
-                els.ordersListContainer.innerHTML = `<div class="py-12 flex flex-col items-center text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800"><i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i><p>Nenhuma solicitação realizada.</p></div>`;
+                els.ordersListContainer.innerHTML = `<div class="py-12 flex flex-col items-center text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800"><i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i><p>Nenhuma solicitação realizada.</p></div>`;
                 lucide.createIcons(); return;
             }
             State.ordersHistory.forEach(order => {
@@ -1431,12 +1465,12 @@
                 const isCompleted = order.status === 'Separação Concluída';
                 
                 const card = document.createElement('div');
-                card.className = `border border-slate-200 dark:border-slate-700 rounded-2xl p-5 relative transition-colors shadow-sm ${isCancelled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[20%]' : 'bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'}`;
+                card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors ${isCancelled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' : 'bg-slate-50 dark:bg-slate-900/30 hover:border-slate-300 dark:hover:border-slate-600'}`;
                 
                 let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = State.products.find(p => p.id === id) || fallbackProductsData.find(p => p.id === id); 
+                    const productInfo = State.products.find(p => p.id === id); 
                     const name = productInfo ? productInfo.name : id;
-                    return `<li class="flex justify-between items-center py-2.5 border-b border-slate-50 dark:border-slate-700/50 last:border-0 last:pb-1"><span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate pr-4">${name}</span><strong class="text-sm text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2 py-0.5 rounded shadow-sm">${order.items[id]} un.</strong></li>`;
+                    return `<li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0"><span class="text-sm text-slate-600 dark:text-slate-300 truncate pr-4">${name}</span><strong class="text-sm text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700">${order.items[id]} un.</strong></li>`;
                 }).join('');
 
                 const statusColors = {
@@ -1447,26 +1481,22 @@
                 const stColor = statusColors[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
 
                 card.innerHTML = `
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="text-xs font-black text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span>
-                                <span class="text-[10px] font-bold ${stColor} px-2.5 py-1 rounded-md border tracking-wide uppercase">${order.status}</span>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/50 px-2 py-1 rounded tracking-wider">${order.id}</span>
+                                <span class="text-[10px] font-medium ${stColor} px-2 py-1 rounded border">${order.status}</span>
                             </div>
-                            <div class="text-sm text-slate-600 dark:text-slate-400">Data p/ separar: <strong class="text-slate-900 dark:text-white">${sepDate}</strong></div>
+                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
                         </div>
-                        <div class="text-[11px] font-medium text-slate-500 bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center gap-1.5 shrink-0">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}
-                        </div>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">Em: ${orderDate}</span>
                     </div>
-                    ${order.notes ? `<div class="mb-4 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 p-3.5 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 dark:text-amber-200 italic leading-relaxed">"${order.notes}"</p></div>` : ''}
-                    
-                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
-                        <div class="bg-slate-100 dark:bg-slate-800/80 px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
-                        <ul class="px-4 py-1">${itemsListHtml}</ul>
+                    ${order.notes ? `<div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i><p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p></div>` : ''}
+                    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
+                        <ul class="px-3 py-1">${itemsListHtml}</ul>
                     </div>
-                    
-                    ${!isCancelled && !isCompleted ? `<div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3"><button onclick="editOrder('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl shadow-sm flex items-center gap-2 transition-colors"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Editar</button><button onclick="cancelOrder('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-xl shadow-sm flex items-center gap-2 transition-colors"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Cancelar Pedido</button></div>` : ''}
+                    ${!isCancelled && !isCompleted ? `<div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2"><button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button></div>` : ''}
                 `;
                 els.ordersListContainer.appendChild(card);
             });
@@ -1484,7 +1514,7 @@
         };
 
         window.cancelOrder = function(orderId) {
-            showActionConfirm('Cancelar Solicitação', 'A solicitação será cancelada e o saldo em reais retornará para sua conta.', 'danger', 'Sim, Cancelar', async () => {
+            showActionConfirm('Cancelar Solicitação', 'Esta solicitação será cancelada. O saldo e o estoque dos produtos serão restaurados.', 'danger', 'Sim, Cancelar', async () => {
                 const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
                 if(orderIndex === -1) return;
                 const order = State.ordersHistory[orderIndex];
@@ -1505,7 +1535,12 @@
                         }
                     } catch(err) { console.error('Erro banco', err); }
                 }
+                
+                backgroundRefresh(); // Força update para todos instantaneamente
+                
+                // Update Local UI Fast
                 renderOrdersHistory(); renderProducts(); initDashboard();
+                lastOrdersHash = JSON.stringify(State.ordersHistory);
             });
         };
 
@@ -1535,10 +1570,15 @@
                 State.cart = { ...order.items }; els.separationDate.value = order.separationDate; els.orderNotes.value = order.notes || '';
                 State.ordersHistory.splice(orderIndex, 1);
                 
+                backgroundRefresh(); // Dispara o refresh na base para outros usuários
+                
+                // Fast Local UI Update
                 renderOrdersHistory(); renderProducts(); initDashboard(); updateCartUI();
+                lastOrdersHash = JSON.stringify(State.ordersHistory);
+                
                 toggleOrdersModal(); if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
             };
-            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho', 'Seus itens atuais no carrinho serão perdidos.', 'warning', 'Sim, Substituir', proceedWithEdit);
+            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho Atual', 'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?', 'warning', 'Sim, Substituir', proceedWithEdit);
             else proceedWithEdit(); 
         };
 
