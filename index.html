@@ -63,7 +63,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 relative">
 
     <!-- TELA DE LOGIN CORPORATIVA -->
     <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex items-center justify-center transition-opacity duration-300 p-4">
@@ -151,7 +151,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <button id="openAdminProductsBtn" class="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 border border-brand-500 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                    <i data-lucide="package" class="w-4 h-4"></i> Gerenciar Produtos
+                    <i data-lucide="package" class="w-4 h-4"></i> Catálogo
                 </button>
                 <button id="closeAdminBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-sm font-medium transition-colors">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Sair do ADM
@@ -224,24 +224,27 @@
                         </div>
                     </div>
 
-                    <!-- Ranking de Brindes -->
+                    <!-- Pedidos do Dia (Tabela Nova) -->
                     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[550px]">
-                        <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                            <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Ranking de Produtos
-                            </h3>
-                            <p class="text-xs text-slate-500 mt-1">Itens que mais saíram do estoque interno</p>
+                        <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center gap-2">
+                            <div>
+                                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                    <i data-lucide="calendar-clock" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Pedidos
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">Acompanhamento logístico diário</p>
+                            </div>
+                            <input type="date" id="admDailyDate" class="px-2 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-semibold outline-none text-slate-700 dark:text-slate-200 [color-scheme:light] dark:[color-scheme:dark] w-[130px]">
                         </div>
                         <div class="flex-1 overflow-y-auto p-0 no-scrollbar relative">
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-white dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
                                     <tr class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
-                                        <th class="p-4 py-3">Produto</th>
-                                        <th class="p-4 py-3 text-center">Unidades Saídas</th>
-                                        <th class="p-4 py-3 text-right">Custo Total</th>
+                                        <th class="p-4 py-3">ID / Hora</th>
+                                        <th class="p-4 py-3">Usuário</th>
+                                        <th class="p-4 py-3 text-center">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="admProductsTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
+                                <tbody id="admDailyOrdersTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
@@ -261,12 +264,8 @@
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
-                    <i data-lucide="wallet" class="w-4 h-4"></i>
-                    <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
-                    <strong class="text-sm transition-all" id="headerBalanceDisplay">R$ 0,00</strong>
-                </div>
-
+                <!-- Card de Saldo Removido do Header e mantido no Painel para ficar mais limpo -->
+                
                 <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
                     <div class="text-right">
                         <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
@@ -304,7 +303,7 @@
                 <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na base de controle.</p>
             </div>
 
-            <!-- DASHBOARD COMERCIAL -->
+            <!-- DASHBOARD COMERCIAL (Modificado) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
@@ -315,7 +314,7 @@
                     <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
                 </div>
                 <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm flex flex-col justify-center">
-                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
+                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Budget Disponível</span>
                     <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1 transition-all" id="stat-balance">--</strong>
                 </div>
             </div>
@@ -394,7 +393,7 @@
     <!-- MODAIS GLOBAIS (Z-INDEX 1000+) -->
 
     <!-- Modal de Ação Global (Fica na frente de TODOS) -->
-    <div id="actionConfirmModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
+    <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="actionConfirmModalContent">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer">
@@ -410,7 +409,7 @@
     </div>
 
     <!-- Modal Editar Usuário ADM -->
-    <div id="adminEditUserModal" class="fixed inset-0 z-[1300] flex items-center justify-center hidden">
+    <div id="adminEditUserModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminEditUserModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminEditUserModalContent">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="user-cog" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Editar Usuário</h3>
@@ -436,7 +435,7 @@
     </div>
 
     <!-- Modal Editar Produto ADM -->
-    <div id="adminEditProductModal" class="fixed inset-0 z-[1250] flex items-center justify-center hidden">
+    <div id="adminEditProductModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg" id="adminEditProductModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminEditProductModalContent">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Editar Produto</h3>
@@ -471,6 +470,24 @@
             <div class="flex gap-3 mt-6">
                 <button id="cancelEditProdBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
                 <button id="saveEditProdBtn" class="flex-1 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center justify-center gap-2">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualização e Edição de Pedido Individual ADM -->
+    <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminSingleOrderModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminSingleOrderModalContent">
+            <!-- Header do Modal -->
+            <div class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Detalhes do Pedido
+                </h3>
+                <button id="closeSingleOrderModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <!-- Corpo renderizado dinamicamente -->
+            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody">
+                <!-- Conteúdo do pedido vai aqui -->
             </div>
         </div>
     </div>
@@ -619,6 +636,17 @@
         </button>
     </div>
 
+    <!-- TOAST NOTIFICATION (NOVO PEDIDO NO ADM) -->
+    <div id="admToast" class="fixed bottom-6 right-6 bg-slate-900 dark:bg-slate-800 border border-brand-500/30 text-white px-5 py-4 rounded-2xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-500 z-[9999] flex items-center gap-4 hidden">
+        <div class="w-10 h-10 bg-brand-500/20 rounded-full flex items-center justify-center border border-brand-500/50 shrink-0">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-brand-400 animate-bounce"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-white mb-0.5">Novo Pedido!</p>
+            <p class="text-xs text-slate-300" id="admToastText">Verifique o painel.</p>
+        </div>
+    </div>
+
     <!-- SCRIPT SUPABASE & LOGICA GERAL -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -645,7 +673,8 @@
             users: [],
             orders: [],
             userStats: {},
-            itemStats: {}
+            itemStats: {},
+            lastKnownOrderId: null // Para notificação do toast
         };
 
         // Checksums e Variáveis Globais
@@ -654,6 +683,11 @@
         let lastAdminHash = "";
         let editingUserId = null; 
         let editingProductId = null; 
+        let currentEditOrderId = null; // Para edição no modal único do ADM
+
+        // Variável de controle de inatividade
+        let inactivityTimeout;
+        const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 minutos em milissegundos
 
         const els = {
             productsGrid: document.getElementById('productsGrid'),
@@ -723,13 +757,16 @@
             admTotalOrders: document.getElementById('admTotalOrders'),
             admTotalItems: document.getElementById('admTotalItems'),
             admUsersTable: document.getElementById('admUsersTable'),
-            admProductsTable: document.getElementById('admProductsTable'),
+            admDailyDate: document.getElementById('admDailyDate'),
+            admDailyOrdersTable: document.getElementById('admDailyOrdersTable'),
+            
             adminPasswordModal: document.getElementById('adminPasswordModal'),
             adminPasswordModalContent: document.getElementById('adminPasswordModalContent'),
             adminPasswordInput: document.getElementById('adminPasswordInput'),
             adminPasswordError: document.getElementById('adminPasswordError'),
             adminPasswordSubmitBtn: document.getElementById('adminPasswordSubmitBtn'),
             adminPasswordCancelBtn: document.getElementById('adminPasswordCancelBtn'),
+            
             adminUserDetailsModal: document.getElementById('adminUserDetailsModal'),
             adminUserDetailsModalContent: document.getElementById('adminUserDetailsModalContent'),
             closeAdminUserModalBtn: document.getElementById('closeAdminUserModalBtn'),
@@ -763,9 +800,42 @@
             editProdIcon: document.getElementById('editProdIcon'),
             editProdStatus: document.getElementById('editProdStatus'),
             cancelEditProdBtn: document.getElementById('cancelEditProdBtn'),
-            saveEditProdBtn: document.getElementById('saveEditProdBtn')
+            saveEditProdBtn: document.getElementById('saveEditProdBtn'),
+            
+            // Modal Single Order ADM
+            adminSingleOrderModal: document.getElementById('adminSingleOrderModal'),
+            adminSingleOrderModalContent: document.getElementById('adminSingleOrderModalContent'),
+            closeSingleOrderModalBtn: document.getElementById('closeSingleOrderModalBtn'),
+            adminSingleOrderBody: document.getElementById('adminSingleOrderBody')
         };
 
+        // --- SISTEMA DE LOGOUT POR INATIVIDADE ---
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimeout);
+            // Só ativa o timer se estiver logado E a tela ADM estiver escondida (fechada)
+            if (State.userId && els.adminScreen.classList.contains('hidden')) {
+                inactivityTimeout = setTimeout(async () => {
+                    await supabaseClient.auth.signOut();
+                    els.loginEmail.value = '';
+                    els.loginPassword.value = '';
+                    State.userId = null;
+                    
+                    // Mostra mensagem de erro adaptada
+                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span>Sessão expirada por inatividade. Faça login novamente.</span>';
+                    els.loginErrorMsg.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'border-red-200');
+                    els.loginErrorMsg.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+                    
+                    els.loginScreen.classList.remove('hidden');
+                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
+                    lucide.createIcons();
+                }, INACTIVITY_LIMIT);
+            }
+        }
+        
+        // Ativa o reset do timer em qualquer interação do usuário
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
+
+        // --- UI E EVENTOS BÁSICOS ---
         const togglePasswordBtn = document.getElementById('togglePasswordBtn');
         const eyeIcon = document.getElementById('eyeIcon');
         togglePasswordBtn?.addEventListener('click', () => {
@@ -809,9 +879,11 @@
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
+                resetInactivityTimer(); // Inicia timer na entrada
                 await initialLoad();
             } else {
                 State.userId = null;
+                clearTimeout(inactivityTimeout); // Limpa se deslogado
                 els.loginScreen.classList.remove('hidden');
                 setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
             }
@@ -819,7 +891,10 @@
 
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            els.loginErrorMsg.classList.add('hidden');
+            // Restaura o visual de erro padrão caso estivesse como inativo
+            els.loginErrorMsg.className = "hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
+            els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
+            
             els.loginSubmitBtn.disabled = true;
             els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Aguarde...</span>';
             lucide.createIcons();
@@ -901,6 +976,25 @@
             els.actionCancelBtn.click(); 
         });
 
+        // TOAST NOTIFICATION NOVO PEDIDO
+        function showAdmToast(order) {
+            const toast = document.getElementById('admToast');
+            const text = document.getElementById('admToastText');
+            let uName = order.usuario_id;
+            if(AdminState.userStats[order.usuario_id]) uName = AdminState.userStats[order.usuario_id].name;
+            
+            text.textContent = `${uName} solicitou ${formatMoney(order.valor_total)}.`;
+            
+            toast.classList.remove('hidden');
+            void toast.offsetWidth; // force reflow
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 500);
+            }, 6000);
+        }
+
         async function fetchBaseData() {
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
@@ -966,6 +1060,20 @@
                 if (!els.adminScreen.classList.contains('hidden')) {
                     const { data: users } = await supabaseClient.from('usuarios').select('*');
                     const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
+                    
+                    if (orders && orders.length > 0) {
+                        // Verificador de Novo Pedido (se for o ID mais recente diferente e a data for maior)
+                        if (AdminState.lastKnownOrderId && AdminState.lastKnownOrderId !== orders[0].id) {
+                            const oldLatest = AdminState.orders.find(o => o.id === AdminState.lastKnownOrderId);
+                            const newDate = new Date(orders[0].data_pedido);
+                            const oldDate = oldLatest ? new Date(oldLatest.data_pedido) : new Date(0);
+                            
+                            if (newDate > oldDate) {
+                                showAdmToast(orders[0]);
+                            }
+                        }
+                        AdminState.lastKnownOrderId = orders[0].id;
+                    }
                     
                     AdminState.users = users || [];
                     AdminState.orders = orders || [];
@@ -1080,12 +1188,20 @@
         });
 
         els.closeAdminBtn.addEventListener('click', () => {
-            els.adminScreen.classList.add('hidden');
+            showActionConfirm('Sair do Painel ADM', 'Deseja encerrar a visão de administrador e voltar ao sistema comum?', 'warning', 'Sair do ADM', () => {
+                els.adminScreen.classList.add('hidden');
+                resetInactivityTimer(); // Reseta o timer pois ele voltou pro comercial
+            });
         });
 
         async function initialAdminLoad() {
             els.adminContent.classList.add('hidden');
             els.adminLoading.classList.remove('hidden');
+            
+            // Seta data de hoje no filtro de pedidos por padrão (Ajustando fuso local)
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            els.admDailyDate.value = (new Date(today - tzOffset)).toISOString().split('T')[0];
 
             try {
                 await fetchBaseData();
@@ -1094,6 +1210,8 @@
 
                 AdminState.users = users || [];
                 AdminState.orders = orders || [];
+                
+                if (orders && orders.length > 0) AdminState.lastKnownOrderId = orders[0].id;
                 
                 buildAndRenderAdminStats();
                 lastAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
@@ -1105,6 +1223,46 @@
                 console.error("Erro painel ADM:", err);
                 els.adminLoading.innerHTML = `<span class="text-red-500 font-bold">Falha ao conectar com banco de dados. Verifique a internet ou as permissões.</span>`;
             }
+        }
+
+        els.admDailyDate.addEventListener('change', () => { renderAdminDailyOrders(); });
+
+        function renderAdminDailyOrders() {
+            const table = els.admDailyOrdersTable;
+            table.innerHTML = '';
+            const selectedDate = els.admDailyDate.value;
+            
+            if(!AdminState.orders) return;
+            
+            const dailyOrders = AdminState.orders.filter(o => o.data_pedido.startsWith(selectedDate));
+            
+            if(dailyOrders.length === 0) {
+                table.innerHTML = `<tr><td colspan="3" class="text-center p-8 text-slate-400 dark:text-slate-500 text-sm"><i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>Nenhum pedido nesta data.</td></tr>`;
+                lucide.createIcons(); return;
+            }
+            
+            dailyOrders.forEach(o => {
+                const timeStr = new Date(o.data_pedido).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                let uName = o.usuario_id;
+                if(AdminState.userStats[o.usuario_id]) uName = AdminState.userStats[o.usuario_id].name;
+                
+                const statusColors = {
+                    'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50',
+                    'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50',
+                    'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50'
+                };
+                const stColor = statusColors[o.status] || 'text-slate-700 bg-slate-100 border-slate-200';
+                const statusBadge = `<span class="text-[10px] font-bold ${stColor} px-2 py-0.5 rounded-md border whitespace-nowrap">${o.status}</span>`;
+                
+                table.innerHTML += `
+                    <tr class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" onclick="openAdminSingleOrder('${o.id}')">
+                        <td class="p-4 py-3 text-xs leading-tight"><strong class="text-brand-600 dark:text-brand-400 font-black tracking-wider uppercase">${o.id}</strong><br><span class="text-[10px] text-slate-400 dark:text-slate-500">${timeStr}</span></td>
+                        <td class="p-4 py-3 text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[120px]">${uName}</td>
+                        <td class="p-4 py-3 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
         }
 
         function buildAndRenderAdminStats() {
@@ -1138,12 +1296,6 @@
                         if (o.pedido_itens) {
                             o.pedido_itens.forEach(item => {
                                 totalItemsGlobal += item.quantidade;
-                                const productInfo = State.products.find(p => p.id === item.produto_id);
-                                const productName = productInfo ? productInfo.name : item.produto_id;
-
-                                if (!AdminState.itemStats[item.produto_id]) AdminState.itemStats[item.produto_id] = { name: productName, qty: 0, value: 0 };
-                                AdminState.itemStats[item.produto_id].qty += item.quantidade;
-                                AdminState.itemStats[item.produto_id].value += (item.quantidade * parseFloat(item.preco_unitario || 0));
                             });
                         }
                     }
@@ -1168,26 +1320,160 @@
                 els.admUsersTable.appendChild(tr);
             });
 
-            els.admProductsTable.innerHTML = '';
-            const sortedItems = Object.values(AdminState.itemStats).sort((a, b) => b.qty - a.qty);
-            sortedItems.forEach(i => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-4 py-3 font-medium text-slate-700 dark:text-slate-300 text-xs">${i.name}</td>
-                    <td class="p-4 py-3 text-center"><span class="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">${i.qty}</span></td>
-                    <td class="p-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400">${formatMoney(i.value)}</td>
-                `;
-                els.admProductsTable.appendChild(tr);
-            });
+            // Atualiza também a tabela de Pedidos Diários
+            renderAdminDailyOrders();
             lucide.createIcons();
             
+            // Mantém modais atualizados caso estejam abertos
             if(!els.adminUserDetailsModal.classList.contains('hidden')) {
                 const openUserId = els.adminUserDetailsModal.getAttribute('data-open-user');
                 if(openUserId) window.openAdminUserDetails(openUserId, true);
             }
+            if(!els.adminSingleOrderModal.classList.contains('hidden')) {
+                if(currentEditOrderId && !document.getElementById('editAdmSepDate')) {
+                    // Não atualiza forçado se estiver em modo edição, para não perder dados digitados
+                    window.openAdminSingleOrder(currentEditOrderId, true);
+                }
+            }
         }
 
+        // --- FUNÇÕES DE PEDIDO ÚNICO DO ADM ---
+        window.openAdminSingleOrder = function(orderId, isSilentRefresh = false) {
+            const order = AdminState.orders.find(o => o.id === orderId);
+            if(!order) return;
+            
+            currentEditOrderId = orderId;
+            const uStats = AdminState.userStats[order.usuario_id] || { name: 'Desconhecido' };
+            const orderDate = new Date(order.data_pedido).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
+            const sepDateParts = order.data_separacao.split('-');
+            const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
+            
+            let itemsHtml = order.pedido_itens.map(item => {
+                const productInfo = State.products.find(p => p.id === item.produto_id);
+                const pName = productInfo ? productInfo.name : item.produto_id;
+                return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium text-slate-700 dark:text-slate-300">${pName}</span><strong class="text-sm text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600">${item.quantidade} un.</strong></li>`;
+            }).join('');
+
+            const statusColors = {
+                'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50',
+                'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50',
+                'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50'
+            };
+            const stColor = statusColors[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
+
+            // HTML montado da tela (Card do Pedido)
+            els.adminSingleOrderBody.innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm font-black text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span>
+                            <span class="text-[11px] font-bold ${stColor} px-2.5 py-1 rounded-md border">${order.status}</span>
+                        </div>
+                        <p class="text-sm text-slate-700 dark:text-slate-300 mb-1">Solicitado por: <strong>${uStats.name}</strong></p>
+                        <div class="text-sm text-slate-600 dark:text-slate-400" id="displaySepDateArea">Data p/ separar: <strong class="text-slate-900 dark:text-white">${sepDate}</strong></div>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <strong class="text-2xl font-black text-slate-900 dark:text-white">${formatMoney(order.valor_total)}</strong>
+                        <div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/50 px-2 py-1 rounded border border-slate-100 dark:border-slate-700"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}</div>
+                    </div>
+                </div>
+                
+                <div id="displayNotesArea">
+                    ${order.observacoes ? `<div class="mb-5 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 dark:text-amber-200 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}
+                </div>
+                
+                <!-- Área de Edição Injetada Dinamicamente aqui (Oculta por padrão) -->
+                <div id="editFieldsArea" class="hidden mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 p-4 rounded-xl space-y-4">
+                    <p class="text-xs font-bold text-blue-800 dark:text-blue-300 mb-2 uppercase tracking-wider flex items-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Modo de Edição ADM</p>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nova Data de Separação</label>
+                        <input type="date" id="editAdmSepDate" value="${order.data_separacao}" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Observações do Pedido</label>
+                        <textarea id="editAdmNotes" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none text-slate-900 dark:text-white">${order.observacoes || ''}</textarea>
+                    </div>
+                    <div class="flex gap-2 justify-end pt-2">
+                        <button onclick="cancelAdmOrderEdit()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition-colors">Cancelar</button>
+                        <button onclick="saveAdmOrderEdit('${order.id}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-2" id="saveAdmOrderBtn"><i data-lucide="save" class="w-3.5 h-3.5"></i> Salvar Alterações</button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden mb-2 shadow-sm">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700 flex justify-between">
+                        <span>Itens Solicitados</span>
+                    </div>
+                    <ul class="px-4 py-1 divide-y divide-slate-50 dark:divide-slate-700/50">${itemsHtml}</ul>
+                </div>
+                
+                <div class="mt-6 flex flex-wrap justify-end gap-3" id="admSingleOrderFooter">
+                    ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `
+                        <button onclick="adminCompleteOrder('${order.id}', '${order.usuario_id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
+                        <button onclick="startAdmOrderEdit()" class="px-4 py-2.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="edit" class="w-4 h-4"></i> Alterar Pedido</button>
+                    ` : ''}
+                    <button onclick="adminDeleteOrder('${order.id}', '${order.usuario_id}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Registro</button>
+                </div>
+            `;
+            lucide.createIcons();
+
+            if(!isSilentRefresh) {
+                els.adminSingleOrderModal.classList.remove('hidden');
+                setTimeout(() => {
+                    els.adminSingleOrderModalContent.classList.remove('scale-95', 'opacity-0');
+                    els.adminSingleOrderModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+        };
+
+        window.startAdmOrderEdit = function() {
+            document.getElementById('editFieldsArea').classList.remove('hidden');
+            document.getElementById('displaySepDateArea').classList.add('hidden');
+            document.getElementById('displayNotesArea').classList.add('hidden');
+            document.getElementById('admSingleOrderFooter').classList.add('hidden');
+        };
+
+        window.cancelAdmOrderEdit = function() {
+            document.getElementById('editFieldsArea').classList.add('hidden');
+            document.getElementById('displaySepDateArea').classList.remove('hidden');
+            document.getElementById('displayNotesArea').classList.remove('hidden');
+            document.getElementById('admSingleOrderFooter').classList.remove('hidden');
+        };
+
+        window.saveAdmOrderEdit = async function(orderId) {
+            const btn = document.getElementById('saveAdmOrderBtn');
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Salvando...';
+            lucide.createIcons();
+            
+            const newDate = document.getElementById('editAdmSepDate').value;
+            const newNotes = document.getElementById('editAdmNotes').value;
+
+            try {
+                await supabaseClient.from('pedidos').update({ data_separacao: newDate, observacoes: newNotes }).eq('id', orderId);
+                
+                // Atualiza local na hora
+                const orderIndex = AdminState.orders.findIndex(o => o.id === orderId);
+                if(orderIndex !== -1) {
+                    AdminState.orders[orderIndex].data_separacao = newDate;
+                    AdminState.orders[orderIndex].observacoes = newNotes;
+                }
+                
+                backgroundRefresh(); // Trigger sync
+                window.openAdminSingleOrder(orderId, true); // Recarrega tela silenciosamente
+
+            } catch(e) {
+                console.error("Erro ao alterar pedido", e);
+                btn.innerHTML = 'Erro!';
+            }
+        };
+
+        els.closeSingleOrderModalBtn.addEventListener('click', () => {
+            els.adminSingleOrderModalContent.classList.remove('scale-100', 'opacity-100');
+            els.adminSingleOrderModalContent.classList.add('scale-95', 'opacity-0');
+            currentEditOrderId = null;
+            setTimeout(() => { els.adminSingleOrderModal.classList.add('hidden'); }, 300);
+        });
+        
+        // --- DETALHES DO USUÁRIO (LISTA DE PEDIDOS DO USER) ---
         window.openAdminUserDetails = function(userId, isSilentRefresh = false) {
             const uStats = AdminState.userStats[userId];
             if(!uStats) return;
@@ -1249,7 +1535,7 @@
                         
                         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
                             ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `
-                                <button onclick="adminCompleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
+                                <button onclick="adminCompleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir</button>
                             ` : ''}
                             <button onclick="adminDeleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl transition-colors flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Registro</button>
                         </div>
@@ -1458,6 +1744,9 @@
                 } catch (webhookErr) { }
 
                 backgroundRefresh(); 
+                
+                // Fecha modal único se estiver aberto
+                if(currentEditOrderId === orderId) els.closeSingleOrderModalBtn.click();
             });
         };
 
@@ -1467,8 +1756,10 @@
                 if (!order) return;
                 
                 let uStats = AdminState.userStats[userId];
-                let newBalance = uStats.balance + parseFloat(order.valor_total || 0);
-                await supabaseClient.from('usuarios').update({ saldo: newBalance }).eq('id', userId);
+                if(uStats) {
+                    let newBalance = uStats.balance + parseFloat(order.valor_total || 0);
+                    await supabaseClient.from('usuarios').update({ saldo: newBalance }).eq('id', userId);
+                }
                 
                 if(order.pedido_itens) {
                     for(let item of order.pedido_itens) {
@@ -1481,6 +1772,9 @@
                 
                 await supabaseClient.from('pedidos').delete().eq('id', orderId);
                 backgroundRefresh();
+                
+                // Fecha modal único se estiver aberto
+                if(currentEditOrderId === orderId) els.closeSingleOrderModalBtn.click();
             });
         };
 
@@ -1537,8 +1831,8 @@
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full p-6 pb-2">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md">
+                        <div class="absolute inset-0 w-full h-full p-4">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-sm">
                         </div>
                     `;
                 } else {
@@ -1552,13 +1846,13 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[200px] overflow-hidden">
                         ${imageSectionHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
                         </div>
                         <div class="absolute top-3 right-3 z-20">
-                            <span class="bg-[#f0e6d2]/90 dark:bg-amber-900/50 backdrop-blur-sm text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
+                            <span class="bg-[#f0e6d2]/90 dark:bg-amber-900/50 backdrop-blur-sm text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border border-transparent dark:border-amber-800/50">
                                 Estoque: ${product.stock} un.
                             </span>
                         </div>
@@ -1580,7 +1874,7 @@
                                 <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
                                 <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
                             </div>
-                            <button onclick="addMultipleToCart('${product.id}', event)" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
+                            <button onclick="addMultipleToCart('${product.id}', event)" class="flex-1 h-9 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
                                 <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i> ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
                             </button>
                         </div>
@@ -1630,16 +1924,13 @@
         };
 
         function animateFlyToCart(sourceEl) {
-            // Verifica se está no PC (>= 1024px) ou Celular para saber onde o carrinho está
             const isDesktop = window.innerWidth >= 1024;
             const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn');
             if (!targetEl) return;
 
-            // Pega posições iniciais e finais
             const sourceRect = sourceEl.getBoundingClientRect();
             const targetRect = targetEl.getBoundingClientRect();
 
-            // Clona a imagem/ícone
             const clone = sourceEl.cloneNode(true);
             clone.style.position = 'fixed';
             clone.style.top = `${sourceRect.top}px`;
@@ -1650,15 +1941,12 @@
             clone.style.pointerEvents = 'none';
             clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
             clone.style.margin = '0';
-            // Remove o hover extra que faz aumentar
             clone.className = sourceEl.className.replace(/group-hover:scale-\d+/g, '');
             
             document.body.appendChild(clone);
 
-            // Força a renderização inicial antes de aplicar a transição
             clone.getBoundingClientRect();
 
-            // Calcula a distância até o centro do alvo
             const sourceCenterX = sourceRect.left + (sourceRect.width / 2);
             const sourceCenterY = sourceRect.top + (sourceRect.height / 2);
             const targetCenterX = targetRect.left + (targetRect.width / 2);
@@ -1667,16 +1955,15 @@
             const translateX = targetCenterX - sourceCenterX;
             const translateY = targetCenterY - sourceCenterY;
 
-            // Dispara a animação diminuindo e girando enquanto move
             clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1) rotate(15deg)`;
             clone.style.opacity = '0.2';
 
-            // Limpeza e efeito "Pop" ao chegar
             setTimeout(() => {
                 clone.remove();
                 if (isDesktop) {
-                    targetEl.classList.add('scale-150', 'text-brand-500');
-                    setTimeout(() => targetEl.classList.remove('scale-150', 'text-brand-500'), 250);
+                    const badge = document.getElementById('cartTotalItems');
+                    badge.classList.add('scale-[2]', 'text-brand-500');
+                    setTimeout(() => badge.classList.remove('scale-[2]', 'text-brand-500'), 300);
                 } else {
                     targetEl.classList.add('scale-110');
                     setTimeout(() => targetEl.classList.remove('scale-110'), 250);
@@ -1726,13 +2013,13 @@
                 if (product.price) totalValue += (product.price * qty);
 
                 const iconCartHtml = product.icon.startsWith('http') 
-                    ? `<img src="${product.icon}" class="w-6 h-6 object-contain">`
+                    ? `<img src="${product.icon}" class="w-8 h-8 object-contain">`
                     : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
 
                 const itemEl = document.createElement('div');
                 itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
                 itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden p-1">
                         ${iconCartHtml}
                     </div>
                     <div class="flex-1 flex flex-col justify-center min-w-0">
@@ -1834,6 +2121,7 @@
                         }
                     }
 
+                    // --- INTEGRAÇÃO GOOGLE APPS SCRIPT (COM TEXT/PLAIN) ---
                     try {
                         const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                         const webhookData = {
@@ -1848,8 +2136,16 @@
                                 return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario };
                             })
                         };
-                        fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook ok'));
-                    } catch(webhookErr) { }
+                        
+                        // Envio usando text/plain para contornar o erro de CORS do Google
+                        fetch(webhookUrl, { 
+                            method: 'POST', 
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify(webhookData) 
+                        }).catch(e => console.log('Google Apps Script acionado silenciosamente.'));
+                        
+                    } catch(webhookErr) { console.error('Erro local Webhook', webhookErr); }
 
                 } catch (error) { console.error("Erro banco", error); }
             }
@@ -1953,10 +2249,16 @@
                             const product = State.products.find(p => p.id === itemId);
                             if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
                         }
+                        
                         try {
                             const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
-                            fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
+                            fetch(webhookUrl, { 
+                                method: 'POST', 
+                                mode: 'no-cors',
+                                headers: { 'Content-Type': 'text/plain' },
+                                body: JSON.stringify(webhookData) 
+                            }).catch(e => console.log('Webhook silencioso atualizado.'));
                         } catch (e) { }
 
                     } catch(err) { console.error('Erro banco', err); }
