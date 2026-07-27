@@ -65,6 +65,14 @@
         input[type="number"] {
             -moz-appearance: textfield;
         }
+        
+        /* Novo estilo para o gradiente de fundo da tela de login */
+        .login-bg-pattern {
+            background-color: #0f172a;
+            background-image: radial-gradient(circle at 100% 100%, #1e293b 0, #1e293b 3px, transparent 3px), radial-gradient(circle at 0 0, #1e293b 0, #1e293b 3px, transparent 3px), radial-gradient(circle at 0 100%, #1e293b 0, #1e293b 3px, transparent 3px), radial-gradient(circle at 100% 0, #1e293b 0, #1e293b 3px, transparent 3px), radial-gradient(circle at 50% 50%, #1e293b 0, #1e293b 3px, transparent 3px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px, 20px 0, 0 20px, 0 0;
+        }
     </style>
 
     <!-- Script de inicialização do Tema -->
@@ -78,32 +86,92 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300">
 
-    <!-- TELA DE LOGIN -->
+    <!-- NOVA TELA DE LOGIN (Premium/Split Screen) -->
     <div id="loginScreen" class="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-900 flex items-center justify-center transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 dark:border-slate-700 mx-4">
-            <div class="flex justify-center mb-6">
-                <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center">
-                    <i data-lucide="lock" class="w-8 h-8 text-brand-600 dark:text-brand-400"></i>
+        
+        <div class="bg-white dark:bg-slate-800 w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row mx-4 border border-slate-100 dark:border-slate-700 min-h-[550px]">
+            
+            <!-- Coluna Esquerda: Marca & Mensagem (Escondida no Mobile) -->
+            <div class="hidden md:flex flex-col justify-between w-1/2 p-12 login-bg-pattern relative overflow-hidden">
+                <!-- Efeito de brilho de fundo -->
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-brand-600/20 to-transparent pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar Seguros" class="h-10 mb-12">
+                    <h1 class="text-3xl font-bold text-white leading-tight mb-4">Portal de<br>Merchandising Comercial</h1>
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-sm">Sistema centralizado para solicitação, controle de cotas e distribuição de materiais promocionais e brindes corporativos.</p>
+                </div>
+
+                <div class="relative z-10 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center backdrop-blur-sm border border-slate-700">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium">Acesso Restrito & Seguro</span>
                 </div>
             </div>
-            <h2 class="text-2xl font-bold text-center text-slate-900 dark:text-white mb-2">Acesso Restrito</h2>
-            <p class="text-center text-slate-500 dark:text-slate-400 text-sm mb-6">Portal de Brindes Comercial</p>
-            
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail Corporativo</label>
-                    <input type="email" id="loginEmail" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="nome.sobrenome@empresa.com">
+
+            <!-- Coluna Direita: Formulário de Acesso -->
+            <div class="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center bg-white dark:bg-slate-800 relative">
+                
+                <!-- Logo visível apenas no mobile -->
+                <div class="md:hidden flex justify-center mb-8">
+                     <!-- Logo Light -->
+                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Logo Zattar" class="h-12 block dark:hidden">
+                     <!-- Logo Dark -->
+                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Logo Zattar" class="h-12 hidden dark:block">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
+
+                <div class="text-center md:text-left mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Bem-vindo(a)</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Insira suas credenciais para continuar.</p>
                 </div>
-                <div id="loginErrorMsg" class="hidden text-red-500 text-sm text-center font-medium">Credenciais inválidas. Tente novamente.</div>
-                <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    Entrar no Sistema
-                </button>
-            </form>
+                
+                <form id="loginForm" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">E-mail Corporativo</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <input type="email" id="loginEmail" required class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-900/30 outline-none transition-all-ease text-slate-900 dark:text-white text-sm" placeholder="nome.sobrenome@zattar.com">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">Senha</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="key" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <!-- Input de Senha -->
+                            <input type="password" id="loginPassword" required class="w-full pl-10 pr-12 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-900/30 outline-none transition-all-ease text-slate-900 dark:text-white text-sm" placeholder="••••••••">
+                            
+                            <!-- Botão do "Olho" -->
+                            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors focus:outline-none">
+                                <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mensagem de Erro Supabase -->
+                    <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4">
+                        <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
+                        <span>E-mail ou senha incorretos. Tente novamente.</span>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" id="loginSubmitBtn" class="w-full py-3.5 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-xl font-semibold shadow-md shadow-brand-500/20 hover:shadow-brand-500/40 transition-all flex justify-center items-center gap-2">
+                            <span>Acessar Portal</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <p class="text-center text-[10px] text-slate-400 mt-8 mb-0 md:absolute md:bottom-8 md:w-[calc(100%-6rem)]">
+                    &copy; 2026 Zattar Seguros. Base interna.
+                </p>
+            </div>
+
         </div>
     </div>
 
@@ -290,6 +358,8 @@
     <!-- Overlay para mobile quando sidebar está aberta -->
     <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
+    <!-- Modais do Sistema (Sucesso, Histórico, Logout, Ações) -->
+    
     <!-- Modal de Sucesso -->
     <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
@@ -379,16 +449,17 @@
         </button>
     </div>
 
-    <!-- SCRIPT PRINCIPAL E INTEGRAÇÃO SUPABASE -->
+    <!-- SCRIPT PRINCIPAL (Inicia lógica do Javascript) -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // --- INTEGRAÇÃO SUPABASE ---
+        // --- CONFIGURAÇÃO DO SUPABASE ---
+        // (Insira as chaves reais que você configurou)
         const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        // Dados estáticos de fallback
+        // Dados de Fallback (Caso falhe a conexão e seja necessário rodar off-line)
         const fallbackProductsData = [
             { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
             { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
@@ -414,7 +485,7 @@
             userBalance: 0
         };
 
-        // Elementos do DOM
+        // DOM Elements Map
         const els = {
             productsGrid: document.getElementById('productsGrid'),
             categoryFilters: document.getElementById('categoryFilters'),
@@ -474,7 +545,21 @@
             themeToggleBtn: document.getElementById('themeToggleBtn')
         };
 
-        // --- SISTEMA DE TEMA ---
+        // Lógica do Olho na Senha
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const eyeIcon = document.getElementById('eyeIcon');
+        togglePasswordBtn?.addEventListener('click', () => {
+            const type = els.loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            els.loginPassword.setAttribute('type', type);
+            if (type === 'text') {
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        });
+
+        // Toggle Dark Mode (Manual)
         els.themeToggleBtn?.addEventListener('click', () => {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
@@ -485,29 +570,40 @@
             }
         });
 
-        // --- SISTEMA DE AUTENTICAÇÃO SUPABASE ---
+        // --- STREAMING_CHUNK:Iniciando sistema de autenticação... ---
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
+            
             if (session) {
+                // Usuário Logado
                 State.userId = session.user.id;
+                
+                // Oculta tela de login com transição suave
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
+                // Formata o email para exibir como nome do usuário
                 let userEmail = session.user.email;
                 let namePart = userEmail.split('@')[0];
                 let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 els.userNameDisplay.textContent = formattedName;
 
+                // Agora que sabemos quem é o usuário, carrega os dados reais
                 await loadFromSupabase();
+
             } else {
+                // Usuário Deslogado
                 State.userId = null;
                 els.loginScreen.classList.remove('hidden');
                 setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
             }
         }
 
+        // --- STREAMING_CHUNK:Processando login do usuario... ---
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Oculta erro e altera estado do botão
             els.loginErrorMsg.classList.add('hidden');
             els.loginSubmitBtn.disabled = true;
             els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Autenticando...</span>';
@@ -516,37 +612,28 @@
             const email = els.loginEmail.value;
             const password = els.loginPassword.value;
             
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            // Tenta logar via Supabase Auth
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
             
             if (error) {
+                // Erro no login
                 els.loginErrorMsg.classList.remove('hidden');
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
             } else {
+                // Sucesso
                 els.loginSubmitBtn.innerHTML = '<span>Entrando...</span> <i data-lucide="check" class="w-4 h-4"></i>';
                 lucide.createIcons();
+                // Aciona a verificação para mudar de tela
                 checkAuth();
             }
         });
 
-        // Toggle Visibilidade da Senha (O olhinho)
-        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
-        const eyeIcon = document.getElementById('eyeIcon');
-        
-        togglePasswordBtn?.addEventListener('click', () => {
-            const type = els.loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-            els.loginPassword.setAttribute('type', type);
-            
-            // Troca o ícone
-            if (type === 'text') {
-                eyeIcon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                eyeIcon.setAttribute('data-lucide', 'eye');
-            }
-            lucide.createIcons();
-        });
-
+        // Eventos de Logout
         els.logoutBtn?.addEventListener('click', () => {
             els.logoutConfirmModal.classList.remove('hidden');
             setTimeout(() => {
@@ -562,22 +649,27 @@
         });
 
         els.logoutConfirmBtn?.addEventListener('click', async () => {
+            // Fecha modal
             els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
             els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             
+            // Desloga no banco
             await supabaseClient.auth.signOut();
+            
+            // Reseta formulário visual
             els.loginEmail.value = '';
             els.loginPassword.value = '';
             els.loginSubmitBtn.disabled = false;
-            els.loginSubmitBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4"></i> Entrar no Sistema';
-            checkAuth();
+            els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            
+            checkAuth(); // Vai mostrar a tela de login novamente
         });
 
-        // --- INTEGRAÇÃO COM BANCO DE DADOS ---
+        // --- STREAMING_CHUNK:Carregando dados do servidor... ---
         async function loadFromSupabase() {
             try {
-                // 1. Carrega Produtos
+                // 1. Puxa Produtos
                 const { data: prods, error: prodsErr } = await supabaseClient.from('produtos').select('*');
                 if (prods && !prodsErr) {
                     State.products = prods.map(p => ({
@@ -589,10 +681,10 @@
                         icon: p.icone || 'box'
                     }));
                 } else {
-                    State.products = JSON.parse(JSON.stringify(fallbackProductsData));
+                    State.products = JSON.parse(JSON.stringify(fallbackProductsData)); // Fallback
                 }
 
-                // 2. Carrega Categorias
+                // 2. Puxa Categorias (ou gera a partir dos produtos)
                 const { data: cats, error: catsErr } = await supabaseClient.from('categorias').select('nome');
                 if (cats && !catsErr && cats.length > 0) {
                     State.categories = ["Todos", ...cats.map(c => c.nome)];
@@ -600,61 +692,127 @@
                     State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
                 }
 
-                // 3. Carrega Saldo do Usuário
-                const { data: userData } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).single();
-                if (userData) {
-                    State.userBalance = parseFloat(userData.saldo);
-                } else {
-                    State.userBalance = 3000.00; // Mock fallback
+                // 3. Puxa Saldo do Usuário Logado
+                if (State.userId) {
+                    const { data: userData, error: userErr } = await supabaseClient
+                        .from('usuarios')
+                        .select('saldo')
+                        .eq('id', State.userId)
+                        .single();
+                        
+                    if (userData && !userErr) {
+                        State.userBalance = parseFloat(userData.saldo);
+                    } else {
+                        State.userBalance = 0; // Prevenção se o registro não existir ainda
+                    }
                 }
 
-                // 4. Carrega Histórico e Itens COM OS NOMES CORRIGIDOS E FILTRADO PELO USUÁRIO!
-                const { data: pedidosData, error: pedidosErr } = await supabaseClient
-                    .from('pedidos')
-                    .select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade )`)
-                    .eq('usuario_id', State.userId)
-                    .order('data_pedido', { ascending: false });
+                // 4. Puxa Histórico (Apenas do usuário logado!) e seus itens correspondentes
+                if (State.userId) {
+                    const { data: pedidosData, error: pedidosErr } = await supabaseClient
+                        .from('pedidos')
+                        .select(`
+                            id, 
+                            data_pedido, 
+                            data_separacao, 
+                            observacoes, 
+                            status, 
+                            pedido_itens ( produto_id, quantidade )
+                        `)
+                        .eq('usuario_id', State.userId) // FILTRO CRUCIAL! Apenas os pedidos deste usuário
+                        .order('data_pedido', { ascending: false }); // Do mais novo pro mais velho
 
-                if (pedidosData && !pedidosErr) {
-                    State.ordersHistory = pedidosData.map(p => {
-                        const items = {};
-                        if(p.pedido_itens) {
-                            p.pedido_itens.forEach(item => {
-                                items[item.produto_id] = item.quantidade;
-                            });
-                        }
-                        return {
-                            id: p.id,
-                            date: p.data_pedido,
-                            separationDate: p.data_separacao,
-                            notes: p.observacoes,
-                            status: p.status,
-                            items: items
-                        };
-                    });
-                } else {
-                    State.ordersHistory = [];
+                    if (pedidosData && !pedidosErr) {
+                        State.ordersHistory = pedidosData.map(p => {
+                            // Remonta a estrutura de items = { "PAP-001": 2, "TER-002": 1 } pro layout funcionar
+                            const items = {};
+                            if(p.pedido_itens) {
+                                p.pedido_itens.forEach(item => {
+                                    items[item.produto_id] = item.quantidade;
+                                });
+                            }
+                            
+                            return {
+                                id: p.id,
+                                date: p.data_pedido,
+                                separationDate: p.data_separacao,
+                                notes: p.observacoes,
+                                status: p.status,
+                                items: items
+                            };
+                        });
+                    } else {
+                        State.ordersHistory = [];
+                    }
                 }
 
             } catch (error) {
-                console.error("Modo Offline ativado (erro Supabase):", error);
+                console.error("Falha ao carregar do banco. Rodando fallback local.", error);
+                // Dados de salvamento local caso a conexão principal quebre
                 if(State.products.length === 0) State.products = JSON.parse(JSON.stringify(fallbackProductsData));
                 State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
                 if(State.userBalance === 0) State.userBalance = 3000.00;
             }
             
+            // Depois de tentar puxar tudo, manda a tela desenhar as informações
             finalizeDataLoad();
         }
 
+        // --- STREAMING_CHUNK:Renderizando a interface gráfica... ---
         function finalizeDataLoad() {
             setupDateInput();
             initDashboard();
             renderCategories();
             renderProducts();
             updateCartUI();
-            lucide.createIcons();
+            lucide.createIcons(); // Recarrega ícones
         }
 
+        // Funções Genéricas e de Modais de Ação 
+        let pendingActionCallback = null;
+
+        function showActionConfirm(title, text, type, confirmBtnText, callback) {
+            els.actionConfirmTitle.textContent = title;
+            els.actionConfirmText.textContent = text;
+            els.actionConfirmBtn.textContent = confirmBtnText;
+
+            if (type === 'danger') {
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
+                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
+            } else { 
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
+                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
+            }
+            
+            lucide.createIcons(); 
+            pendingActionCallback = callback;
+
+            els.actionConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        els.actionCancelBtn?.addEventListener('click', () => {
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                els.actionConfirmModal.classList.add('hidden');
+                pendingActionCallback = null;
+            }, 300);
+        });
+
+        els.actionConfirmBtn?.addEventListener('click', () => {
+            if (pendingActionCallback) pendingActionCallback();
+            els.actionCancelBtn.click(); 
+        });
+
+        // Funções de formatação e utilitários
         const formatMoney = (value) => {
             if (value === null || value === undefined) return "Valor a confirmar";
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -692,6 +850,7 @@
             });
         }
 
+        // --- STREAMING_CHUNK:Montando visual do catálogo e produtos... ---
         function renderProducts() {
             els.productsGrid.innerHTML = '';
             
@@ -740,6 +899,7 @@
                     <div class="p-4 flex-1 flex flex-col">
                         <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
                         <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
+                        
                         <div class="mt-auto pt-3 flex items-end justify-between">
                             <div class="flex flex-col">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
@@ -768,25 +928,31 @@
                 `;
                 els.productsGrid.appendChild(card);
             });
+
             lucide.createIcons();
         }
 
-        // Expor funções globais para onclicks do HTML
+        // Funções Globais expostas no Window para onclicks inline do HTML funcionarem
         window.changeCardQty = function(productId, delta) {
             const input = document.getElementById(`card-qty-${productId}`);
             if(!input) return;
+            
             const product = State.products.find(p => p.id === productId);
             const qtyInCart = State.cart[productId] || 0;
             const stockRemaining = product.stock - qtyInCart;
+            
             let newVal = parseInt(input.value) + delta;
+            
             if (newVal < 1) newVal = 1;
             if (newVal > stockRemaining) newVal = stockRemaining;
+            
             input.value = newVal;
         };
 
         window.addMultipleToCart = function(productId) {
             const input = document.getElementById(`card-qty-${productId}`);
             let qtyToAdd = input ? parseInt(input.value) : 1;
+            
             const product = State.products.find(p => p.id === productId);
             const currentQty = State.cart[productId] || 0;
             const stockRemaining = product.stock - currentQty;
@@ -812,7 +978,9 @@
                 delete State.cart[productId];
             } else if (newQty <= product.stock) {
                 State.cart[productId] = newQty;
-            } else return;
+            } else {
+                return; 
+            }
             
             updateCartUI();
             renderProducts();
@@ -824,6 +992,7 @@
             renderProducts();
         };
 
+        // --- STREAMING_CHUNK:Atualizando carrinho e realizando checkout... ---
         function updateCartUI() {
             els.cartItemsContainer.innerHTML = '';
             let totalItems = 0;
@@ -846,7 +1015,7 @@
             }
 
             els.emptyCartState.classList.add('hidden');
-            els.checkoutForm.classList.remove('hidden');
+            els.checkoutForm.classList.remove('hidden'); 
 
             cartKeys.forEach(id => {
                 const product = State.products.find(p => p.id === id);
@@ -864,11 +1033,17 @@
                         <h4 class="text-sm font-semibold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
                         <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
                     </div>
+                    
                     <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="minus" class="w-3 h-3"></i>
+                        </button>
                         <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
-                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                            <i data-lucide="plus" class="w-3 h-3"></i>
+                        </button>
                     </div>
+
                     <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
@@ -878,6 +1053,7 @@
 
             els.cartTotalItems.textContent = totalItems;
             
+            // Validação visual de saldo excedido
             if (els.cartTotalValue) {
                 els.cartTotalValue.textContent = formatMoney(totalValue);
                 if (totalValue > State.userBalance) {
@@ -893,58 +1069,21 @@
                     els.checkoutBtn.disabled = false;
                     els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
                 }
-            } else {
-                 els.checkoutBtn.disabled = false;
             }
             
             els.mobileCartBadge.textContent = totalItems;
             if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
+
             lucide.createIcons();
         }
 
-        // Configuração Sidebar e Datas
-        els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
-        const toggleSidebar = () => {
-            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
-            if (isClosed) {
-                els.cartSidebar.classList.remove('translate-x-full');
-                els.cartOverlay.classList.remove('hidden');
-                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10);
-            } else {
-                els.cartSidebar.classList.add('translate-x-full');
-                els.cartOverlay.classList.remove('opacity-100');
-                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
-            }
-        };
-        els.mobileCartBtn.addEventListener('click', toggleSidebar);
-        els.closeCartBtn.addEventListener('click', toggleSidebar);
-        els.cartOverlay.addEventListener('click', toggleSidebar);
-
-        const setupDateInput = () => {
-            const today = new Date();
-            const tzOffset = today.getTimezoneOffset() * 60000;
-            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
-            els.separationDate.min = localISOTime;
-            els.separationDate.value = "";
-            els.btnToday.addEventListener('click', () => {
-                els.separationDate.value = localISOTime;
-                els.separationDate.classList.remove('border-red-500', 'ring-red-500');
-                if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
-            });
-            els.separationDate.addEventListener('change', () => {
-                if (els.separationDate.value) {
-                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
-                    if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
-                }
-            });
-        };
-
-        // Envio do Pedido
+        // Lógica Checkout de Pedidos (Insert no Banco e Updades)
         els.checkoutBtn.addEventListener('click', async () => {
             if (!els.separationDate.value) {
                 els.separationDate.classList.add('border-red-500', 'ring-red-500');
                 els.dateErrorMsg.classList.remove('hidden');
                 els.separationDate.focus();
+                
                 setTimeout(() => {
                     els.separationDate.classList.remove('border-red-500', 'ring-red-500');
                     els.dateErrorMsg.classList.add('hidden');
@@ -952,7 +1091,7 @@
                 return;
             }
 
-            // Calculando totais
+            // Calculo de custos e geração ID
             let orderTotalValue = 0;
             Object.keys(State.cart).forEach(id => {
                 const prod = State.products.find(p => p.id === id);
@@ -961,16 +1100,18 @@
 
             const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
+            // Feedback Visual de Carregamento
             els.checkoutBtn.disabled = true;
             els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...';
             lucide.createIcons();
 
-            // Gravação no Supabase (com colunas corrigidas)
+            // Rotina de Inserção no Supabase se usuário estiver logado
             if (State.userId) {
                 try {
+                    // 1. Cria cabeçalho do pedido
                     await supabaseClient.from('pedidos').insert({
                         id: orderId,
-                        usuario_id: State.userId,
+                        usuario_id: State.userId, // Relacionamento crucial
                         data_pedido: new Date().toISOString(),
                         data_separacao: els.separationDate.value,
                         observacoes: els.orderNotes.value,
@@ -978,6 +1119,7 @@
                         valor_total: orderTotalValue
                     });
 
+                    // 2. Prepara e insere os itens (linhas)
                     const orderItems = Object.keys(State.cart).map(prodId => {
                         const prod = State.products.find(p => p.id === prodId);
                         return {
@@ -990,22 +1132,25 @@
                     
                     await supabaseClient.from('pedido_itens').insert(orderItems);
                     
+                    // 3. Atualiza Saldo da conta do comercial 
                     State.userBalance -= orderTotalValue;
                     await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
 
+                    // 4. Dá baixa no Estoque Geral dos produtos consumidos
                     for (let prodId of Object.keys(State.cart)) {
                         const prod = State.products.find(p => p.id === prodId);
                         if (prod) {
-                            prod.stock -= State.cart[prodId]; // Atualiza local
-                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); // Atualiza remoto
+                            prod.stock -= State.cart[prodId]; // Baixa na interface local
+                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); // Baixa real
                         }
                     }
+
                 } catch (error) {
-                    console.error("Erro ao enviar pedido para o banco:", error);
+                    console.error("Erro na transação de pedido com o banco de dados:", error);
                 }
             }
 
-            // Atualiza histórico localmente pro usuário ver de imediato
+            // Inserir localmente no histórico imediato da interface
             const newOrder = {
                 id: orderId,
                 date: new Date().toISOString(),
@@ -1016,6 +1161,7 @@
             };
             State.ordersHistory.unshift(newOrder);
 
+            // Reseta sistema e atualiza
             State.cart = {};
             els.orderNotes.value = "";
             setupDateInput();
@@ -1024,6 +1170,7 @@
             renderProducts();
             initDashboard();
             
+            // Pop-up Sucesso
             els.successModal.classList.remove('hidden');
             setTimeout(() => {
                 els.successModalContent.classList.remove('scale-95', 'opacity-0');
@@ -1033,13 +1180,17 @@
             if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
         });
 
+        // Fechar Modal e Resetar
         els.closeModalBtn.addEventListener('click', () => {
             els.successModalContent.classList.remove('scale-100', 'opacity-100');
             els.successModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.successModal.classList.add('hidden'); }, 300);
+            
+            setTimeout(() => {
+                els.successModal.classList.add('hidden');
+            }, 300);
         });
 
-        // --- SISTEMA DE HISTÓRICO ---
+        // --- STREAMING_CHUNK:Lógica e interface do painel de histórico... ---
         const renderOrdersHistory = () => {
             els.ordersListContainer.innerHTML = '';
             
@@ -1089,17 +1240,22 @@
                             </div>
                             <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
                         </div>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">Em: ${orderDate}</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                            Em: ${orderDate}
+                        </span>
                     </div>
+                    
                     ${order.notes ? `
                     <div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start">
                         <i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
                         <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p>
                     </div>` : ''}
+                    
                     <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                         <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
                         <ul class="px-3 py-1">${itemsListHtml}</ul>
                     </div>
+
                     ${!isCancelled ? `
                     <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
                         <button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
@@ -1127,83 +1283,59 @@
             } else {
                 els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
                 els.ordersModalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => { els.ordersModal.classList.add('hidden'); }, 300);
+                setTimeout(() => {
+                    els.ordersModal.classList.add('hidden');
+                }, 300);
             }
         };
 
-        // Modais de Confirmação
-        let pendingActionCallback = null;
-        function showActionConfirm(title, text, type, confirmBtnText, callback) {
-            els.actionConfirmTitle.textContent = title;
-            els.actionConfirmText.textContent = text;
-            els.actionConfirmBtn.textContent = confirmBtnText;
-
-            if (type === 'danger') {
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
-                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
-            } else { 
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
-                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
-            }
-            lucide.createIcons();
-            pendingActionCallback = callback;
-            els.actionConfirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        els.actionCancelBtn?.addEventListener('click', () => {
-            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300);
-        });
-
-        els.actionConfirmBtn?.addEventListener('click', () => {
-            if (pendingActionCallback) pendingActionCallback();
-            els.actionCancelBtn.click();
-        });
-
-        // Cancelar Pedido
         window.cancelOrder = function(orderId) {
-            showActionConfirm('Cancelar Solicitação', 'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.', 'danger', 'Sim, Cancelar', async () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex];
-                
-                let orderCost = 0;
-                Object.keys(order.items).forEach(itemId => {
-                    const product = State.products.find(p => p.id === itemId);
-                    if (product) {
-                        product.stock += order.items[itemId];
-                        if (product.price) orderCost += (product.price * order.items[itemId]);
-                    }
-                });
-                
-                State.userBalance += orderCost;
-                order.status = 'Cancelado';
-                
-                if (State.userId) {
-                    await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                    for (let itemId of Object.keys(order.items)) {
+            showActionConfirm(
+                'Cancelar Solicitação', 
+                'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.',
+                'danger',
+                'Sim, Cancelar',
+                async () => {
+                    const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                    if(orderIndex === -1) return;
+                    const order = State.ordersHistory[orderIndex];
+                    
+                    let orderCost = 0;
+                    Object.keys(order.items).forEach(itemId => {
                         const product = State.products.find(p => p.id === itemId);
-                        if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                        if (product) {
+                            product.stock += order.items[itemId]; // Devolve produto interface
+                            if (product.price) orderCost += (product.price * order.items[itemId]);
+                        }
+                    });
+                    
+                    State.userBalance += orderCost; // Devolve saldo interface
+                    order.status = 'Cancelado';
+                    
+                    // Supabase Reverse Operations
+                    if (State.userId) {
+                        try {
+                            await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                            await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                            
+                            for (let itemId of Object.keys(order.items)) {
+                                const product = State.products.find(p => p.id === itemId);
+                                if (product) {
+                                    await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                                }
+                            }
+                        } catch(err) {
+                            console.error('Falha ao reverter operação no banco', err);
+                        }
                     }
+                    
+                    renderOrdersHistory();
+                    renderProducts();
+                    initDashboard();
                 }
-                
-                renderOrdersHistory();
-                renderProducts();
-                initDashboard();
-            });
+            );
         };
 
-        // Alterar Pedido
         window.editOrder = function(orderId) {
             const proceedWithEdit = async () => {
                 const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
@@ -1221,12 +1353,18 @@
                 
                 State.userBalance += orderCost;
                 
+                // No caso de alteração, vamos deletar o pedido antigo para refazer (ou poderíamos cancelar)
                 if (State.userId) {
-                    await supabaseClient.from('pedidos').delete().eq('id', orderId); // Apaga o registro atual pra refazer
-                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                    for (let itemId of Object.keys(order.items)) {
-                        const product = State.products.find(p => p.id === itemId);
-                        if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                    try {
+                        await supabaseClient.from('pedidos').delete().eq('id', orderId); // Apaga registro
+                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                        
+                        for (let itemId of Object.keys(order.items)) {
+                            const product = State.products.find(p => p.id === itemId);
+                            if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                        }
+                    } catch (err) {
+                         console.error('Falha ao excluir e recuperar pedido para edição', err);
                     }
                 }
                 
@@ -1245,13 +1383,67 @@
             };
 
             if(Object.keys(State.cart).length > 0) {
-                showActionConfirm('Substituir Carrinho Atual', 'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?', 'warning', 'Sim, Substituir', proceedWithEdit);
+                showActionConfirm(
+                    'Substituir Carrinho Atual',
+                    'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?',
+                    'warning',
+                    'Sim, Substituir',
+                    proceedWithEdit
+                );
             } else {
-                proceedWithEdit();
+                proceedWithEdit(); 
             }
         };
 
-        // Botão direito
+        // --- STREAMING_CHUNK:Configurando inputs e inicialização... ---
+        
+        // Input Event listeners
+        els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
+        
+        const toggleSidebar = () => {
+            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
+            if (isClosed) {
+                els.cartSidebar.classList.remove('translate-x-full');
+                els.cartOverlay.classList.remove('hidden');
+                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10);
+            } else {
+                els.cartSidebar.classList.add('translate-x-full');
+                els.cartOverlay.classList.remove('opacity-100');
+                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
+            }
+        };
+
+        els.mobileCartBtn.addEventListener('click', toggleSidebar);
+        els.closeCartBtn.addEventListener('click', toggleSidebar);
+        els.cartOverlay.addEventListener('click', toggleSidebar);
+
+        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
+        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
+
+        const setupDateInput = () => {
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
+            
+            els.separationDate.min = localISOTime;
+            els.separationDate.value = ""; 
+
+            els.btnToday.addEventListener('click', () => {
+                els.separationDate.value = localISOTime;
+                els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
+            });
+
+            els.separationDate.addEventListener('change', () => {
+                if (els.separationDate.value) {
+                    els.separationDate.classList.remove('border-red-500', 'ring-red-500');
+                    if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
+                }
+            });
+        };
+
+        // Context menu listener
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
@@ -1264,20 +1456,21 @@
                 menu.style.left = `${x}px`; menu.style.top = `${y}px`;
             }
         });
-        document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
+
+        document.addEventListener('click', (e) => {
+            if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden');
+        });
+
         document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
         document.getElementById('contextTheme')?.addEventListener('click', () => { els.themeToggleBtn.click(); els.customContextMenu.classList.add('hidden'); });
         document.getElementById('contextPrint')?.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); window.print(); });
 
-        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
-
-        // --- INICIALIZAÇÃO ---
+        // Bootstrap App
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            checkAuth(); // Dispara o login, que se sucesso chama o loadFromSupabase.
+            checkAuth(); // Dispara processo de login / load do Supabase
         });
+
     </script>
 </body>
 </html>
