@@ -264,9 +264,13 @@
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <!-- Card de Saldo Removido do Header e mantido no Painel para ficar mais limpo -->
+                <!-- Mostrador de Saldo no Header restaurado -->
+                <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg shadow-sm">
+                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none mb-0.5">Meu Saldo</span>
+                    <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
+                </div>
                 
-                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
+                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700 ml-2">
                     <div class="text-right">
                         <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
                         <p id="userRoleDisplay" class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
@@ -369,9 +373,9 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center mb-4 text-sm">
+            <div class="flex justify-between items-center mb-4 text-sm relative">
                 <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
-                <strong class="text-slate-900 dark:text-white text-lg transition-transform duration-300 inline-block" id="cartTotalItems">0</strong>
+                <strong class="text-slate-900 dark:text-white text-lg transition-all duration-300 inline-block transform" id="cartTotalItems">0</strong>
             </div>
             
             <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
@@ -1740,7 +1744,12 @@
                 try {
                     const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
-                    fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update status concluído'));
+                    fetch(webhookUrl, { 
+                        method: 'POST', 
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(webhookData) 
+                    }).catch(e => console.log('Webhook update status concluído'));
                 } catch (webhookErr) { }
 
                 backgroundRefresh(); 
@@ -1831,8 +1840,8 @@
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full p-4">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-sm">
+                        <div class="absolute inset-0 w-full h-full">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-500 drop-shadow-sm">
                         </div>
                     `;
                 } else {
@@ -1846,7 +1855,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[200px] overflow-hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
                         ${imageSectionHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
