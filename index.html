@@ -510,7 +510,7 @@
             e.preventDefault();
             els.loginErrorMsg.classList.add('hidden');
             els.loginSubmitBtn.disabled = true;
-            els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Autenticando...';
+            els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Autenticando...</span>';
             lucide.createIcons();
             
             const email = els.loginEmail.value;
@@ -521,13 +521,30 @@
             if (error) {
                 els.loginErrorMsg.classList.remove('hidden');
                 els.loginSubmitBtn.disabled = false;
-                els.loginSubmitBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4"></i> Entrar no Sistema';
+                els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
             } else {
-                els.loginSubmitBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Entrando...';
+                els.loginSubmitBtn.innerHTML = '<span>Entrando...</span> <i data-lucide="check" class="w-4 h-4"></i>';
                 lucide.createIcons();
                 checkAuth();
             }
+        });
+
+        // Toggle Visibilidade da Senha (O olhinho)
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        togglePasswordBtn?.addEventListener('click', () => {
+            const type = els.loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            els.loginPassword.setAttribute('type', type);
+            
+            // Troca o ícone
+            if (type === 'text') {
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
         });
 
         els.logoutBtn?.addEventListener('click', () => {
