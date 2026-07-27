@@ -1253,7 +1253,30 @@
 
         window.adminCompleteOrder = function(orderId, userId) {
             showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado.', 'warning', 'Sim, Concluir', async () => {
+                
+                // 1. Atualiza no banco de dados Supabase
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
+                
+                // 2. Avisa o Google Sheets para atualizar a linha
+                try {
+                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                    const webhookData = {
+                        action: "updateStatus",
+                        orderId: orderId,
+                        status: 'Separação Concluída'
+                    };
+
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(webhookData)
+                    }).catch(e => console.log('Webhook de atualização disparado.'));
+                } catch (webhookErr) {
+                    console.error('Falha ao acionar webhook Google', webhookErr);
+                }
+
                 backgroundRefresh(); 
             });
         };
