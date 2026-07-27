@@ -1554,41 +1554,41 @@
 
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
-                    // Se for imagem real, preenche todo o fundo e remove a caixa menor
+                    // Imagem preenche todo o fundo (cover) sem padding
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full p-6 pb-2">
-                            <img src="${product.icon}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md">
-                        </div>
+                        <img src="${product.icon}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 z-0">
+                        <div class="absolute inset-0 bg-black/10 z-0 group-hover:bg-transparent transition-colors duration-500"></div>
                     `;
                 } else {
-                    // Se for ícone, mantém a caixinha menor com fundo no meio
+                    // Ícone mantém o fundo e a caixa centralizada
                     imageSectionHtml = `
-                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10">
-                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5] group-hover:scale-110 transition-transform"></i>
+                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10 group-hover:scale-110 transition-transform">
+                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
                         </div>
                     `;
                 }
 
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
+                
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                    <!-- Top Area (Visual/Icon) -->
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                        
                         ${imageSectionHtml}
+
+                        <!-- Badges -->
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
                         </div>
                         <div class="absolute top-3 right-3 z-20">
-                            <span class="bg-[#f0e6d2]/90 dark:bg-amber-900/50 backdrop-blur-sm text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
+                            <span class="bg-[#f0e6d2]/90 dark:bg-amber-900/80 backdrop-blur-sm text-[#8c734b] dark:text-amber-400 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 border dark:border-amber-800/50">
                                 Estoque: ${product.stock} un.
                             </span>
                         </div>
                     </div>
-                    <div class="p-4 flex-1 flex flex-col relative z-20 bg-white dark:bg-slate-800">
-                        <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
-                        <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        <div class="mt-auto pt-3 flex items-end justify-between">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
+
+                    <!-- Bottom Area (Info) -->
                                 <strong class="text-brand-700 dark:text-brand-400 font-semibold text-sm">${formatMoney(product.price)}</strong>
                             </div>
                         </div>
