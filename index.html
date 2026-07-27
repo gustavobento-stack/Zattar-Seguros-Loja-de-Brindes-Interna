@@ -67,7 +67,7 @@
         }
     </style>
 
-    <!-- Script de inicialização do Tema (Evita piscar branco antes de carregar o dark mode) -->
+    <!-- Script de inicialização do Tema -->
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -98,7 +98,8 @@
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha</label>
                     <input type="password" id="loginPassword" required class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all-ease text-slate-900 dark:text-white" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
+                <div id="loginErrorMsg" class="hidden text-red-500 text-sm text-center font-medium">Credenciais inválidas. Tente novamente.</div>
+                <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white rounded-lg font-semibold shadow-sm transition-colors mt-2 flex justify-center items-center gap-2">
                     <i data-lucide="log-in" class="w-4 h-4"></i>
                     Entrar no Sistema
                 </button>
@@ -124,7 +125,7 @@
                 <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
                     <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
-                    <strong class="text-sm" id="headerBalanceDisplay">R$ 3.000,00</strong>
+                    <strong class="text-sm" id="headerBalanceDisplay">R$ 0,00</strong>
                 </div>
 
                 <!-- Info do Usuário e Logout -->
@@ -165,7 +166,7 @@
             <!-- Botão mobile para abrir carrinho -->
             <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2">
                 <i data-lucide="shopping-cart"></i>
-                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
             </button>
         </header>
 
@@ -244,7 +245,6 @@
                 <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
                 <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo ao lado.</p>
             </div>
-            
             <!-- Itens serão renderizados aqui -->
         </div>
 
@@ -379,20 +379,20 @@
         </button>
     </div>
 
-    <!-- SCRIPT TIPO MODULE PARA O SUPABASE -->
+    <!-- SCRIPT PRINCIPAL E INTEGRAÇÃO SUPABASE -->
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // --- CONFIGURAÇÃO DO SUPABASE ---
-        const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co'; 
+        // --- INTEGRAÇÃO SUPABASE ---
+        const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        // Dados extraídos do documento PDF (Fallback)
-        const productsData = [
+        // Dados estáticos de fallback
+        const fallbackProductsData = [
             { id: "PAP-001", category: "Papelaria", name: "Bloco de Anotações", stock: 280, price: 5.96, icon: "book" },
             { id: "PAP-002", category: "Papelaria", name: "Caderno Moleskine", stock: 220, price: 23.12, icon: "book-marked" },
-            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" }, // null indica "Valor a confirmar"
+            { id: "PAP-003", category: "Papelaria", name: "Pasta Corporativa", stock: 127, price: null, icon: "folder" },
             { id: "ACS-001", category: "Acessórios", name: "Sacola Ecobag", stock: 125, price: 4.95, icon: "shopping-bag" },
             { id: "ACS-002", category: "Acessórios", name: "Necessaire", stock: 58, price: 28.95, icon: "briefcase" },
             { id: "TER-001", category: "Térmicos & Bebidas", name: "Garrafa Térmica", stock: 58, price: 20.95, icon: "bottle-water" },
@@ -402,16 +402,16 @@
             { id: "COL-001", category: "Colecionáveis", name: "Miniatura Caminhão", stock: 12, price: 240.00, icon: "truck" }
         ];
 
+        // Estado Global
         const State = {
-            products: JSON.parse(JSON.stringify(productsData)),
+            userId: null,
+            products: [],
             cart: {}, 
             searchQuery: "",
             selectedCategory: "Todos",
-            categories: ["Todos", ...new Set(productsData.map(p => p.category))],
+            categories: ["Todos"],
             ordersHistory: [], 
-            userBalance: 3000.00, 
-            userSession: null,
-            userId: null
+            userBalance: 0
         };
 
         // Elementos do DOM
@@ -454,6 +454,8 @@
             loginForm: document.getElementById('loginForm'),
             loginEmail: document.getElementById('loginEmail'),
             loginPassword: document.getElementById('loginPassword'),
+            loginErrorMsg: document.getElementById('loginErrorMsg'),
+            loginSubmitBtn: document.getElementById('loginSubmitBtn'),
             userNameDisplay: document.getElementById('userNameDisplay'),
             logoutBtn: document.getElementById('logoutBtn'),
             logoutConfirmModal: document.getElementById('logoutConfirmModal'),
@@ -472,7 +474,7 @@
             themeToggleBtn: document.getElementById('themeToggleBtn')
         };
 
-        // --- SISTEMA DE TEMA (Dark/Light Mode) ---
+        // --- SISTEMA DE TEMA ---
         els.themeToggleBtn?.addEventListener('click', () => {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
@@ -483,61 +485,47 @@
             }
         });
 
-        // --- SISTEMA DE LOGIN SUPABASE & FALLBACK ---
+        // --- SISTEMA DE AUTENTICAÇÃO SUPABASE ---
         async function checkAuth() {
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                State.userSession = session;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                State.userId = session.user.id;
+                els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
-                if (session) {
-                    State.userId = session.user.id;
-                    els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
-                    
-                    let namePart = session.user.email.split('@')[0];
-                    let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                    els.userNameDisplay.textContent = formattedName;
+                let userEmail = session.user.email;
+                let namePart = userEmail.split('@')[0];
+                let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                els.userNameDisplay.textContent = formattedName;
 
-                    await loadFromSupabase();
-                } else {
-                    els.loginScreen.classList.remove('hidden');
-                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
-                }
-            } catch (error) {
-                console.warn("Sem Supabase, usando Login Local");
-                const userEmail = localStorage.getItem('brindesUser');
-                if (userEmail) {
-                    State.userId = 'mock-user-id';
-                    els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
-                    let namePart = userEmail.split('@')[0];
-                    let formattedName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                    els.userNameDisplay.textContent = formattedName;
-                    await loadFromStorageLocal();
-                } else {
-                    els.loginScreen.classList.remove('hidden');
-                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
-                }
+                await loadFromSupabase();
+            } else {
+                State.userId = null;
+                els.loginScreen.classList.remove('hidden');
+                setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
             }
         }
 
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            els.loginErrorMsg.classList.add('hidden');
+            els.loginSubmitBtn.disabled = true;
+            els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Autenticando...';
+            lucide.createIcons();
+            
             const email = els.loginEmail.value;
             const password = els.loginPassword.value;
             
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password,
-                });
-
-                if (error) throw error;
-                await checkAuth();
-            } catch (error) {
-                console.warn("Erro no Supabase Auth. Usando mock local.", error);
-                localStorage.setItem('brindesUser', email);
-                State.userId = 'mock-user-id';
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                els.loginErrorMsg.classList.remove('hidden');
+                els.loginSubmitBtn.disabled = false;
+                els.loginSubmitBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4"></i> Entrar no Sistema';
+                lucide.createIcons();
+            } else {
+                els.loginSubmitBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Entrando...';
+                lucide.createIcons();
                 checkAuth();
             }
         });
@@ -561,177 +549,88 @@
             els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             
-            try { await supabaseClient.auth.signOut(); } catch (e) {}
-            localStorage.removeItem('brindesUser');
+            await supabaseClient.auth.signOut();
             els.loginEmail.value = '';
-            if(els.loginPassword) els.loginPassword.value = '';
+            els.loginPassword.value = '';
+            els.loginSubmitBtn.disabled = false;
+            els.loginSubmitBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4"></i> Entrar no Sistema';
             checkAuth();
         });
 
-        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES ---
-        let pendingActionCallback = null;
-
-        function showActionConfirm(title, text, type, confirmBtnText, callback) {
-            els.actionConfirmTitle.textContent = title;
-            els.actionConfirmText.textContent = text;
-            els.actionConfirmBtn.textContent = confirmBtnText;
-
-            if (type === 'danger') {
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
-                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
-            } else { 
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
-                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
-                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
-            }
-            
-            lucide.createIcons(); 
-            pendingActionCallback = callback;
-
-            els.actionConfirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        els.actionCancelBtn?.addEventListener('click', () => {
-            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                els.actionConfirmModal.classList.add('hidden');
-                pendingActionCallback = null;
-            }, 300);
-        });
-
-        els.actionConfirmBtn?.addEventListener('click', () => {
-            if (pendingActionCallback) pendingActionCallback();
-            els.actionCancelBtn.click(); 
-        });
-
-        // --- SISTEMA DE MENU DE CONTEXTO ---
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                const menu = els.customContextMenu;
-                menu.classList.remove('hidden');
-                const rect = menu.getBoundingClientRect();
-                let x = e.clientX;
-                let y = e.clientY;
-                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
-                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
-                menu.style.left = `${x}px`;
-                menu.style.top = `${y}px`;
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!els.customContextMenu.contains(e.target)) {
-                els.customContextMenu.classList.add('hidden');
-            }
-        });
-
-        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
-        document.getElementById('contextTheme')?.addEventListener('click', () => {
-            els.themeToggleBtn.click();
-            els.customContextMenu.classList.add('hidden');
-        });
-        document.getElementById('contextPrint')?.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            window.print();
-        });
-
-        // --- INTEGRAÇÃO COM SUPABASE ---
+        // --- INTEGRAÇÃO COM BANCO DE DADOS ---
         async function loadFromSupabase() {
             try {
                 // 1. Carrega Produtos
-                const { data: produtosData, error: errProd } = await supabaseClient.from('produtos').select('*');
-                if (produtosData && produtosData.length > 0) {
-                    State.products = produtosData.map(p => ({
+                const { data: prods, error: prodsErr } = await supabaseClient.from('produtos').select('*');
+                if (prods && !prodsErr) {
+                    State.products = prods.map(p => ({
                         id: p.id,
                         category: p.categoria,
                         name: p.nome,
                         stock: p.estoque,
                         price: p.preco,
-                        icon: p.icone || 'tag'
+                        icon: p.icone || 'box'
                     }));
+                } else {
+                    State.products = JSON.parse(JSON.stringify(fallbackProductsData));
                 }
 
                 // 2. Carrega Categorias
-                const { data: catData } = await supabaseClient.from('categorias').select('nome');
-                if (catData && catData.length > 0) {
-                    State.categories = ["Todos", ...catData.map(c => c.nome)];
+                const { data: cats, error: catsErr } = await supabaseClient.from('categorias').select('nome');
+                if (cats && !catsErr && cats.length > 0) {
+                    State.categories = ["Todos", ...cats.map(c => c.nome)];
                 } else {
                     State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
                 }
 
                 // 3. Carrega Saldo do Usuário
-                const { data: userData, error: errUser } = await supabaseClient
-                    .from('usuarios')
-                    .select('saldo')
-                    .eq('id', State.userId)
-                    .maybeSingle(); 
-
+                const { data: userData } = await supabaseClient.from('usuarios').select('saldo').eq('id', State.userId).single();
                 if (userData) {
                     State.userBalance = parseFloat(userData.saldo);
+                } else {
+                    State.userBalance = 3000.00; // Mock fallback
                 }
 
-                // 4. Carrega Histórico de Pedidos (Filtrado pelo usuário logado)
-                const { data: pedidosData } = await supabaseClient
+                // 4. Carrega Histórico e Itens COM OS NOMES CORRIGIDOS E FILTRADO PELO USUÁRIO!
+                const { data: pedidosData, error: pedidosErr } = await supabaseClient
                     .from('pedidos')
-                    .select(`id, data_criacao, data_separacao, observacao, status, pedido_itens ( produto_id, quantidade )`)
+                    .select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade )`)
                     .eq('usuario_id', State.userId)
-                    .order('data_criacao', { ascending: false });
+                    .order('data_pedido', { ascending: false });
 
-                if (pedidosData) {
+                if (pedidosData && !pedidosErr) {
                     State.ordersHistory = pedidosData.map(p => {
                         const items = {};
-                        p.pedido_itens.forEach(item => {
-                            items[item.produto_id] = item.quantidade;
-                        });
+                        if(p.pedido_itens) {
+                            p.pedido_itens.forEach(item => {
+                                items[item.produto_id] = item.quantidade;
+                            });
+                        }
                         return {
                             id: p.id,
-                            date: p.data_criacao,
+                            date: p.data_pedido,
                             separationDate: p.data_separacao,
-                            notes: p.observacao,
+                            notes: p.observacoes,
                             status: p.status,
                             items: items
                         };
                     });
+                } else {
+                    State.ordersHistory = [];
                 }
-                
-                finalizeDataLoad();
+
             } catch (error) {
-                console.error("Erro ao carregar do Supabase. Caiu no Fallback.", error);
-                await loadFromStorageLocal();
+                console.error("Modo Offline ativado (erro Supabase):", error);
+                if(State.products.length === 0) State.products = JSON.parse(JSON.stringify(fallbackProductsData));
+                State.categories = ["Todos", ...new Set(State.products.map(p => p.category))];
+                if(State.userBalance === 0) State.userBalance = 3000.00;
             }
-        }
-
-        async function loadFromStorageLocal() {
-            const savedCart = localStorage.getItem('brindesCart');
-            const savedOrders = localStorage.getItem('brindesOrders');
-            const savedBalance = localStorage.getItem('brindesBalance');
             
-            if (savedCart) State.cart = JSON.parse(savedCart);
-            if (savedOrders) State.ordersHistory = JSON.parse(savedOrders);
-            if (savedBalance) State.userBalance = parseFloat(savedBalance);
-
-            State.ordersHistory.forEach(order => {
-                Object.keys(order.items).forEach(id => {
-                    const product = State.products.find(p => p.id === id);
-                    if (product) {
-                        product.stock -= order.items[id];
-                    }
-                });
-            });
-
             finalizeDataLoad();
         }
 
         function finalizeDataLoad() {
+            setupDateInput();
             initDashboard();
             renderCategories();
             renderProducts();
@@ -739,25 +638,9 @@
             lucide.createIcons();
         }
 
-        function saveLocalCart() {
-            localStorage.setItem('brindesCart', JSON.stringify(State.cart));
-        }
-
-        // ------------------------------------------------------------
         const formatMoney = (value) => {
-            if (value === null) return "Valor a confirmar";
+            if (value === null || value === undefined) return "Valor a confirmar";
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        };
-
-        const getCategoryIcon = (category) => {
-            const map = {
-                'Papelaria': 'pencil-ruler',
-                'Acessórios': 'gem',
-                'Térmicos & Bebidas': 'glass-water',
-                'Cutelaria': 'chef-hat',
-                'Colecionáveis': 'box'
-            };
-            return map[category] || 'tag';
         };
 
         function initDashboard() {
@@ -836,10 +719,10 @@
                             <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
                         </div>
                     </div>
+
                     <div class="p-4 flex-1 flex flex-col">
                         <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1">${product.category}</span>
                         <h3 class="text-slate-800 dark:text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        
                         <div class="mt-auto pt-3 flex items-end justify-between">
                             <div class="flex flex-col">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
@@ -847,15 +730,16 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
-                                <button onclick="window.changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
+                                <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
                                 <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
-                                <button onclick="window.changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
+                                <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
                             </div>
                             <button 
-                                onclick="window.addMultipleToCart('${product.id}')"
+                                onclick="addMultipleToCart('${product.id}')"
                                 class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}"
                                 ${isOutOfStock ? 'disabled' : ''}
                             >
@@ -867,18 +751,16 @@
                 `;
                 els.productsGrid.appendChild(card);
             });
-
             lucide.createIcons();
         }
 
+        // Expor funções globais para onclicks do HTML
         window.changeCardQty = function(productId, delta) {
             const input = document.getElementById(`card-qty-${productId}`);
             if(!input) return;
-            
             const product = State.products.find(p => p.id === productId);
             const qtyInCart = State.cart[productId] || 0;
             const stockRemaining = product.stock - qtyInCart;
-            
             let newVal = parseInt(input.value) + delta;
             if (newVal < 1) newVal = 1;
             if (newVal > stockRemaining) newVal = stockRemaining;
@@ -888,7 +770,6 @@
         window.addMultipleToCart = function(productId) {
             const input = document.getElementById(`card-qty-${productId}`);
             let qtyToAdd = input ? parseInt(input.value) : 1;
-            
             const product = State.products.find(p => p.id === productId);
             const currentQty = State.cart[productId] || 0;
             const stockRemaining = product.stock - currentQty;
@@ -900,7 +781,6 @@
                 State.cart[productId] = currentQty + qtyToAdd;
                 updateCartUI();
                 renderProducts();
-                saveLocalCart();
                 
                 els.mobileCartBtn.classList.add('scale-110');
                 setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
@@ -915,20 +795,16 @@
                 delete State.cart[productId];
             } else if (newQty <= product.stock) {
                 State.cart[productId] = newQty;
-            } else {
-                return;
-            }
+            } else return;
             
             updateCartUI();
             renderProducts();
-            saveLocalCart();
         };
 
         window.removeFromCart = function(productId) {
             delete State.cart[productId];
             updateCartUI();
             renderProducts();
-            saveLocalCart();
         };
 
         function updateCartUI() {
@@ -941,7 +817,7 @@
                 els.cartItemsContainer.appendChild(els.emptyCartState);
                 els.emptyCartState.classList.remove('hidden');
                 els.checkoutBtn.disabled = true;
-                els.checkoutForm.classList.add('hidden'); 
+                els.checkoutForm.classList.add('hidden');
                 els.cartTotalItems.textContent = "0";
                 
                 if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
@@ -972,15 +848,11 @@
                         <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
                     </div>
                     <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="window.updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
-                            <i data-lucide="minus" class="w-3 h-3"></i>
-                        </button>
+                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
                         <span class="text-sm font-medium w-4 text-center dark:text-white">${qty}</span>
-                        <button onclick="window.updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
-                            <i data-lucide="plus" class="w-3 h-3"></i>
-                        </button>
+                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
                     </div>
-                    <button onclick="window.removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
+                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100">
                         <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
                 `;
@@ -1010,28 +882,23 @@
             
             els.mobileCartBadge.textContent = totalItems;
             if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
-
             lucide.createIcons();
         }
 
-        els.searchInput.addEventListener('input', (e) => {
-            State.searchQuery = e.target.value;
-            renderProducts();
-        });
-
+        // Configuração Sidebar e Datas
+        els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
         const toggleSidebar = () => {
             const isClosed = els.cartSidebar.classList.contains('translate-x-full');
             if (isClosed) {
                 els.cartSidebar.classList.remove('translate-x-full');
                 els.cartOverlay.classList.remove('hidden');
-                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
+                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10);
             } else {
                 els.cartSidebar.classList.add('translate-x-full');
                 els.cartOverlay.classList.remove('opacity-100');
-                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300); 
+                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
             }
         };
-
         els.mobileCartBtn.addEventListener('click', toggleSidebar);
         els.closeCartBtn.addEventListener('click', toggleSidebar);
         els.cartOverlay.addEventListener('click', toggleSidebar);
@@ -1040,16 +907,13 @@
             const today = new Date();
             const tzOffset = today.getTimezoneOffset() * 60000;
             const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
-            
             els.separationDate.min = localISOTime;
-            els.separationDate.value = ""; 
-
+            els.separationDate.value = "";
             els.btnToday.addEventListener('click', () => {
                 els.separationDate.value = localISOTime;
                 els.separationDate.classList.remove('border-red-500', 'ring-red-500');
                 if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden');
             });
-
             els.separationDate.addEventListener('change', () => {
                 if (els.separationDate.value) {
                     els.separationDate.classList.remove('border-red-500', 'ring-red-500');
@@ -1058,7 +922,7 @@
             });
         };
 
-        // FINALIZAR PEDIDO (SUPABASE / LOCAL)
+        // Envio do Pedido
         els.checkoutBtn.addEventListener('click', async () => {
             if (!els.separationDate.value) {
                 els.separationDate.classList.add('border-red-500', 'ring-red-500');
@@ -1071,12 +935,60 @@
                 return;
             }
 
-            els.checkoutBtn.disabled = true;
-            els.checkoutBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...`;
-            lucide.createIcons();
+            // Calculando totais
+            let orderTotalValue = 0;
+            Object.keys(State.cart).forEach(id => {
+                const prod = State.products.find(p => p.id === id);
+                if (prod && prod.price) orderTotalValue += (prod.price * State.cart[id]);
+            });
 
             const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            els.checkoutBtn.disabled = true;
+            els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...';
+            lucide.createIcons();
 
+            // Gravação no Supabase (com colunas corrigidas)
+            if (State.userId) {
+                try {
+                    await supabaseClient.from('pedidos').insert({
+                        id: orderId,
+                        usuario_id: State.userId,
+                        data_pedido: new Date().toISOString(),
+                        data_separacao: els.separationDate.value,
+                        observacoes: els.orderNotes.value,
+                        status: 'Enviado para Separação',
+                        valor_total: orderTotalValue
+                    });
+
+                    const orderItems = Object.keys(State.cart).map(prodId => {
+                        const prod = State.products.find(p => p.id === prodId);
+                        return {
+                            pedido_id: orderId,
+                            produto_id: prodId,
+                            quantidade: State.cart[prodId],
+                            preco_unitario: prod && prod.price ? prod.price : 0
+                        };
+                    });
+                    
+                    await supabaseClient.from('pedido_itens').insert(orderItems);
+                    
+                    State.userBalance -= orderTotalValue;
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+
+                    for (let prodId of Object.keys(State.cart)) {
+                        const prod = State.products.find(p => p.id === prodId);
+                        if (prod) {
+                            prod.stock -= State.cart[prodId]; // Atualiza local
+                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); // Atualiza remoto
+                        }
+                    }
+                } catch (error) {
+                    console.error("Erro ao enviar pedido para o banco:", error);
+                }
+            }
+
+            // Atualiza histórico localmente pro usuário ver de imediato
             const newOrder = {
                 id: orderId,
                 date: new Date().toISOString(),
@@ -1085,59 +997,12 @@
                 items: { ...State.cart },
                 status: 'Enviado para Separação'
             };
-
-            let orderTotalValue = 0;
-            Object.keys(State.cart).forEach(id => {
-                const productIndex = State.products.findIndex(p => p.id === id);
-                if(productIndex > -1) {
-                    State.products[productIndex].stock -= State.cart[id];
-                    if (State.products[productIndex].price) {
-                        orderTotalValue += (State.products[productIndex].price * State.cart[id]);
-                    }
-                }
-            });
-
-            State.userBalance -= orderTotalValue;
             State.ordersHistory.unshift(newOrder);
-
-            // Supabase Integration
-            if (State.userId && State.userId !== 'mock-user-id') {
-                try {
-                    await supabaseClient.from('pedidos').insert({
-                        id: orderId,
-                        usuario_id: State.userId,
-                        data_separacao: els.separationDate.value,
-                        observacao: els.orderNotes.value,
-                        status: 'Enviado para Separação'
-                    });
-
-                    const orderItems = Object.keys(State.cart).map(prodId => ({
-                        pedido_id: orderId,
-                        produto_id: prodId,
-                        quantidade: State.cart[prodId]
-                    }));
-                    await supabaseClient.from('pedido_itens').insert(orderItems);
-                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-
-                    for (const prodId of Object.keys(State.cart)) {
-                        const prod = State.products.find(p => p.id === prodId);
-                        await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
-                    }
-                } catch (e) {
-                    console.error("Erro ao salvar no Supabase, salvando localmente", e);
-                    localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
-                    localStorage.setItem('brindesBalance', State.userBalance.toString());
-                }
-            } else {
-                 localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
-                 localStorage.setItem('brindesBalance', State.userBalance.toString());
-            }
 
             State.cart = {};
             els.orderNotes.value = "";
             setupDateInput();
             
-            saveLocalCart();
             updateCartUI();
             renderProducts();
             initDashboard();
@@ -1148,17 +1013,16 @@
                 els.successModalContent.classList.add('scale-100', 'opacity-100');
             }, 10);
             
-            if(!els.cartSidebar.classList.contains('translate-x-full')) {
-                toggleSidebar();
-            }
+            if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
         });
 
         els.closeModalBtn.addEventListener('click', () => {
             els.successModalContent.classList.remove('scale-100', 'opacity-100');
             els.successModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.successModal.classList.add('hidden'), 300); 
+            setTimeout(() => { els.successModal.classList.add('hidden'); }, 300);
         });
 
+        // --- SISTEMA DE HISTÓRICO ---
         const renderOrdersHistory = () => {
             els.ordersListContainer.innerHTML = '';
             
@@ -1186,7 +1050,7 @@
                 }`;
                 
                 let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = State.products.find(p => p.id === id) || productsData.find(p => p.id === id);
+                    const productInfo = State.products.find(p => p.id === id) || fallbackProductsData.find(p => p.id === id); 
                     const name = productInfo ? productInfo.name : id;
                     return `
                         <li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
@@ -1208,28 +1072,23 @@
                             </div>
                             <div class="text-sm font-semibold text-slate-800 dark:text-slate-200">Para Separar: <span class="text-brand-600 dark:text-brand-400">${sepDate}</span></div>
                         </div>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                            Em: ${orderDate}
-                        </span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap bg-white dark:bg-slate-800 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">Em: ${orderDate}</span>
                     </div>
-                    
                     ${order.notes ? `
                     <div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-2 items-start">
                         <i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i>
                         <p class="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">"${order.notes}"</p>
                     </div>` : ''}
-                    
                     <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                         <div class="bg-slate-100 dark:bg-slate-700/50 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">Itens Solicitados</div>
                         <ul class="px-3 py-1">${itemsListHtml}</ul>
                     </div>
-
                     ${!isCancelled ? `
                     <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
-                        <button onclick="window.editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
+                        <button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm">
                             <i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar
                         </button>
-                        <button onclick="window.cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
+                        <button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm">
                             <i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar
                         </button>
                     </div>` : ''}
@@ -1251,58 +1110,84 @@
             } else {
                 els.ordersModalContent.classList.remove('scale-100', 'opacity-100');
                 els.ordersModalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    els.ordersModal.classList.add('hidden');
-                }, 300);
+                setTimeout(() => { els.ordersModal.classList.add('hidden'); }, 300);
             }
         };
 
-        window.cancelOrder = async function(orderId) {
-            showActionConfirm(
-                'Cancelar Solicitação', 
-                'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.',
-                'danger',
-                'Sim, Cancelar',
-                async () => {
-                    const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                    if(orderIndex === -1) return;
-                    
-                    const order = State.ordersHistory[orderIndex];
-                    let orderCost = 0;
-                    
-                    Object.keys(order.items).forEach(itemId => {
-                        const product = State.products.find(p => p.id === itemId);
-                        if (product) {
-                            product.stock += order.items[itemId];
-                            if (product.price) orderCost += (product.price * order.items[itemId]);
-                        }
-                    });
-                    
-                    State.userBalance += orderCost;
-                    order.status = 'Cancelado';
+        // Modais de Confirmação
+        let pendingActionCallback = null;
+        function showActionConfirm(title, text, type, confirmBtnText, callback) {
+            els.actionConfirmTitle.textContent = title;
+            els.actionConfirmText.textContent = text;
+            els.actionConfirmBtn.textContent = confirmBtnText;
 
-                    if (State.userId && State.userId !== 'mock-user-id') {
-                        try{
-                            await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                            await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                            
-                            for (const prodId of Object.keys(order.items)) {
-                                const prod = State.products.find(p => p.id === prodId);
-                                await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
-                            }
-                        } catch(e) { console.error("Erro ao cancelar", e); }
+            if (type === 'danger') {
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-50 dark:bg-red-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
+                els.actionConfirmIcon.className = "h-6 w-6 text-red-500 dark:text-red-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors shadow-sm";
+            } else { 
+                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/30 mb-4";
+                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
+                els.actionConfirmIcon.className = "h-6 w-6 text-amber-500 dark:text-amber-400";
+                els.actionConfirmBtn.className = "flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-sm";
+            }
+            lucide.createIcons();
+            pendingActionCallback = callback;
+            els.actionConfirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
+                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        els.actionCancelBtn?.addEventListener('click', () => {
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
+            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300);
+        });
+
+        els.actionConfirmBtn?.addEventListener('click', () => {
+            if (pendingActionCallback) pendingActionCallback();
+            els.actionCancelBtn.click();
+        });
+
+        // Cancelar Pedido
+        window.cancelOrder = function(orderId) {
+            showActionConfirm('Cancelar Solicitação', 'Esta solicitação será cancelada. O saldo em reais e o estoque dos produtos serão restaurados.', 'danger', 'Sim, Cancelar', async () => {
+                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
+                if(orderIndex === -1) return;
+                const order = State.ordersHistory[orderIndex];
+                
+                let orderCost = 0;
+                Object.keys(order.items).forEach(itemId => {
+                    const product = State.products.find(p => p.id === itemId);
+                    if (product) {
+                        product.stock += order.items[itemId];
+                        if (product.price) orderCost += (product.price * order.items[itemId]);
                     }
-                    
-                    localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
-                    localStorage.setItem('brindesBalance', State.userBalance.toString());
-                    renderOrdersHistory();
-                    renderProducts();
-                    initDashboard();
+                });
+                
+                State.userBalance += orderCost;
+                order.status = 'Cancelado';
+                
+                if (State.userId) {
+                    await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                    for (let itemId of Object.keys(order.items)) {
+                        const product = State.products.find(p => p.id === itemId);
+                        if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                    }
                 }
-            );
+                
+                renderOrdersHistory();
+                renderProducts();
+                initDashboard();
+            });
         };
 
-        window.editOrder = async function(orderId) {
+        // Alterar Pedido
+        window.editOrder = function(orderId) {
             const proceedWithEdit = async () => {
                 const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
                 if(orderIndex === -1) return;
@@ -1318,61 +1203,64 @@
                 });
                 
                 State.userBalance += orderCost;
+                
+                if (State.userId) {
+                    await supabaseClient.from('pedidos').delete().eq('id', orderId); // Apaga o registro atual pra refazer
+                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                    for (let itemId of Object.keys(order.items)) {
+                        const product = State.products.find(p => p.id === itemId);
+                        if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
+                    }
+                }
+                
                 State.cart = { ...order.items };
                 els.separationDate.value = order.separationDate;
                 els.orderNotes.value = order.notes || '';
-
-                if (State.userId && State.userId !== 'mock-user-id') {
-                    try{
-                        await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                        
-                        for (const prodId of Object.keys(order.items)) {
-                            const prod = State.products.find(p => p.id === prodId);
-                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId);
-                        }
-                    } catch(e) { console.error("Erro ao alterar", e); }
-                }
-                
                 State.ordersHistory.splice(orderIndex, 1);
                 
-                localStorage.setItem('brindesOrders', JSON.stringify(State.ordersHistory));
-                localStorage.setItem('brindesBalance', State.userBalance.toString());
-                saveLocalCart();
-
                 renderOrdersHistory();
                 renderProducts();
                 initDashboard();
                 updateCartUI();
                 
                 toggleOrdersModal(); 
-                if(els.cartSidebar.classList.contains('translate-x-full')) {
-                    toggleSidebar();
-                }
+                if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
             };
 
             if(Object.keys(State.cart).length > 0) {
-                showActionConfirm(
-                    'Substituir Carrinho Atual',
-                    'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?',
-                    'warning',
-                    'Sim, Substituir',
-                    proceedWithEdit
-                );
+                showActionConfirm('Substituir Carrinho Atual', 'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?', 'warning', 'Sim, Substituir', proceedWithEdit);
             } else {
-                proceedWithEdit(); 
+                proceedWithEdit();
             }
         };
+
+        // Botão direito
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                const menu = els.customContextMenu;
+                menu.classList.remove('hidden');
+                const rect = menu.getBoundingClientRect();
+                let x = e.clientX; let y = e.clientY;
+                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
+                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
+                menu.style.left = `${x}px`; menu.style.top = `${y}px`;
+            }
+        });
+        document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
+        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
+        document.getElementById('contextTheme')?.addEventListener('click', () => { els.themeToggleBtn.click(); els.customContextMenu.classList.add('hidden'); });
+        document.getElementById('contextPrint')?.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); window.print(); });
 
         els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
         els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
         els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
 
+        // --- INICIALIZAÇÃO ---
         window.addEventListener('DOMContentLoaded', () => {
-            setupDateInput();
-            checkAuth(); // Verifica auth (e se logado, puxa os dados do Supabase)
+            lucide.createIcons();
+            checkAuth(); // Dispara o login, que se sucesso chama o loadFromSupabase.
         });
-
     </script>
 </body>
 </html>
