@@ -264,7 +264,7 @@
                 <div class="hidden lg:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-400 px-4 py-2 rounded-lg">
                     <i data-lucide="wallet" class="w-4 h-4"></i>
                     <span class="text-xs font-semibold uppercase tracking-wider">Meu Saldo:</span>
-                    <strong class="text-sm" id="headerBalanceDisplay">R$ 0,00</strong>
+                    <strong class="text-sm transition-all" id="headerBalanceDisplay">R$ 0,00</strong>
                 </div>
 
                 <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700">
@@ -292,13 +292,13 @@
                 </div>
             </div>
 
-            <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2">
+            <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2 transition-transform duration-300">
                 <i data-lucide="shopping-cart"></i>
-                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
             </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col">
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col relative">
             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
                 <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400 mt-0.5"></i>
                 <p>Itens de merchandising controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação. Tudo será registrado na base de controle.</p>
@@ -316,7 +316,7 @@
                 </div>
                 <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm flex flex-col justify-center">
                     <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">Meu Saldo Disponível</span>
-                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1" id="stat-balance">--</strong>
+                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1 transition-all" id="stat-balance">--</strong>
                 </div>
             </div>
 
@@ -325,7 +325,7 @@
                 <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12" id="productsGrid"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12 relative" id="productsGrid"></div>
 
             <footer class="mt-auto pt-10 pb-4 text-center w-full">
                 <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium tracking-widest uppercase">
@@ -372,13 +372,13 @@
 
             <div class="flex justify-between items-center mb-4 text-sm">
                 <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
-                <strong class="text-slate-900 dark:text-white text-lg" id="cartTotalItems">0</strong>
+                <strong class="text-slate-900 dark:text-white text-lg transition-transform duration-300 inline-block" id="cartTotalItems">0</strong>
             </div>
             
             <div class="flex justify-between items-center mb-4 text-sm border-t border-slate-100 dark:border-slate-700 pt-3">
                 <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
                 <div class="text-right">
-                    <strong class="text-brand-600 dark:text-brand-400 text-xl block" id="cartTotalValue">R$ 0,00</strong>
+                    <strong class="text-brand-600 dark:text-brand-400 text-xl block transition-colors" id="cartTotalValue">R$ 0,00</strong>
                     <span id="balanceWarning" class="text-red-500 text-[10px] hidden font-bold mt-1 uppercase tracking-wider">Saldo insuficiente!</span>
                 </div>
             </div>
@@ -653,7 +653,7 @@
         let lastOrdersHash = "";
         let lastAdminHash = "";
         let editingUserId = null; 
-        let editingProductId = null; // Guarda ID para painel de produtos
+        let editingProductId = null; 
 
         const els = {
             productsGrid: document.getElementById('productsGrid'),
@@ -741,7 +741,6 @@
             userSyncIcon: document.getElementById('userSyncIcon'),
             admSyncStatus: document.getElementById('admSyncStatus'),
 
-            // Modais de Edição ADM (Usuário)
             openEditUserBtn: document.getElementById('openEditUserBtn'),
             adminEditUserModal: document.getElementById('adminEditUserModal'),
             adminEditUserModalContent: document.getElementById('adminEditUserModalContent'),
@@ -751,7 +750,6 @@
             cancelEditUserBtn: document.getElementById('cancelEditUserBtn'),
             saveEditUserBtn: document.getElementById('saveEditUserBtn'),
 
-            // Modais de Edição ADM (Produtos)
             openAdminProductsBtn: document.getElementById('openAdminProductsBtn'),
             adminProductsModal: document.getElementById('adminProductsModal'),
             adminProductsModalContent: document.getElementById('adminProductsModalContent'),
@@ -792,11 +790,9 @@
             if (session) {
                 State.userId = session.user.id;
                 
-                // Formatação Default do E-mail
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 
-                // Buscar Dados do Usuário
                 const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo').eq('id', State.userId).single();
                 if (userData) {
                     State.userBalance = parseFloat(userData.saldo || 0);
@@ -845,7 +841,6 @@
             }
         });
 
-        // Logout
         els.logoutBtn?.addEventListener('click', () => {
             els.logoutConfirmModal.classList.remove('hidden');
             setTimeout(() => {
@@ -872,7 +867,6 @@
             checkAuth(); 
         });
 
-        // --- SISTEMA DE CONFIRMAÇÃO DE AÇÕES GLOBAL ---
         let pendingActionCallback = null;
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
             els.actionConfirmTitle.textContent = title;
@@ -907,8 +901,6 @@
             els.actionCancelBtn.click(); 
         });
 
-        // --- INTEGRAÇÃO COM SUPABASE ---
-        
         async function fetchBaseData() {
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
@@ -928,7 +920,7 @@
                     stock: p.estoque, 
                     price: p.preco, 
                     icon: p.icone || 'box',
-                    ativo: p.ativo !== false // Assume true se não existir
+                    ativo: p.ativo !== false 
                 }));
             }
         }
@@ -962,7 +954,6 @@
             lucide.createIcons();
         }
 
-        // --- MOTOR INVISÍVEL DE REFRESH ---
         async function backgroundRefresh() {
             if (!State.userId && els.adminScreen.classList.contains('hidden')) return;
 
@@ -985,7 +976,6 @@
                         lastAdminHash = newAdminHash;
                     }
 
-                    // Se a tela de Gerenciamento de Produtos estiver aberta, atualiza ela
                     if (!els.adminProductsModal.classList.contains('hidden')) {
                         renderAdminProductsList();
                     }
@@ -1038,8 +1028,6 @@
         }
         
         setInterval(backgroundRefresh, 5000);
-
-        // --- SISTEMA DA ÁREA ADMINISTRATIVA ---
 
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -1280,7 +1268,6 @@
             }
         };
 
-        // --- SISTEMA DE GERENCIAMENTO DE PRODUTOS (CATÁLOGO) ADM ---
         function renderAdminProductsList() {
             els.adminProductsList.innerHTML = '';
             
@@ -1288,7 +1275,6 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors";
                 
-                // Tratar imagem/icone
                 const iconDisplay = p.icon.startsWith('http') 
                     ? `<img src="${p.icon}" class="w-8 h-8 object-contain rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-0.5">`
                     : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center border border-slate-200 dark:border-slate-600"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i></div>`;
@@ -1377,7 +1363,7 @@
                     estoque: newStock, 
                     preco: newPrice, 
                     icone: newIcon,
-                    ativo: newActive // Grava status no banco de dados!
+                    ativo: newActive 
                 }).eq('id', editingProductId);
                 
                 const productIndex = State.products.findIndex(p => p.id === editingProductId);
@@ -1390,8 +1376,8 @@
                 }
                 
                 els.cancelEditProdBtn.click();
-                renderAdminProductsList(); // Atualiza a tabela do modal ADM
-                backgroundRefresh(); // Dispara atualização visual da tela comercial que estiver aberta no fundo
+                renderAdminProductsList(); 
+                backgroundRefresh(); 
 
             } catch (err) {
                 console.error("Erro ao atualizar produto:", err);
@@ -1400,7 +1386,6 @@
             }
         });
 
-        // Modal: Editar Usuário no ADM
         els.openEditUserBtn?.addEventListener('click', () => {
             if (!editingUserId) return;
             const uStats = AdminState.userStats[editingUserId];
@@ -1463,13 +1448,13 @@
         });
 
         window.adminCompleteOrder = function(orderId, userId) {
-            showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado.', 'warning', 'Sim, Concluir', async () => {
+            showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído? O usuário comercial verá o status atualizado e a Planilha também.', 'warning', 'Sim, Concluir', async () => {
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 
                 try {
                     const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
-                    fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
+                    fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update status concluído'));
                 } catch (webhookErr) { }
 
                 backgroundRefresh(); 
@@ -1499,14 +1484,12 @@
             });
         };
 
-        // --- DASHBOARD COMERCIAL E FORMATAÇÃO ---
         const formatMoney = (value) => {
             if (value === null) return "Valor a confirmar";
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         };
 
         function initDashboard() {
-            // Filtra o catálogo contando apenas itens ATIVOS
             const activeProducts = State.products.filter(p => p.ativo);
             const totalUnits = activeProducts.reduce((acc, curr) => acc + curr.stock, 0);
             els.statUnits.textContent = totalUnits;
@@ -1534,8 +1517,7 @@
         function renderProducts() {
             els.productsGrid.innerHTML = '';
             let filtered = State.products.filter(p => {
-                if (!p.ativo) return false; // Impede que o comercial veja produtos pausados!
-                
+                if (!p.ativo) return false; 
                 const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
                 const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
                 return matchCategory && matchSearch;
@@ -1554,17 +1536,15 @@
 
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
-                    // Se for imagem real, preenche todo o fundo e remove a caixa menor
                     imageSectionHtml = `
                         <div class="absolute inset-0 w-full h-full p-6 pb-2">
-                            <img src="${product.icon}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md">
                         </div>
                     `;
                 } else {
-                    // Se for ícone, mantém a caixinha menor com fundo no meio
                     imageSectionHtml = `
-                        <div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10">
-                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5] group-hover:scale-110 transition-transform"></i>
+                        <div class="product-visual w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10 transition-transform duration-500 group-hover:scale-110">
+                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
                         </div>
                     `;
                 }
@@ -1600,7 +1580,7 @@
                                 <input type="number" id="card-qty-${product.id}" value="1" min="1" max="${stockRemaining}" class="w-full text-center text-sm font-semibold h-full focus:outline-none no-spinners bg-transparent text-slate-900 dark:text-white">
                                 <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">+</button>
                             </div>
-                            <button onclick="addMultipleToCart('${product.id}')" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
+                            <button onclick="addMultipleToCart('${product.id}', event)" class="flex-1 h-9 bg-slate-900 dark:bg-brand-600 hover:bg-brand-600 dark:hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed hover:bg-slate-900 dark:hover:bg-brand-600' : ''}" ${isOutOfStock ? 'disabled' : ''}>
                                 <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5"></i> ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
                             </button>
                         </div>
@@ -1634,7 +1614,8 @@
             if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
             
             if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
-                // Animação de Voo para o Carrinho
+                
+                // Mágica da Animação: Clone voando pro carrinho
                 if (event) {
                     let btn = event.currentTarget;
                     let card = btn.closest('.group');
@@ -1645,22 +1626,20 @@
                 State.cart[productId] = currentQty + qtyToAdd;
                 updateCartUI();
                 renderProducts(); 
-                
-                // Pop extra no botão mobile
-                els.mobileCartBtn.classList.add('scale-110');
-                setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
             }
         };
 
         function animateFlyToCart(sourceEl) {
+            // Verifica se está no PC (>= 1024px) ou Celular para saber onde o carrinho está
             const isDesktop = window.innerWidth >= 1024;
-            // Destino: Ícone flutuante no Celular, ou Totalizador de Itens no PC
             const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn');
             if (!targetEl) return;
 
+            // Pega posições iniciais e finais
             const sourceRect = sourceEl.getBoundingClientRect();
             const targetRect = targetEl.getBoundingClientRect();
 
+            // Clona a imagem/ícone
             const clone = sourceEl.cloneNode(true);
             clone.style.position = 'fixed';
             clone.style.top = `${sourceRect.top}px`;
@@ -1671,13 +1650,15 @@
             clone.style.pointerEvents = 'none';
             clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
             clone.style.margin = '0';
-            clone.className = sourceEl.className.replace('group-hover:scale-105', ''); // Remove o hover extra
+            // Remove o hover extra que faz aumentar
+            clone.className = sourceEl.className.replace(/group-hover:scale-\d+/g, '');
             
             document.body.appendChild(clone);
 
-            // Força renderização imediata do estilo inicial
+            // Força a renderização inicial antes de aplicar a transição
             clone.getBoundingClientRect();
 
+            // Calcula a distância até o centro do alvo
             const sourceCenterX = sourceRect.left + (sourceRect.width / 2);
             const sourceCenterY = sourceRect.top + (sourceRect.height / 2);
             const targetCenterX = targetRect.left + (targetRect.width / 2);
@@ -1686,16 +1667,19 @@
             const translateX = targetCenterX - sourceCenterX;
             const translateY = targetCenterY - sourceCenterY;
 
-            // Move até o carrinho encolhendo e girando suavemente
+            // Dispara a animação diminuindo e girando enquanto move
             clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1) rotate(15deg)`;
-            clone.style.opacity = '0';
+            clone.style.opacity = '0.2';
 
+            // Limpeza e efeito "Pop" ao chegar
             setTimeout(() => {
                 clone.remove();
-                // Efeito POP no Destino do Desktop
                 if (isDesktop) {
                     targetEl.classList.add('scale-150', 'text-brand-500');
-                    setTimeout(() => targetEl.classList.remove('scale-150', 'text-brand-500'), 200);
+                    setTimeout(() => targetEl.classList.remove('scale-150', 'text-brand-500'), 250);
+                } else {
+                    targetEl.classList.add('scale-110');
+                    setTimeout(() => targetEl.classList.remove('scale-110'), 250);
                 }
             }, 600);
         }
@@ -1864,7 +1848,7 @@
                                 return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario };
                             })
                         };
-                        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook ok'));
+                        fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook ok'));
                     } catch(webhookErr) { }
 
                 } catch (error) { console.error("Erro banco", error); }
@@ -1972,7 +1956,7 @@
                         try {
                             const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
-                            fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
+                            fetch(webhookUrl, { method: 'POST', body: JSON.stringify(webhookData) }).catch(e => console.log('Webhook update'));
                         } catch (e) { }
 
                     } catch(err) { console.error('Erro banco', err); }
