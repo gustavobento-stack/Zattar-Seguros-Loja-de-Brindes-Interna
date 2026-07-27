@@ -1623,7 +1623,7 @@
             input.value = newVal;
         };
 
-        window.addMultipleToCart = function(productId) {
+        window.addMultipleToCart = function(productId, event) {
             const input = document.getElementById(`card-qty-${productId}`);
             let qtyToAdd = input ? parseInt(input.value) : 1;
             const product = State.products.find(p => p.id === productId);
@@ -1634,13 +1634,71 @@
             if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
             
             if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
+                // Animação de Voo para o Carrinho
+                if (event) {
+                    let btn = event.currentTarget;
+                    let card = btn.closest('.group');
+                    let visualEl = card ? card.querySelector('.product-visual') : null;
+                    if (visualEl) animateFlyToCart(visualEl);
+                }
+
                 State.cart[productId] = currentQty + qtyToAdd;
                 updateCartUI();
                 renderProducts(); 
+                
+                // Pop extra no botão mobile
                 els.mobileCartBtn.classList.add('scale-110');
                 setTimeout(() => els.mobileCartBtn.classList.remove('scale-110'), 200);
             }
         };
+
+        function animateFlyToCart(sourceEl) {
+            const isDesktop = window.innerWidth >= 1024;
+            // Destino: Ícone flutuante no Celular, ou Totalizador de Itens no PC
+            const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn');
+            if (!targetEl) return;
+
+            const sourceRect = sourceEl.getBoundingClientRect();
+            const targetRect = targetEl.getBoundingClientRect();
+
+            const clone = sourceEl.cloneNode(true);
+            clone.style.position = 'fixed';
+            clone.style.top = `${sourceRect.top}px`;
+            clone.style.left = `${sourceRect.left}px`;
+            clone.style.width = `${sourceRect.width}px`;
+            clone.style.height = `${sourceRect.height}px`;
+            clone.style.zIndex = '99999';
+            clone.style.pointerEvents = 'none';
+            clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+            clone.style.margin = '0';
+            clone.className = sourceEl.className.replace('group-hover:scale-105', ''); // Remove o hover extra
+            
+            document.body.appendChild(clone);
+
+            // Força renderização imediata do estilo inicial
+            clone.getBoundingClientRect();
+
+            const sourceCenterX = sourceRect.left + (sourceRect.width / 2);
+            const sourceCenterY = sourceRect.top + (sourceRect.height / 2);
+            const targetCenterX = targetRect.left + (targetRect.width / 2);
+            const targetCenterY = targetRect.top + (targetRect.height / 2);
+
+            const translateX = targetCenterX - sourceCenterX;
+            const translateY = targetCenterY - sourceCenterY;
+
+            // Move até o carrinho encolhendo e girando suavemente
+            clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1) rotate(15deg)`;
+            clone.style.opacity = '0';
+
+            setTimeout(() => {
+                clone.remove();
+                // Efeito POP no Destino do Desktop
+                if (isDesktop) {
+                    targetEl.classList.add('scale-150', 'text-brand-500');
+                    setTimeout(() => targetEl.classList.remove('scale-150', 'text-brand-500'), 200);
+                }
+            }, 600);
+        }
 
         window.updateQuantity = function(productId, delta) {
             const product = State.products.find(p => p.id === productId);
