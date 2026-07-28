@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Brindes Comercial</title>
     
+    <!-- Bibliotecas Necessárias -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Correção do Bug do Dashboard ADM -->
     
     <!-- hCaptcha Script -->
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
@@ -18,21 +19,12 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            200: '#99f6e4',
-                            300: '#5eead4',
-                            400: '#2dd4bf',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59',
-                            900: '#134e4a',
+                            50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4',
+                            400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e',
+                            800: '#115e59', 900: '#134e4a',
                         }
                     }
                 }
@@ -93,16 +85,14 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 relative">
 
-    <!-- TELA DE LOGIN CORPORATIVA -->
+    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="fixed inset-0 z-[100] login-bg-pattern flex items-center justify-center transition-opacity duration-300 p-4">
         <div class="login-glass-card w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative transition-colors duration-300">
-            
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-500/10 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-10000"></div>
                 <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[80px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-7000 delay-1000"></div>
             </div>
             
-            <!-- Coluna Esquerda: Branding -->
             <div class="hidden md:flex flex-col justify-between w-1/2 p-14 relative z-10 border-r border-slate-200 dark:border-white/5">
                 <div class="relative z-10">
                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 mb-12 block dark:hidden">
@@ -121,7 +111,6 @@
                 </div>
             </div>
 
-            <!-- Coluna Direita: Formulário -->
             <div class="w-full md:w-1/2 p-8 sm:p-14 flex flex-col justify-center relative z-10">
                 <div class="absolute top-4 right-4 z-20">
                     <button id="loginThemeToggleBtn" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors">
@@ -169,7 +158,7 @@
                         <span>E-mail ou senha incorretos.</span>
                     </div>
                     
-                    <!-- Validação hCaptcha -->
+                    <!-- Validação hCaptcha restaurada nativamente -->
                     <div class="flex justify-center md:justify-start pt-2">
                         <div class="h-captcha overflow-hidden rounded-xl" data-theme="dark" data-sitekey="926c870e-f0c2-46c6-b18c-9bd4fff83cc6"></div>
                     </div>
@@ -271,9 +260,7 @@
                             <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                                 <h3 class="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Alerta de Estoque</h3>
                             </div>
-                            <div class="flex-1 overflow-y-auto p-2" id="lowStockList">
-                                <!-- Lista de produtos com < 15 un -->
-                            </div>
+                            <div class="flex-1 overflow-y-auto p-2" id="lowStockList"></div>
                         </div>
                     </div>
                 </div>
@@ -435,15 +422,10 @@
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg shadow-sm w-48 relative overflow-hidden group">
-                    <div class="flex justify-between items-end mb-1 relative z-10">
-                        <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider leading-none">Meu Saldo</span>
-                        <strong class="text-emerald-900 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
-                    </div>
-                    <!-- Barra de progresso do Orçamento -->
-                    <div class="w-full bg-emerald-200 dark:bg-emerald-900/50 h-1.5 rounded-full overflow-hidden relative z-10" title="Consumo do orçamento base">
-                        <div id="headerBudgetBar" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
-                    </div>
+                <!-- EXIBIÇÃO SIMPLES DO SALDO COMERCIAL (Sem Barra de Progresso) -->
+                <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg shadow-sm">
+                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none mb-0.5">Meu Saldo</span>
+                    <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
                 </div>
                 
                 <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700 ml-2">
@@ -492,16 +474,13 @@
                     <span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
                     <strong class="text-3xl font-black text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
                 </div>
+                <!-- EXIBIÇÃO SIMPLES DO SALDO (Dashboard) -->
                 <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm flex flex-col justify-center relative overflow-hidden">
-                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider relative z-10">Meu Saldo Restante</span>
+                    <span class="text-emerald-700 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider relative z-10">Meu Saldo</span>
                     <strong class="text-3xl font-black text-emerald-800 dark:text-emerald-300 mt-1 transition-all relative z-10" id="stat-balance">--</strong>
-                    <div class="absolute bottom-0 left-0 right-0 h-2 bg-emerald-200 dark:bg-emerald-900/50">
-                        <div id="cardBudgetBar" class="h-full bg-emerald-500 transition-all duration-1000" style="width: 0%"></div>
-                    </div>
                 </div>
             </div>
 
-            <!-- Filtros de Categoria e Select de Ordenação -->
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
                 <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
@@ -584,7 +563,7 @@
 
     <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- MODAIS GLOBAIS (Z-INDEX 1000+) -->
+    <!-- MODAIS GLOBAIS -->
 
     <!-- Modal de Ação Global -->
     <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
@@ -602,7 +581,7 @@
         </div>
     </div>
 
-    <!-- Modais ADM Dinâmicos (Criar/Editar) -->
+    <!-- Modais Genéricos ADM (Criar/Editar) -->
     <div id="adminGenericModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg" id="adminGenericModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col" id="adminGenericModalContent">
@@ -663,9 +642,13 @@
                 </div>
             </div>
             
-            <div class="p-6 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50 dark:bg-slate-800/50 rounded-b-3xl">
-                <button id="cancelDeepEditBtn" class="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-xl text-sm font-bold transition-colors">Descartar Alterações</button>
-                <button id="saveDeepEditBtn" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-bold transition-colors shadow-sm flex items-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Aplicar e Recalcular Saldo</button>
+            <div class="p-6 border-t border-slate-200 dark:border-slate-800 flex justify-between gap-3 bg-slate-50 dark:bg-slate-800/50 rounded-b-3xl">
+                <!-- NOVO BOTÃO DE EXCLUIR REGISTRO NO ADM -->
+                <button id="deleteDeepEditBtn" class="px-4 py-3 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"><i data-lucide="trash-2" class="w-5 h-5"></i> Excluir Registro</button>
+                <div class="flex gap-3">
+                    <button id="cancelDeepEditBtn" class="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-xl text-sm font-bold transition-colors">Descartar</button>
+                    <button id="saveDeepEditBtn" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-bold transition-colors shadow-sm flex items-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Aplicar Ajustes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -737,52 +720,31 @@
         </div>
     </div>
 
-    <!-- SCRIPT SUPABASE & LOGICA GERAL -->
+    <!-- SCRIPT GERAL -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // === CONEXÃO SUPABASE ===
+        // CONEXÃO SUPABASE
         const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         const State = {
-            userId: null,
-            userName: "",
-            userRole: "",
-            isAdmin: false,
-            products: [],
-            cart: {}, 
-            searchQuery: "",
-            selectedCategory: "Todos",
-            categories: ["Todos"],
-            sortBy: "relevancia",
-            ordersHistory: [], 
-            userBalance: 0,
-            userTotalBudget: 0 // Usado para a barra de progresso (Saldo atual + Gasto total)
+            userId: null, userName: "", userRole: "", isAdmin: false,
+            products: [], cart: {}, searchQuery: "", selectedCategory: "Todos",
+            categories: ["Todos"], sortBy: "relevancia", ordersHistory: [], 
+            userBalance: 0
         };
 
         const AdminState = {
-            users: [],
-            orders: [],
-            categoriesRaw: [],
-            userStats: {},
-            lastKnownOrderId: null,
-            userSearchQuery: "",
-            userSortBy: "spent",
-            userSortDesc: true,
-            chartInstance: null,
+            users: [], orders: [], categoriesRaw: [], userStats: {},
+            lastKnownOrderId: null, userSearchQuery: "", userSortBy: "spent",
+            userSortDesc: true, chartInstance: null,
             deepEditState: { id: null, items: {}, status: '', date: '', notes: '', userId: '' }
         };
 
-        // Checksums e Variáveis Globais
-        let lastProductsHash = "";
-        let lastOrdersHash = "";
-        let lastAdminHash = "";
-
-        // Variável de controle de inatividade
-        let inactivityTimeout;
-        const INACTIVITY_LIMIT = 15 * 60 * 1000;
+        let lastProductsHash = ""; let lastOrdersHash = ""; let lastAdminHash = "";
+        let inactivityTimeout; const INACTIVITY_LIMIT = 15 * 60 * 1000;
 
         const els = {
             productsGrid: document.getElementById('productsGrid'),
@@ -805,8 +767,6 @@
             statItems: document.getElementById('stat-items'),
             statBalance: document.getElementById('stat-balance'),
             headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
-            headerBudgetBar: document.getElementById('headerBudgetBar'),
-            cardBudgetBar: document.getElementById('cardBudgetBar'),
             cartSidebar: document.getElementById('cartSidebar'),
             cartOverlay: document.getElementById('cartOverlay'),
             mobileCartBtn: document.getElementById('mobileCartBtn'),
@@ -834,42 +794,35 @@
             logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'),
             logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
             logoutCancelBtn: document.getElementById('logoutCancelBtn'),
-            
-            // Context Menu
             customContextMenu: document.getElementById('customContextMenu'),
             themeToggleBtn: document.getElementById('themeToggleBtn'),
             contextAdminMode: document.getElementById('contextAdminMode'),
             contextAdminDivider: document.getElementById('contextAdminDivider'),
             
-            // Admin Global Elements
+            // ADM
             adminScreen: document.getElementById('adminScreen'),
             closeAdminBtn: document.getElementById('closeAdminBtn'),
             closeAdminBtnDesktop: document.getElementById('closeAdminBtnDesktop'),
             adminLoading: document.getElementById('adminLoading'),
             admHeaderTitle: document.getElementById('admHeaderTitle'),
-            
-            // Admin Generic Modal
             adminGenericModal: document.getElementById('adminGenericModal'),
             adminGenericModalContent: document.getElementById('adminGenericModalContent'),
             genericModalTitle: document.getElementById('genericModalTitle'),
             genericModalBody: document.getElementById('genericModalBody'),
             genericModalCancelBtn: document.getElementById('genericModalCancelBtn'),
             genericModalSaveBtn: document.getElementById('genericModalSaveBtn'),
-            
-            // Admin Order Deep Edit Modal
             adminOrderEditModal: document.getElementById('adminOrderEditModal'),
             adminOrderEditContent: document.getElementById('adminOrderEditContent'),
             closeOrderEditBtn: document.getElementById('closeOrderEditBtn'),
             cancelDeepEditBtn: document.getElementById('cancelDeepEditBtn'),
             saveDeepEditBtn: document.getElementById('saveDeepEditBtn'),
+            deleteDeepEditBtn: document.getElementById('deleteDeepEditBtn'),
             deepEditStatus: document.getElementById('deepEditStatus'),
             deepEditDate: document.getElementById('deepEditDate'),
             deepEditNotes: document.getElementById('deepEditNotes'),
             deepEditTotal: document.getElementById('deepEditTotal'),
             deepEditItemsList: document.getElementById('deepEditItemsList'),
             deepEditAddProduct: document.getElementById('deepEditAddProduct'),
-            
-            // Action Confirm Global
             actionConfirmModal: document.getElementById('actionConfirmModal'),
             actionConfirmModalContent: document.getElementById('actionConfirmModalContent'),
             actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
@@ -895,7 +848,6 @@
                 }, INACTIVITY_LIMIT);
             }
         }
-        
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
 
         const togglePasswordBtn = document.getElementById('togglePasswordBtn');
@@ -914,7 +866,6 @@
                 document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
             }
         };
-
         els.themeToggleBtn?.addEventListener('click', toggleTheme);
         document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
 
@@ -922,7 +873,6 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 State.userId = session.user.id;
-                
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 
@@ -952,15 +902,11 @@
 
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // Validação local do hCaptcha (Front-end)
             const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
             if (!hcaptchaResponse) {
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Por favor, resolva o Captcha antes de acessar.</span>';
-                els.loginErrorMsg.classList.remove('hidden');
-                lucide.createIcons();
-                return;
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Resolva o Captcha.</span>';
+                els.loginErrorMsg.classList.remove('hidden'); lucide.createIcons(); return;
             }
 
             els.loginErrorMsg.classList.add('hidden');
@@ -968,21 +914,17 @@
             els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Aguarde...</span>';
             lucide.createIcons();
             
-            // Envia o login nativamente pro Supabase, que fará a verificação segura do token no backend deles
             const { error } = await supabaseClient.auth.signInWithPassword({
                 email: els.loginEmail.value,
                 password: els.loginPassword.value,
-                options: {
-                    captchaToken: hcaptchaResponse // O Supabase pega este token e valida no backend com a sua Secret Key!
-                }
+                options: { captchaToken: hcaptchaResponse } 
             });
             
             if (error) {
-                if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); // Reseta para nova tentativa
+                if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
                 els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail/senha incorretos ou Captcha expirado.</span>';
                 els.loginErrorMsg.classList.remove('hidden');
-                
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
@@ -995,38 +937,25 @@
 
         els.logoutBtn?.addEventListener('click', () => {
             els.logoutConfirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            setTimeout(() => { els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         });
-
         els.logoutCancelBtn?.addEventListener('click', () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
         });
-
         els.logoutConfirmBtn?.addEventListener('click', async () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             await supabaseClient.auth.signOut();
             els.loginEmail.value = ''; els.loginPassword.value = '';
-            
-            if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); // Reseta o captcha ao deslogar
-            
-            els.loginSubmitBtn.disabled = false;
-            els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
+            els.loginSubmitBtn.disabled = false; els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
             checkAuth(); 
         });
 
         let pendingActionCallback = null;
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
-            els.actionConfirmTitle.textContent = title;
-            els.actionConfirmText.textContent = text;
-            els.actionConfirmBtn.textContent = confirmBtnText;
-
+            els.actionConfirmTitle.textContent = title; els.actionConfirmText.textContent = text; els.actionConfirmBtn.textContent = confirmBtnText;
             if (type === 'danger') {
                 els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800/50 mb-4 text-red-500";
                 els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
@@ -1036,38 +965,21 @@
                 els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
                 els.actionConfirmBtn.className = "flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors shadow-sm";
             }
-            lucide.createIcons(); 
-            pendingActionCallback = callback;
+            lucide.createIcons(); pendingActionCallback = callback;
             els.actionConfirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0');
-                els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            setTimeout(() => { els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         }
-
         els.actionCancelBtn?.addEventListener('click', () => {
-            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100');
-            els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300);
         });
-        els.actionConfirmBtn?.addEventListener('click', () => {
-            if (pendingActionCallback) pendingActionCallback();
-            els.actionCancelBtn.click(); 
-        });
+        els.actionConfirmBtn?.addEventListener('click', () => { if (pendingActionCallback) pendingActionCallback(); els.actionCancelBtn.click(); });
 
-        // TOAST NOTIFICATION NOVO PEDIDO ADM
         function showAdmToast(title, textData) {
-            const toast = document.getElementById('admToast');
-            const text = document.getElementById('admToastText');
-            toast.querySelector('p').textContent = title;
-            text.textContent = textData;
-            toast.classList.remove('hidden');
-            void toast.offsetWidth; 
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-24', 'opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 500);
-            }, 6000);
+            const toast = document.getElementById('admToast'); const text = document.getElementById('admToastText');
+            toast.querySelector('p').textContent = title; text.textContent = textData;
+            toast.classList.remove('hidden'); void toast.offsetWidth; toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('hidden'), 500); }, 6000);
         }
 
         const overrideImages = {
@@ -1083,40 +995,25 @@
         async function fetchBaseData() {
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
-            if(cats) {
-                AdminState.categoriesRaw = cats;
-                cats.forEach(c => catMap[c.id] = c.nome);
-                State.categories = ["Todos", ...cats.map(c => c.nome)];
-            } else {
-                State.categories = ["Todos"];
-            }
+            if(cats) { AdminState.categoriesRaw = cats; cats.forEach(c => catMap[c.id] = c.nome); State.categories = ["Todos", ...cats.map(c => c.nome)]; } else { State.categories = ["Todos"]; }
 
             const { data: prods } = await supabaseClient.from('produtos').select('*');
             if (prods) {
                 State.products = prods.map(p => {
-                    let finalIcon = p.icone || 'box';
-                    if (overrideImages[p.nome]) finalIcon = overrideImages[p.nome];
-                    return {
-                        id: p.id, category: catMap[p.categoria_id] || 'Outros', categoryId: p.categoria_id,
-                        name: p.nome, stock: p.estoque, price: p.preco, icon: finalIcon, ativo: p.ativo !== false 
-                    };
+                    let finalIcon = p.icone || 'box'; if (overrideImages[p.nome]) finalIcon = overrideImages[p.nome];
+                    return { id: p.id, category: catMap[p.categoria_id] || 'Outros', categoryId: p.categoria_id, name: p.nome, stock: p.estoque, price: p.preco, icon: finalIcon, ativo: p.ativo !== false };
                 });
             }
         }
 
         async function logAdminAction(actionText) {
             if(!State.userId) return;
-            try {
-                // Tenta inserir na tabela auditoria (falha silenciosamente se não existir)
-                await supabaseClient.from('auditoria').insert({ admin_id: State.userId, admin_nome: State.userName, acao: actionText, data: new Date().toISOString() });
-            } catch(e) {}
-            // Atualiza UI se estiver na tela
+            try { await supabaseClient.from('auditoria').insert({ admin_id: State.userId, admin_nome: State.userName, acao: actionText, data: new Date().toISOString() }); } catch(e) {}
             renderAuditLogs();
         }
 
         async function renderAuditLogs() {
-            const list = document.getElementById('admAuditList');
-            if(!list) return;
+            const list = document.getElementById('admAuditList'); if(!list) return;
             try {
                 const { data } = await supabaseClient.from('auditoria').select('*').order('data', { ascending: false }).limit(50);
                 list.innerHTML = '';
@@ -1125,55 +1022,30 @@
                         const dateStr = new Date(log.data).toLocaleString('pt-BR');
                         list.innerHTML += `<li class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 text-sm"><strong class="text-slate-800 dark:text-white">${log.admin_nome}</strong> <span class="text-slate-600 dark:text-slate-400">${log.acao}</span> <span class="block mt-1 text-[10px] text-slate-400">${dateStr}</span></li>`;
                     });
-                } else {
-                    list.innerHTML = '<li class="text-sm text-slate-500 text-center py-4">Nenhum log encontrado.</li>';
-                }
-            } catch(e) {
-                list.innerHTML = '<li class="text-sm text-red-500 text-center py-4">Tabela auditoria não existe no Supabase. Crie-a com: id, admin_id, admin_nome, acao, data.</li>';
-            }
+                } else { list.innerHTML = '<li class="text-sm text-slate-500 text-center py-4">Nenhum log encontrado.</li>'; }
+            } catch(e) { list.innerHTML = '<li class="text-sm text-red-500 text-center py-4">Tabela auditoria não existe. Crie-a no Supabase.</li>'; }
         }
 
         async function initialLoad() {
             await fetchBaseData();
-            
             if (State.userId) {
-                // Calcular Budget Total (Current Balance + Spent in orders)
-                const { data: pedidosData } = await supabaseClient.from('pedidos')
-                    .select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`)
-                    .eq('usuario_id', State.userId) 
-                    .order('data_pedido', { ascending: false });
-
-                let spentTotal = 0;
+                const { data: pedidosData } = await supabaseClient.from('pedidos').select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`).eq('usuario_id', State.userId).order('data_pedido', { ascending: false });
                 if (pedidosData) {
                     State.ordersHistory = pedidosData.map(p => {
-                        const items = {};
-                        if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
-                        if(p.status !== 'Cancelado') spentTotal += parseFloat(p.valor_total || 0);
+                        const items = {}; if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
                         return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items, valor_total: p.valor_total };
                     });
                 }
-                State.userTotalBudget = State.userBalance + spentTotal;
             }
-            
-            lastProductsHash = JSON.stringify(State.products);
-            lastOrdersHash = JSON.stringify(State.ordersHistory);
-
-            setupDateInput();
-            initDashboard();
-            renderCategories();
-            renderProducts();
-            updateCartUI();
-            lucide.createIcons();
+            lastProductsHash = JSON.stringify(State.products); lastOrdersHash = JSON.stringify(State.ordersHistory);
+            setupDateInput(); initDashboard(); renderCategories(); renderProducts(); updateCartUI(); lucide.createIcons();
         }
 
         async function backgroundRefresh() {
             if (!State.userId && els.adminScreen.classList.contains('hidden')) return;
             try {
-                els.userSyncIcon.classList.add('animate-spin', 'text-brand-500');
-                els.userSyncIcon.classList.remove('text-slate-300', 'dark:text-slate-600');
-                
+                els.userSyncIcon.classList.add('animate-spin', 'text-brand-500'); els.userSyncIcon.classList.remove('text-slate-300', 'dark:text-slate-600');
                 await fetchBaseData(); 
-
                 if (!els.adminScreen.classList.contains('hidden')) {
                     const { data: users } = await supabaseClient.from('usuarios').select('*');
                     const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
@@ -1181,11 +1053,9 @@
                     if (orders && orders.length > 0) {
                         if (AdminState.lastKnownOrderId && AdminState.lastKnownOrderId !== orders[0].id) {
                             const oldLatest = AdminState.orders.find(o => o.id === AdminState.lastKnownOrderId);
-                            const newDate = new Date(orders[0].data_pedido);
-                            const oldDate = oldLatest ? new Date(oldLatest.data_pedido) : new Date(0);
+                            const newDate = new Date(orders[0].data_pedido); const oldDate = oldLatest ? new Date(oldLatest.data_pedido) : new Date(0);
                             if (newDate > oldDate) {
-                                let uName = orders[0].usuario_id;
-                                if(AdminState.userStats[orders[0].usuario_id]) uName = AdminState.userStats[orders[0].usuario_id].name;
+                                let uName = orders[0].usuario_id; if(AdminState.userStats[orders[0].usuario_id]) uName = AdminState.userStats[orders[0].usuario_id].name;
                                 showAdmToast("Novo Pedido!", `${uName} solicitou ${formatMoney(orders[0].valor_total)}.`);
                             }
                         }
@@ -1194,71 +1064,40 @@
                     
                     AdminState.users = users || []; AdminState.orders = orders || [];
                     const newAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
-                    if(newAdminHash !== lastAdminHash) {
-                        buildAndRenderAdminStats();
-                        lastAdminHash = newAdminHash;
-                    }
+                    if(newAdminHash !== lastAdminHash) { buildAndRenderAdminStats(); lastAdminHash = newAdminHash; }
                 } else if (State.userId) {
                     const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo').eq('id', State.userId).single();
                     if (userData) {
-                        State.userBalance = parseFloat(userData.saldo || 0);
-                        State.userName = userData.nome || State.userName;
-                        State.userRole = userData.cargo || State.userRole;
+                        State.userBalance = parseFloat(userData.saldo || 0); State.userName = userData.nome || State.userName; State.userRole = userData.cargo || State.userRole;
                         els.userNameDisplay.textContent = State.userName;
                     }
 
-                    const { data: pedidosData } = await supabaseClient.from('pedidos')
-                        .select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`)
-                        .eq('usuario_id', State.userId) 
-                        .order('data_pedido', { ascending: false });
-
-                    let spentTotal = 0;
+                    const { data: pedidosData } = await supabaseClient.from('pedidos').select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`).eq('usuario_id', State.userId).order('data_pedido', { ascending: false });
                     if (pedidosData) {
                         State.ordersHistory = pedidosData.map(p => {
-                            const items = {};
-                            if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
-                            if(p.status !== 'Cancelado') spentTotal += parseFloat(p.valor_total || 0);
+                            const items = {}; if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
                             return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items, valor_total: p.valor_total };
                         });
                     }
-                    State.userTotalBudget = State.userBalance + spentTotal;
 
                     const newProductsHash = JSON.stringify(State.products);
                     if(newProductsHash !== lastProductsHash) { renderProducts(); lastProductsHash = newProductsHash; }
                     const newOrdersHash = JSON.stringify(State.ordersHistory);
                     if(newOrdersHash !== lastOrdersHash) { if (!els.ordersModal.classList.contains('hidden')) renderOrdersHistory(); lastOrdersHash = newOrdersHash; }
-                    
                     initDashboard(); 
                 }
-
-                setTimeout(() => {
-                    els.userSyncIcon.classList.remove('animate-spin', 'text-brand-500');
-                    els.userSyncIcon.classList.add('text-slate-300', 'dark:text-slate-600');
-                }, 1000);
+                setTimeout(() => { els.userSyncIcon.classList.remove('animate-spin', 'text-brand-500'); els.userSyncIcon.classList.add('text-slate-300', 'dark:text-slate-600'); }, 1000);
             } catch (err) {}
         }
-        
         setInterval(backgroundRefresh, 5000);
 
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                const menu = els.customContextMenu;
-                if(!els.loginScreen.classList.contains('hidden')) {
-                    els.contextAdminMode.classList.add('hidden');
-                    els.contextAdminDivider.classList.add('hidden');
-                } else {
-                    if(State.isAdmin) {
-                        els.contextAdminMode.classList.remove('hidden');
-                        els.contextAdminMode.classList.add('flex');
-                        els.contextAdminDivider.classList.remove('hidden');
-                    } else {
-                        els.contextAdminMode.classList.add('hidden');
-                        els.contextAdminDivider.classList.add('hidden');
-                    }
+                e.preventDefault(); const menu = els.customContextMenu;
+                if(!els.loginScreen.classList.contains('hidden')) { els.contextAdminMode.classList.add('hidden'); els.contextAdminDivider.classList.add('hidden'); } else {
+                    if(State.isAdmin) { els.contextAdminMode.classList.remove('hidden'); els.contextAdminMode.classList.add('flex'); els.contextAdminDivider.classList.remove('hidden'); } else { els.contextAdminMode.classList.add('hidden'); els.contextAdminDivider.classList.add('hidden'); }
                 }
-                menu.classList.remove('hidden');
-                const rect = menu.getBoundingClientRect();
+                menu.classList.remove('hidden'); const rect = menu.getBoundingClientRect();
                 let x = e.clientX; let y = e.clientY;
                 if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
                 if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
@@ -1266,41 +1105,20 @@
             }
         });
         document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
-        
         document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
         document.getElementById('contextTheme')?.addEventListener('click', () => { els.themeToggleBtn.click(); els.customContextMenu.classList.add('hidden'); });
 
         // --- SISTEMA ADM (ERP) ---
-        els.contextAdminMode.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            if(State.isAdmin) {
-                els.adminScreen.classList.remove('hidden');
-                initialAdminLoad();
-            }
-        });
+        els.contextAdminMode.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); if(State.isAdmin) { els.adminScreen.classList.remove('hidden'); initialAdminLoad(); } });
+        const closeAdminFn = () => { els.adminScreen.classList.add('hidden'); resetInactivityTimer(); initialLoad(); };
+        els.closeAdminBtn?.addEventListener('click', closeAdminFn); els.closeAdminBtnDesktop?.addEventListener('click', closeAdminFn);
 
-        const closeAdminFn = () => {
-            els.adminScreen.classList.add('hidden');
-            resetInactivityTimer();
-            initialLoad(); // reload commercial UI
-        };
-        els.closeAdminBtn?.addEventListener('click', closeAdminFn);
-        els.closeAdminBtnDesktop?.addEventListener('click', closeAdminFn);
-
-        // Tabs Logic
         document.querySelectorAll('#admSidebarNav button').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const tab = e.currentTarget.getAttribute('data-tab');
-                document.querySelectorAll('.adm-view').forEach(v => v.classList.add('hidden'));
-                document.getElementById(`view-${tab}`).classList.remove('hidden');
-                
-                document.querySelectorAll('#admSidebarNav button').forEach(b => {
-                    b.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50";
-                });
+                const tab = e.currentTarget.getAttribute('data-tab'); document.querySelectorAll('.adm-view').forEach(v => v.classList.add('hidden')); document.getElementById(`view-${tab}`).classList.remove('hidden');
+                document.querySelectorAll('#admSidebarNav button').forEach(b => { b.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"; });
                 e.currentTarget.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-colors bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400";
-                els.admHeaderTitle.innerHTML = e.currentTarget.innerHTML;
-                
-                if(tab === 'auditoria') renderAuditLogs();
+                els.admHeaderTitle.innerHTML = e.currentTarget.innerHTML; if(tab === 'auditoria') renderAuditLogs();
             });
         });
 
@@ -1310,170 +1128,72 @@
                 await fetchBaseData();
                 const { data: users } = await supabaseClient.from('usuarios').select('*');
                 const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
-
-                AdminState.users = users || [];
-                AdminState.orders = orders || [];
+                AdminState.users = users || []; AdminState.orders = orders || [];
                 if (orders && orders.length > 0) AdminState.lastKnownOrderId = orders[0].id;
-                
                 buildAndRenderAdminStats();
                 lastAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
-                
-                // Popula select do Deep Edit
                 els.deepEditAddProduct.innerHTML = '<option value="">+ Adicionar Produto...</option>';
                 State.products.forEach(p => { if(p.ativo) els.deepEditAddProduct.innerHTML += `<option value="${p.id}">${p.name} - ${formatMoney(p.price)}</option>`; });
-
             } catch (err) { console.error("Erro painel ADM:", err); }
             els.adminLoading.classList.add('hidden');
         }
 
-        // Dashboard & Chart
         function renderAdminChart(orders) {
-            const ctx = document.getElementById('monthlyChart');
-            if(!ctx) return;
-            const monthlyTotals = {};
-            const monthsStr = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-            
-            // Inicializa últimos 6 meses
+            const ctx = document.getElementById('monthlyChart'); if(!ctx) return;
+            const monthlyTotals = {}; const monthsStr = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
             const d = new Date();
-            for(let i=5; i>=0; i--) {
-                const checkD = new Date(d.getFullYear(), d.getMonth() - i, 1);
-                const key = `${checkD.getFullYear()}-${checkD.getMonth()}`;
-                monthlyTotals[key] = { label: `${monthsStr[checkD.getMonth()]} ${checkD.getFullYear()}`, total: 0 };
-            }
-
-            orders.forEach(o => {
-                if(o.status !== 'Cancelado') {
-                    const oDate = new Date(o.data_pedido);
-                    const key = `${oDate.getFullYear()}-${oDate.getMonth()}`;
-                    if(monthlyTotals[key]) monthlyTotals[key].total += parseFloat(o.valor_total || 0);
-                }
-            });
-
-            const labels = Object.values(monthlyTotals).map(m => m.label);
-            const data = Object.values(monthlyTotals).map(m => m.total);
-
+            for(let i=5; i>=0; i--) { const checkD = new Date(d.getFullYear(), d.getMonth() - i, 1); const key = `${checkD.getFullYear()}-${checkD.getMonth()}`; monthlyTotals[key] = { label: `${monthsStr[checkD.getMonth()]} ${checkD.getFullYear()}`, total: 0 }; }
+            orders.forEach(o => { if(o.status !== 'Cancelado') { const oDate = new Date(o.data_pedido); const key = `${oDate.getFullYear()}-${oDate.getMonth()}`; if(monthlyTotals[key]) monthlyTotals[key].total += parseFloat(o.valor_total || 0); } });
+            const labels = Object.values(monthlyTotals).map(m => m.label); const data = Object.values(monthlyTotals).map(m => m.total);
             if(AdminState.chartInstance) AdminState.chartInstance.destroy();
-            const isDark = document.documentElement.classList.contains('dark');
-            const gridColor = isDark ? '#1e293b' : '#f1f5f9';
-            const textColor = isDark ? '#94a3b8' : '#64748b';
-
-            AdminState.chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Gasto Mensal (R$)',
-                        data: data,
-                        backgroundColor: '#14b8a6',
-                        borderRadius: 6,
-                        barThickness: 24
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { border: {display: false}, grid: { color: gridColor }, ticks: { color: textColor, callback: (v) => 'R$ '+v } },
-                        x: { border: {display: false}, grid: { display: false }, ticks: { color: textColor } }
-                    }
-                }
-            });
+            const isDark = document.documentElement.classList.contains('dark'); const gridColor = isDark ? '#1e293b' : '#f1f5f9'; const textColor = isDark ? '#94a3b8' : '#64748b';
+            AdminState.chartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Gasto Mensal (R$)', data: data, backgroundColor: '#14b8a6', borderRadius: 6, barThickness: 24 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { border: {display: false}, grid: { color: gridColor }, ticks: { color: textColor, callback: (v) => 'R$ '+v } }, x: { border: {display: false}, grid: { display: false }, ticks: { color: textColor } } } } });
         }
 
         function renderLowStock() {
-            const list = document.getElementById('lowStockList');
-            const lowProducts = State.products.filter(p => p.stock < 15 && p.ativo).sort((a,b) => a.stock - b.stock);
-            document.getElementById('dashLowStockCount').textContent = lowProducts.length;
-            
-            list.innerHTML = '';
-            if(lowProducts.length === 0) {
-                list.innerHTML = `<div class="p-4 text-center text-slate-500 text-sm">Estoque saudável.</div>`; return;
-            }
-            lowProducts.forEach(p => {
-                const color = p.stock <= 5 ? 'text-red-500' : 'text-amber-500';
-                list.innerHTML += `<div class="p-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center last:border-0"><span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate pr-2">${p.name}</span><strong class="text-xs ${color} bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm">${p.stock} un.</strong></div>`;
-            });
+            const list = document.getElementById('lowStockList'); const lowProducts = State.products.filter(p => p.stock < 15 && p.ativo).sort((a,b) => a.stock - b.stock);
+            document.getElementById('dashLowStockCount').textContent = lowProducts.length; list.innerHTML = '';
+            if(lowProducts.length === 0) { list.innerHTML = `<div class="p-4 text-center text-slate-500 text-sm">Estoque saudável.</div>`; return; }
+            lowProducts.forEach(p => { const color = p.stock <= 5 ? 'text-red-500' : 'text-amber-500'; list.innerHTML += `<div class="p-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center last:border-0"><span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate pr-2">${p.name}</span><strong class="text-xs ${color} bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm">${p.stock} un.</strong></div>`; });
         }
 
         function buildAndRenderAdminStats() {
-            let totalSpentGlobal = 0;
-            AdminState.userStats = {};
+            let totalSpentGlobal = 0; AdminState.userStats = {};
             if(AdminState.users) {
                 AdminState.users.forEach(u => {
                     let userName = u.nome || u.email || `ID: ${u.id.split('-')[0]}`;
-                    if (userName.includes('@')) {
-                        let namePart = userName.split('@')[0];
-                        userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                    }
+                    if (userName.includes('@')) { let namePart = userName.split('@')[0]; userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' '); }
                     AdminState.userStats[u.id] = { id: u.id, name: userName, cargo: u.cargo || 'Comercial', balance: parseFloat(u.saldo || 0), spent: 0, isAdmin: u.admin === true };
                 });
             }
             if(AdminState.orders) {
                 AdminState.orders.forEach(o => {
                     if (o.status !== 'Cancelado') {
-                        const vTotal = parseFloat(o.valor_total || 0);
-                        totalSpentGlobal += vTotal;
-                        if (!AdminState.userStats[o.usuario_id]) {
-                            AdminState.userStats[o.usuario_id] = { id: o.usuario_id, name: `ID: ${o.usuario_id.split('-')[0]}`, cargo: 'Comercial', balance: 0, spent: 0, isAdmin: false };
-                        }
+                        const vTotal = parseFloat(o.valor_total || 0); totalSpentGlobal += vTotal;
+                        if (!AdminState.userStats[o.usuario_id]) { AdminState.userStats[o.usuario_id] = { id: o.usuario_id, name: `ID: ${o.usuario_id.split('-')[0]}`, cargo: 'Comercial', balance: 0, spent: 0, isAdmin: false }; }
                         AdminState.userStats[o.usuario_id].spent += vTotal;
                     }
                 });
             }
-
             document.getElementById('dashTotalSpent').textContent = formatMoney(totalSpentGlobal);
             document.getElementById('dashTotalOrders').textContent = (AdminState.orders ? AdminState.orders.filter(o => o.status !== 'Cancelado').length : 0);
-            
-            renderAdminChart(AdminState.orders || []);
-            renderLowStock();
-            renderAdmUsersTable();
-            renderAdminOrdersTable();
-            renderAdminProductsList();
-            renderAdminCategoriesList();
+            renderAdminChart(AdminState.orders || []); renderLowStock(); renderAdmUsersTable(); renderAdminOrdersTable(); renderAdminProductsList(); renderAdminCategoriesList();
         }
 
-        // --- PEDIDOS TAB ---
         function renderAdminOrdersTable() {
-            const table = document.getElementById('admOrdersTable');
-            table.innerHTML = '';
-            if(!AdminState.orders) return;
-            
+            const table = document.getElementById('admOrdersTable'); table.innerHTML = ''; if(!AdminState.orders) return;
             let filteredOrders = AdminState.orders;
-            const search = document.getElementById('filterOrderSearch').value.toLowerCase();
-            const status = document.getElementById('filterOrderStatus').value;
-            const startD = document.getElementById('filterOrderStart').value;
-            const endD = document.getElementById('filterOrderEnd').value;
-            
-            if(search) {
-                filteredOrders = filteredOrders.filter(o => {
-                    const uName = (AdminState.userStats[o.usuario_id] ? AdminState.userStats[o.usuario_id].name : '').toLowerCase();
-                    return o.id.toLowerCase().includes(search) || uName.includes(search);
-                });
-            }
+            const search = document.getElementById('filterOrderSearch').value.toLowerCase(); const status = document.getElementById('filterOrderStatus').value; const startD = document.getElementById('filterOrderStart').value; const endD = document.getElementById('filterOrderEnd').value;
+            if(search) { filteredOrders = filteredOrders.filter(o => { const uName = (AdminState.userStats[o.usuario_id] ? AdminState.userStats[o.usuario_id].name : '').toLowerCase(); return o.id.toLowerCase().includes(search) || uName.includes(search); }); }
             if(status !== 'Todos') filteredOrders = filteredOrders.filter(o => o.status === status);
             if(startD) filteredOrders = filteredOrders.filter(o => o.data_pedido.startsWith(startD) || o.data_pedido >= startD);
             if(endD) filteredOrders = filteredOrders.filter(o => o.data_pedido.startsWith(endD) || o.data_pedido <= endD + 'T23:59:59');
-
-            if(filteredOrders.length === 0) {
-                table.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-400 text-sm">Nenhum pedido encontrado.</td></tr>`;
-                return;
-            }
-
+            if(filteredOrders.length === 0) { table.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-400 text-sm">Nenhum pedido encontrado.</td></tr>`; return; }
             filteredOrders.forEach(o => {
-                const dateObj = new Date(o.data_pedido);
-                const dateStr = dateObj.toLocaleDateString('pt-BR');
-                const timeStr = dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                let uName = o.usuario_id;
-                if(AdminState.userStats[o.usuario_id]) uName = AdminState.userStats[o.usuario_id].name;
-                
-                const statusColors = {
-                    'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50',
-                    'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50',
-                    'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50'
-                };
+                const dateObj = new Date(o.data_pedido); const dateStr = dateObj.toLocaleDateString('pt-BR'); const timeStr = dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                let uName = o.usuario_id; if(AdminState.userStats[o.usuario_id]) uName = AdminState.userStats[o.usuario_id].name;
+                const statusColors = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50' };
                 const stColor = statusColors[o.status] || 'text-slate-700 bg-slate-100 border-slate-200';
-                
                 table.innerHTML += `
                     <tr class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50" onclick="openDeepEditOrder('${o.id}')">
                         <td class="p-4 py-3 leading-tight"><strong class="text-xs text-brand-600 dark:text-brand-400">${o.id}</strong><br><span class="text-[10px] text-slate-400">${dateStr} ${timeStr}</span></td>
@@ -1485,127 +1205,70 @@
                 `;
             });
         }
-        
-        document.getElementById('filterOrderSearch').addEventListener('input', renderAdminOrdersTable);
-        document.getElementById('filterOrderStatus').addEventListener('change', renderAdminOrdersTable);
-        document.getElementById('filterOrderStart').addEventListener('change', renderAdminOrdersTable);
-        document.getElementById('filterOrderEnd').addEventListener('change', renderAdminOrdersTable);
-        
+        document.getElementById('filterOrderSearch').addEventListener('input', renderAdminOrdersTable); document.getElementById('filterOrderStatus').addEventListener('change', renderAdminOrdersTable); document.getElementById('filterOrderStart').addEventListener('change', renderAdminOrdersTable); document.getElementById('filterOrderEnd').addEventListener('change', renderAdminOrdersTable);
         document.getElementById('btnExportOrders').addEventListener('click', () => {
             let csvContent = "data:text/csv;charset=utf-8,ID,Data,Usuario,Valor,Status,Data Separacao\n";
-            AdminState.orders.forEach(o => {
-                const uName = AdminState.userStats[o.usuario_id] ? AdminState.userStats[o.usuario_id].name : o.usuario_id;
-                csvContent += `"${o.id}","${new Date(o.data_pedido).toLocaleString('pt-BR')}","${uName}","${o.valor_total}","${o.status}","${o.data_separacao}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `pedidos_zattar_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            AdminState.orders.forEach(o => { const uName = AdminState.userStats[o.usuario_id] ? AdminState.userStats[o.usuario_id].name : o.usuario_id; csvContent += `"${o.id}","${new Date(o.data_pedido).toLocaleString('pt-BR')}","${uName}","${o.valor_total}","${o.status}","${o.data_separacao}"\n`; });
+            const encodedUri = encodeURI(csvContent); const link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `pedidos_zattar_${new Date().toISOString().split('T')[0]}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
 
         // --- DEEP EDIT ORDER ---
         window.openDeepEditOrder = function(orderId) {
-            const order = AdminState.orders.find(o => o.id === orderId);
-            if(!order) return;
-            
-            AdminState.deepEditState.id = order.id;
-            AdminState.deepEditState.userId = order.usuario_id;
-            AdminState.deepEditState.status = order.status;
-            AdminState.deepEditState.date = order.data_separacao;
-            AdminState.deepEditState.notes = order.observacoes || '';
-            
-            AdminState.deepEditState.items = {};
-            order.pedido_itens.forEach(i => AdminState.deepEditState.items[i.produto_id] = { qty: i.quantidade, price: i.preco_unitario });
-
-            els.deepEditStatus.value = order.status;
-            els.deepEditDate.value = order.data_separacao;
-            els.deepEditNotes.value = order.observacoes || '';
-            
+            const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
+            AdminState.deepEditState.id = order.id; AdminState.deepEditState.userId = order.usuario_id; AdminState.deepEditState.status = order.status; AdminState.deepEditState.date = order.data_separacao; AdminState.deepEditState.notes = order.observacoes || '';
+            AdminState.deepEditState.items = {}; order.pedido_itens.forEach(i => AdminState.deepEditState.items[i.produto_id] = { qty: i.quantidade, price: i.preco_unitario });
+            els.deepEditStatus.value = order.status; els.deepEditDate.value = order.data_separacao; els.deepEditNotes.value = order.observacoes || '';
             renderDeepEditItems();
-
-            els.adminOrderEditModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.adminOrderEditContent.classList.remove('scale-95', 'opacity-0');
-                els.adminOrderEditContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            els.adminOrderEditModal.classList.remove('hidden'); setTimeout(() => { els.adminOrderEditContent.classList.remove('scale-95', 'opacity-0'); els.adminOrderEditContent.classList.add('scale-100', 'opacity-100'); }, 10);
         };
 
         function renderDeepEditItems() {
-            els.deepEditItemsList.innerHTML = '';
-            let tValue = 0;
-            
+            els.deepEditItemsList.innerHTML = ''; let tValue = 0;
             Object.keys(AdminState.deepEditState.items).forEach(pId => {
-                const itm = AdminState.deepEditState.items[pId];
-                const pInfo = State.products.find(p => p.id === pId);
-                const pName = pInfo ? pInfo.name : pId;
-                tValue += (itm.qty * itm.price);
-                
+                const itm = AdminState.deepEditState.items[pId]; const pInfo = State.products.find(p => p.id === pId); const pName = pInfo ? pInfo.name : pId; tValue += (itm.qty * itm.price);
                 els.deepEditItemsList.innerHTML += `
                     <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <div class="flex-1 pr-4">
-                            <p class="text-xs font-bold text-slate-800 dark:text-white truncate">${pName}</p>
-                            <p class="text-[10px] text-slate-500">${formatMoney(itm.price)} / un.</p>
-                        </div>
+                        <div class="flex-1 pr-4"><p class="text-xs font-bold text-slate-800 dark:text-white truncate">${pName}</p><p class="text-[10px] text-slate-500">${formatMoney(itm.price)} / un.</p></div>
                         <div class="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md p-1 shadow-sm">
-                            <button onclick="changeDeepEditQty('${pId}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                            <span class="text-xs font-bold w-6 text-center dark:text-white">${itm.qty}</span>
-                            <button onclick="changeDeepEditQty('${pId}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                            <button onclick="changeDeepEditQty('${pId}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button><span class="text-xs font-bold w-6 text-center dark:text-white">${itm.qty}</span><button onclick="changeDeepEditQty('${pId}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
                         </div>
                         <button onclick="removeDeepEditItem('${pId}')" class="ml-2 w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 `;
             });
-            els.deepEditTotal.textContent = formatMoney(tValue);
-            lucide.createIcons();
+            els.deepEditTotal.textContent = formatMoney(tValue); lucide.createIcons();
         }
-
-        window.changeDeepEditQty = function(pId, delta) {
-            if(AdminState.deepEditState.items[pId]) {
-                let nQ = AdminState.deepEditState.items[pId].qty + delta;
-                if(nQ < 1) nQ = 1;
-                AdminState.deepEditState.items[pId].qty = nQ;
-                renderDeepEditItems();
-            }
-        };
-        window.removeDeepEditItem = function(pId) {
-            delete AdminState.deepEditState.items[pId];
-            renderDeepEditItems();
-        };
-        els.deepEditAddProduct.addEventListener('change', (e) => {
-            const pId = e.target.value;
-            if(!pId) return;
-            if(!AdminState.deepEditState.items[pId]) {
-                const pInfo = State.products.find(p => p.id === pId);
-                AdminState.deepEditState.items[pId] = { qty: 1, price: pInfo ? pInfo.price : 0 };
-                renderDeepEditItems();
-            }
-            els.deepEditAddProduct.value = "";
-        });
-
-        els.closeOrderEditBtn.addEventListener('click', () => {
-            els.adminOrderEditContent.classList.remove('scale-100', 'opacity-100');
-            els.adminOrderEditContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.adminOrderEditModal.classList.add('hidden'); }, 300);
-        });
+        window.changeDeepEditQty = function(pId, delta) { if(AdminState.deepEditState.items[pId]) { let nQ = AdminState.deepEditState.items[pId].qty + delta; if(nQ < 1) nQ = 1; AdminState.deepEditState.items[pId].qty = nQ; renderDeepEditItems(); } };
+        window.removeDeepEditItem = function(pId) { delete AdminState.deepEditState.items[pId]; renderDeepEditItems(); };
+        els.deepEditAddProduct.addEventListener('change', (e) => { const pId = e.target.value; if(!pId) return; if(!AdminState.deepEditState.items[pId]) { const pInfo = State.products.find(p => p.id === pId); AdminState.deepEditState.items[pId] = { qty: 1, price: pInfo ? pInfo.price : 0 }; renderDeepEditItems(); } els.deepEditAddProduct.value = ""; });
+        els.closeOrderEditBtn.addEventListener('click', () => { els.adminOrderEditContent.classList.remove('scale-100', 'opacity-100'); els.adminOrderEditContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.adminOrderEditModal.classList.add('hidden'); }, 300); });
         els.cancelDeepEditBtn.addEventListener('click', () => els.closeOrderEditBtn.click());
-        
         els.saveDeepEditBtn.addEventListener('click', async () => {
-            showActionConfirm('Aplicar Alterações e Recalcular', 'O saldo do usuário e os estoques dos produtos serão ajustados automaticamente com a diferença. Continuar?', 'warning', 'Sim, Aplicar', async () => {
-                els.saveDeepEditBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processando...';
-                
+            showActionConfirm('Aplicar Alterações e Recalcular', 'O saldo do usuário e os estoques dos produtos serão ajustados automaticamente. Continuar?', 'warning', 'Sim, Aplicar', async () => {
+                els.saveDeepEditBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>'; const oldOrder = AdminState.orders.find(o => o.id === AdminState.deepEditState.id); if(!oldOrder) return;
+                const newStatus = els.deepEditStatus.value; const newDate = els.deepEditDate.value; const newNotes = els.deepEditNotes.value; let newTotal = 0; Object.values(AdminState.deepEditState.items).forEach(i => newTotal += (i.qty * i.price));
+                try {
+                    if(oldOrder.status !== 'Cancelado') { let uStats = AdminState.userStats[oldOrder.usuario_id]; if(uStats) await supabaseClient.from('usuarios').update({ saldo: uStats.balance + parseFloat(oldOrder.valor_total||0) }).eq('id', oldOrder.usuario_id); for(let item of oldOrder.pedido_itens) { const p = State.products.find(x => x.id === item.produto_id); if(p) await supabaseClient.from('produtos').update({ estoque: p.stock + item.quantidade }).eq('id', p.id); } }
+                    await supabaseClient.from('pedido_itens').delete().eq('pedido_id', oldOrder.id); await supabaseClient.from('pedidos').update({ status: newStatus, data_separacao: newDate, observacoes: newNotes, valor_total: newTotal }).eq('id', oldOrder.id);
+                    const newItemsArr = Object.keys(AdminState.deepEditState.items).map(pId => ({ pedido_id: oldOrder.id, produto_id: pId, quantidade: AdminState.deepEditState.items[pId].qty, preco_unitario: AdminState.deepEditState.items[pId].price }));
+                    if(newItemsArr.length > 0) await supabaseClient.from('pedido_itens').insert(newItemsArr);
+                    if(newStatus !== 'Cancelado') { const {data: ud} = await supabaseClient.from('usuarios').select('saldo').eq('id', oldOrder.usuario_id).single(); if(ud) await supabaseClient.from('usuarios').update({ saldo: parseFloat(ud.saldo) - newTotal }).eq('id', oldOrder.usuario_id); for(let item of newItemsArr) { const p = State.products.find(x => x.id === item.produto_id); if(p) await supabaseClient.from('produtos').update({ estoque: p.stock - item.quantidade }).eq('id', item.produto_id); } }
+                    logAdminAction(`Editou profundamente o pedido ${oldOrder.id}.`); await backgroundRefresh(); els.closeOrderEditBtn.click(); els.saveDeepEditBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Aplicar Ajustes';
+                } catch(e) { console.error(e); els.saveDeepEditBtn.innerHTML = 'Erro!'; }
+            });
+        });
+
+        // Função de Excluir Registro
+        els.deleteDeepEditBtn.addEventListener('click', () => {
+            showActionConfirm('Excluir Registro Totalmente', 'Deseja apagar este registro da base de dados? O valor em reais será devolvido ao usuário e os brindes retornarão ao estoque.', 'danger', 'Sim, Excluir', async () => {
                 const oldOrder = AdminState.orders.find(o => o.id === AdminState.deepEditState.id);
                 if(!oldOrder) return;
                 
-                const newStatus = els.deepEditStatus.value;
-                const newDate = els.deepEditDate.value;
-                const newNotes = els.deepEditNotes.value;
-                
-                let newTotal = 0;
-                Object.values(AdminState.deepEditState.items).forEach(i => newTotal += (i.qty * i.price));
+                els.deleteDeepEditBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>';
+                lucide.createIcons();
 
                 try {
-                    // Restaura estoque e saldo do pedido VELHO
+                    // Restaura saldo e estoque
                     if(oldOrder.status !== 'Cancelado') {
                         let uStats = AdminState.userStats[oldOrder.usuario_id];
                         if(uStats) await supabaseClient.from('usuarios').update({ saldo: uStats.balance + parseFloat(oldOrder.valor_total||0) }).eq('id', oldOrder.usuario_id);
@@ -1614,73 +1277,32 @@
                             if(p) await supabaseClient.from('produtos').update({ estoque: p.stock + item.quantidade }).eq('id', p.id);
                         }
                     }
-
-                    // Remove itens velhos
-                    await supabaseClient.from('pedido_itens').delete().eq('pedido_id', oldOrder.id);
                     
-                    // Atualiza pedido
-                    await supabaseClient.from('pedidos').update({ status: newStatus, data_separacao: newDate, observacoes: newNotes, valor_total: newTotal }).eq('id', oldOrder.id);
-                    
-                    // Insere itens novos
-                    const newItemsArr = Object.keys(AdminState.deepEditState.items).map(pId => ({
-                        pedido_id: oldOrder.id, produto_id: pId, 
-                        quantidade: AdminState.deepEditState.items[pId].qty, preco_unitario: AdminState.deepEditState.items[pId].price
-                    }));
-                    if(newItemsArr.length > 0) await supabaseClient.from('pedido_itens').insert(newItemsArr);
-                    
-                    // Abate estoque e saldo do pedido NOVO se não for Cancelado
-                    if(newStatus !== 'Cancelado') {
-                        // refetch user para ter saldo atualizado após estorno
-                        const {data: ud} = await supabaseClient.from('usuarios').select('saldo').eq('id', oldOrder.usuario_id).single();
-                        if(ud) await supabaseClient.from('usuarios').update({ saldo: parseFloat(ud.saldo) - newTotal }).eq('id', oldOrder.usuario_id);
-                        for(let item of newItemsArr) {
-                            const p = State.products.find(x => x.id === item.produto_id);
-                            if(p) await supabaseClient.from('produtos').update({ estoque: p.stock - item.quantidade }).eq('id', item.produto_id);
-                        }
-                    }
-                    
-                    logAdminAction(`Editou profundamente o pedido ${oldOrder.id}.`);
+                    await supabaseClient.from('pedidos').delete().eq('id', oldOrder.id);
+                    logAdminAction(`Excluiu totalmente o pedido ${oldOrder.id}.`);
                     await backgroundRefresh();
                     els.closeOrderEditBtn.click();
-                    els.saveDeepEditBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Aplicar e Recalcular Saldo';
-                    
-                } catch(e) { console.error(e); els.saveDeepEditBtn.innerHTML = 'Erro!'; }
+                } catch(e) {
+                    console.error(e);
+                } finally {
+                    els.deleteDeepEditBtn.innerHTML = '<i data-lucide="trash-2" class="w-5 h-5"></i> Excluir Registro';
+                    lucide.createIcons();
+                }
             });
         });
 
-        // --- PRODUTOS TAB ---
         function renderAdminProductsList() {
-            const tbody = document.getElementById('admProductsTable');
-            tbody.innerHTML = '';
-            
-            const search = document.getElementById('admProductSearch').value.toLowerCase();
-            let filtered = State.products;
-            if(search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.id.toLowerCase().includes(search));
-
+            const tbody = document.getElementById('admProductsTable'); tbody.innerHTML = '';
+            const search = document.getElementById('admProductSearch').value.toLowerCase(); let filtered = State.products; if(search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.id.toLowerCase().includes(search));
             filtered.forEach(p => {
-                const iconDisplay = p.icon.startsWith('http') 
-                    ? `<img src="${p.icon}" class="w-8 h-8 object-cover rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">`
-                    : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500"></i></div>`;
-                
-                const statusBadge = p.ativo 
-                    ? `<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 px-2 py-0.5 rounded text-[10px] font-bold">Ativo</span>`
-                    : `<span class="bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">Pausado</span>`;
-
+                const iconDisplay = p.icon.startsWith('http') ? `<img src="${p.icon}" class="w-8 h-8 object-cover rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">` : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500"></i></div>`;
+                const statusBadge = p.ativo ? `<span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 px-2 py-0.5 rounded text-[10px] font-bold">Ativo</span>` : `<span class="bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">Pausado</span>`;
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50">
-                        <td class="p-3">
-                            <div class="flex items-center gap-3">
-                                ${iconDisplay}
-                                <div class="flex flex-col"><strong class="text-xs text-slate-800 dark:text-white">${p.name}</strong><span class="text-[9px] text-slate-400">${p.id}</span></div>
-                            </div>
-                        </td>
-                        <td class="p-3 text-xs text-slate-600 dark:text-slate-400">${p.category}</td>
-                        <td class="p-3 text-center"><strong class="text-xs ${p.stock < 15 ? 'text-amber-500' : 'text-slate-700 dark:text-slate-300'}">${p.stock}</strong></td>
-                        <td class="p-3 text-right font-semibold text-brand-600 dark:text-brand-400 text-xs">${formatMoney(p.price)}</td>
-                        <td class="p-3 text-center">${statusBadge}</td>
-                        <td class="p-3 text-right">
-                            <button onclick="openModalProduct('${p.id}')" class="px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-semibold transition-colors shadow-sm"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                        </td>
+                        <td class="p-3"><div class="flex items-center gap-3">${iconDisplay}<div class="flex flex-col"><strong class="text-xs text-slate-800 dark:text-white">${p.name}</strong><span class="text-[9px] text-slate-400">${p.id}</span></div></div></td>
+                        <td class="p-3 text-xs text-slate-600 dark:text-slate-400">${p.category}</td><td class="p-3 text-center"><strong class="text-xs ${p.stock < 15 ? 'text-amber-500' : 'text-slate-700 dark:text-slate-300'}">${p.stock}</strong></td>
+                        <td class="p-3 text-right font-semibold text-brand-600 dark:text-brand-400 text-xs">${formatMoney(p.price)}</td><td class="p-3 text-center">${statusBadge}</td>
+                        <td class="p-3 text-right"><button onclick="openModalProduct('${p.id}')" class="px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-semibold transition-colors shadow-sm"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button></td>
                     </tr>
                 `;
             });
@@ -1689,164 +1311,73 @@
         document.getElementById('admProductSearch').addEventListener('input', renderAdminProductsList);
 
         function openModalGeneric(title, icon, htmlBody, onSave) {
-            els.genericModalTitle.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> ${title}`;
-            els.genericModalBody.innerHTML = htmlBody;
-            lucide.createIcons();
-            
-            const newSaveBtn = els.genericModalSaveBtn.cloneNode(true);
-            els.genericModalSaveBtn.parentNode.replaceChild(newSaveBtn, els.genericModalSaveBtn);
-            els.genericModalSaveBtn = newSaveBtn;
-            els.genericModalSaveBtn.addEventListener('click', async () => {
-                els.genericModalSaveBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons();
-                await onSave();
-                els.genericModalCancelBtn.click();
-            });
-
-            els.adminGenericModal.classList.remove('hidden');
-            setTimeout(() => {
-                els.adminGenericModalContent.classList.remove('scale-95', 'opacity-0');
-                els.adminGenericModalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            els.genericModalTitle.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> ${title}`; els.genericModalBody.innerHTML = htmlBody; lucide.createIcons();
+            const newSaveBtn = els.genericModalSaveBtn.cloneNode(true); els.genericModalSaveBtn.parentNode.replaceChild(newSaveBtn, els.genericModalSaveBtn); els.genericModalSaveBtn = newSaveBtn;
+            els.genericModalSaveBtn.addEventListener('click', async () => { els.genericModalSaveBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons(); await onSave(); els.genericModalCancelBtn.click(); });
+            els.adminGenericModal.classList.remove('hidden'); setTimeout(() => { els.adminGenericModalContent.classList.remove('scale-95', 'opacity-0'); els.adminGenericModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         }
-        els.genericModalCancelBtn.addEventListener('click', () => {
-            els.adminGenericModalContent.classList.remove('scale-100', 'opacity-100');
-            els.adminGenericModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.adminGenericModal.classList.add('hidden'), 300);
-        });
+        els.genericModalCancelBtn.addEventListener('click', () => { els.adminGenericModalContent.classList.remove('scale-100', 'opacity-100'); els.adminGenericModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.adminGenericModal.classList.add('hidden'), 300); });
 
         document.getElementById('btnNewProduct').addEventListener('click', () => {
             let catOptions = AdminState.categoriesRaw.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
             const html = `
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Nome do Produto</label><input type="text" id="pName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                <div class="flex gap-2">
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Estoque</label><input type="number" id="pStock" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Preço (R$)</label><input type="number" step="0.01" id="pPrice" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                </div>
+                <div class="flex gap-2"><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Estoque</label><input type="number" id="pStock" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
+                <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Preço (R$)</label><input type="number" step="0.01" id="pPrice" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Categoria</label><select id="pCat" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none">${catOptions}</select></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Ícone/URL</label><input type="text" id="pIcon" value="box" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
             `;
             openModalGeneric('Cadastrar Novo Produto', 'plus', html, async () => {
-                const name = document.getElementById('pName').value;
-                const stock = parseInt(document.getElementById('pStock').value)||0;
-                const price = parseFloat(document.getElementById('pPrice').value)||0;
-                const cat = document.getElementById('pCat').value;
-                const icon = document.getElementById('pIcon').value;
-                if(name) {
-                    await supabaseClient.from('produtos').insert({ nome: name, estoque: stock, preco: price, categoria_id: cat, icone: icon, ativo: true });
-                    logAdminAction(`Cadastrou produto: ${name}`);
-                    await backgroundRefresh();
-                }
+                const name = document.getElementById('pName').value; const stock = parseInt(document.getElementById('pStock').value)||0; const price = parseFloat(document.getElementById('pPrice').value)||0; const cat = document.getElementById('pCat').value; const icon = document.getElementById('pIcon').value;
+                if(name) { await supabaseClient.from('produtos').insert({ nome: name, estoque: stock, preco: price, categoria_id: cat, icone: icon, ativo: true }); logAdminAction(`Cadastrou produto: ${name}`); await backgroundRefresh(); }
             });
         });
 
         window.openModalProduct = function(pId) {
-            const p = State.products.find(x => x.id === pId);
-            if(!p) return;
+            const p = State.products.find(x => x.id === pId); if(!p) return;
             let catOptions = AdminState.categoriesRaw.map(c => `<option value="${c.id}" ${c.id === p.categoryId ? 'selected' : ''}>${c.nome}</option>`).join('');
             const html = `
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Nome</label><input type="text" id="eName" value="${p.name}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                <div class="flex gap-2">
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Estoque</label><input type="number" id="eStock" value="${p.stock}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Preço</label><input type="number" step="0.01" id="ePrice" value="${p.price}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                </div>
+                <div class="flex gap-2"><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Estoque</label><input type="number" id="eStock" value="${p.stock}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
+                <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Preço</label><input type="number" step="0.01" id="ePrice" value="${p.price}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Categoria</label><select id="eCat" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none">${catOptions}</select></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Ícone/URL</label><input type="text" id="eIcon" value="${p.icon}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Status</label><select id="eStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"><option value="true" ${p.ativo?'selected':''}>Ativo</option><option value="false" ${!p.ativo?'selected':''}>Pausado</option></select></div>
             `;
             openModalGeneric('Editar Produto', 'edit-3', html, async () => {
-                await supabaseClient.from('produtos').update({ 
-                    nome: document.getElementById('eName').value, estoque: parseInt(document.getElementById('eStock').value),
-                    preco: parseFloat(document.getElementById('ePrice').value), categoria_id: document.getElementById('eCat').value,
-                    icone: document.getElementById('eIcon').value, ativo: document.getElementById('eStatus').value === "true"
-                }).eq('id', pId);
-                logAdminAction(`Alterou o produto: ${document.getElementById('eName').value}`);
-                await backgroundRefresh();
+                await supabaseClient.from('produtos').update({ nome: document.getElementById('eName').value, estoque: parseInt(document.getElementById('eStock').value), preco: parseFloat(document.getElementById('ePrice').value), categoria_id: document.getElementById('eCat').value, icone: document.getElementById('eIcon').value, ativo: document.getElementById('eStatus').value === "true" }).eq('id', pId);
+                logAdminAction(`Alterou o produto: ${document.getElementById('eName').value}`); await backgroundRefresh();
             });
         };
 
-        // --- CATEGORIAS TAB ---
         function renderAdminCategoriesList() {
-            const ul = document.getElementById('admCategoryList');
-            ul.innerHTML = '';
+            const ul = document.getElementById('admCategoryList'); ul.innerHTML = '';
             AdminState.categoriesRaw.forEach(c => {
-                ul.innerHTML += `
-                    <li class="flex justify-between items-center p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <span class="text-sm font-semibold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="tag" class="w-4 h-4 text-slate-400"></i> ${c.nome}</span>
-                        <button onclick="deleteCategory('${c.id}', '${c.nome}')" class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </li>
-                `;
-            });
-            lucide.createIcons();
+                ul.innerHTML += `<li class="flex justify-between items-center p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"><span class="text-sm font-semibold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="tag" class="w-4 h-4 text-slate-400"></i> ${c.nome}</span><button onclick="deleteCategory('${c.id}', '${c.nome}')" class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></li>`;
+            }); lucide.createIcons();
         }
 
-        document.getElementById('btnCreateCategory').addEventListener('click', async () => {
-            const input = document.getElementById('newCategoryInput');
-            if(input.value) {
-                await supabaseClient.from('categorias').insert({ nome: input.value });
-                logAdminAction(`Criou categoria: ${input.value}`);
-                input.value = '';
-                await backgroundRefresh();
-            }
-        });
+        document.getElementById('btnCreateCategory').addEventListener('click', async () => { const input = document.getElementById('newCategoryInput'); if(input.value) { await supabaseClient.from('categorias').insert({ nome: input.value }); logAdminAction(`Criou categoria: ${input.value}`); input.value = ''; await backgroundRefresh(); } });
+        window.deleteCategory = function(cId, cName) { showActionConfirm('Excluir Categoria', `Tem certeza que deseja excluir "${cName}"? Os produtos vinculados perderão a categoria.`, 'danger', 'Excluir', async () => { await supabaseClient.from('categorias').delete().eq('id', cId); logAdminAction(`Excluiu categoria: ${cName}`); await backgroundRefresh(); }); };
 
-        window.deleteCategory = function(cId, cName) {
-            showActionConfirm('Excluir Categoria', `Tem certeza que deseja excluir "${cName}"? Os produtos vinculados perderão a categoria.`, 'danger', 'Excluir', async () => {
-                await supabaseClient.from('categorias').delete().eq('id', cId);
-                logAdminAction(`Excluiu categoria: ${cName}`);
-                await backgroundRefresh();
-            });
-        };
-
-        // --- USUÁRIOS TAB ---
         function renderAdmUsersTable() {
-            const table = document.getElementById('admUsersTableRows');
-            if (!table) return;
-            table.innerHTML = '';
-            
-            let usersArray = Object.values(AdminState.userStats);
-            const search = document.getElementById('admUserSearch') ? document.getElementById('admUserSearch').value.toLowerCase() : "";
+            const table = document.getElementById('admUsersTableRows'); if (!table) return; table.innerHTML = '';
+            let usersArray = Object.values(AdminState.userStats); const search = document.getElementById('admUserSearch') ? document.getElementById('admUserSearch').value.toLowerCase() : "";
             if (search) usersArray = usersArray.filter(u => u.name.toLowerCase().includes(search) || u.cargo.toLowerCase().includes(search));
-
-            usersArray.sort((a, b) => {
-                let valA = a[AdminState.userSortBy]; let valB = b[AdminState.userSortBy];
-                if (typeof valA === 'string') valA = valA.toLowerCase(); if (typeof valB === 'string') valB = valB.toLowerCase();
-                if (valA < valB) return AdminState.userSortDesc ? 1 : -1;
-                if (valA > valB) return AdminState.userSortDesc ? -1 : 1;
-                return 0;
-            });
-
-            if (usersArray.length === 0) {
-                table.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-400">Nenhum usuário encontrado.</td></tr>'; return;
-            }
-
+            usersArray.sort((a, b) => { let valA = a[AdminState.userSortBy]; let valB = b[AdminState.userSortBy]; if (typeof valA === 'string') valA = valA.toLowerCase(); if (typeof valB === 'string') valB = valB.toLowerCase(); if (valA < valB) return AdminState.userSortDesc ? 1 : -1; if (valA > valB) return AdminState.userSortDesc ? -1 : 1; return 0; });
+            if (usersArray.length === 0) { table.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-400">Nenhum usuário encontrado.</td></tr>'; return; }
             usersArray.forEach(u => {
                 table.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800/50 group">
-                        <td class="p-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
-                                <div class="flex flex-col"><span class="text-xs font-bold text-slate-800 dark:text-white">${u.name}</span><span class="text-[9px] text-slate-400">${u.id.split('-')[0]}</span></div>
-                            </div>
-                        </td>
-                        <td class="p-3 text-xs text-slate-600 dark:text-slate-400">${u.cargo}</td>
-                        <td class="p-3 text-right font-bold text-emerald-600 dark:text-emerald-400 text-xs">${formatMoney(u.balance)}</td>
-                        <td class="p-3 text-right font-black text-slate-800 dark:text-white text-xs">${formatMoney(u.spent)}</td>
-                        <td class="p-3 text-center">${u.isAdmin ? '<i data-lucide="shield-check" class="w-4 h-4 text-brand-500 mx-auto"></i>' : '-'}</td>
-                        <td class="p-3 text-right w-10">
-                            <button onclick="openModalUser('${u.id}')" class="px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-semibold transition-colors shadow-sm opacity-0 group-hover:opacity-100"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
-                        </td>
+                        <td class="p-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div><div class="flex flex-col"><span class="text-xs font-bold text-slate-800 dark:text-white">${u.name}</span><span class="text-[9px] text-slate-400">${u.id.split('-')[0]}</span></div></div></td>
+                        <td class="p-3 text-xs text-slate-600 dark:text-slate-400">${u.cargo}</td><td class="p-3 text-right font-bold text-emerald-600 dark:text-emerald-400 text-xs">${formatMoney(u.balance)}</td><td class="p-3 text-right font-black text-slate-800 dark:text-white text-xs">${formatMoney(u.spent)}</td><td class="p-3 text-center">${u.isAdmin ? '<i data-lucide="shield-check" class="w-4 h-4 text-brand-500 mx-auto"></i>' : '-'}</td>
+                        <td class="p-3 text-right w-10"><button onclick="openModalUser('${u.id}')" class="px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-semibold transition-colors shadow-sm opacity-0 group-hover:opacity-100"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button></td>
                     </tr>
                 `;
-            });
-            lucide.createIcons();
+            }); lucide.createIcons();
         }
 
-        window.sortAdmUsers = function(field) {
-            if (AdminState.userSortBy === field) AdminState.userSortDesc = !AdminState.userSortDesc;
-            else { AdminState.userSortBy = field; AdminState.userSortDesc = (field === 'spent' || field === 'balance'); }
-            renderAdmUsersTable();
-        };
-
+        window.sortAdmUsers = function(field) { if (AdminState.userSortBy === field) AdminState.userSortDesc = !AdminState.userSortDesc; else { AdminState.userSortBy = field; AdminState.userSortDesc = (field === 'spent' || field === 'balance'); } renderAdmUsersTable(); };
         document.getElementById('admUserSearch')?.addEventListener('input', renderAdmUsersTable);
 
         document.getElementById('btnBatchRecharge').addEventListener('click', () => {
@@ -1854,14 +1385,7 @@
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg mb-4 text-xs text-blue-800 dark:text-blue-300">Este valor substituirá o saldo atual de TODOS os usuários. Ideal para virada de mês.</div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Novo Saldo (R$)</label><input type="number" step="0.01" id="batchVal" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
             `;
-            openModalGeneric('Recarga em Lote', 'coins', html, async () => {
-                const val = parseFloat(document.getElementById('batchVal').value);
-                if(!isNaN(val)) {
-                    await supabaseClient.from('usuarios').update({ saldo: val }).neq('id', '000'); // update all
-                    logAdminAction(`Executou recarga em lote: ${formatMoney(val)} para todos.`);
-                    await backgroundRefresh();
-                }
-            });
+            openModalGeneric('Recarga em Lote', 'coins', html, async () => { const val = parseFloat(document.getElementById('batchVal').value); if(!isNaN(val)) { await supabaseClient.from('usuarios').update({ saldo: val }).neq('id', '000'); logAdminAction(`Executou recarga em lote: ${formatMoney(val)} para todos.`); await backgroundRefresh(); } });
         });
 
         document.getElementById('btnNewUser').addEventListener('click', () => {
@@ -1870,76 +1394,33 @@
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">ID Supabase Auth</label><input type="text" id="nuId" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">E-mail</label><input type="text" id="nuEmail" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Nome</label><input type="text" id="nuName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div>
-                <div class="flex gap-2">
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Cargo</label><input type="text" id="nuRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div>
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Saldo Inicial</label><input type="number" id="nuBalance" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div>
-                </div>
+                <div class="flex gap-2"><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Cargo</label><input type="text" id="nuRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Saldo Inicial</label><input type="number" id="nuBalance" value="0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"></div></div>
             `;
-            openModalGeneric('Cadastrar Usuário (Manual)', 'user-plus', html, async () => {
-                await supabaseClient.from('usuarios').insert({ 
-                    id: document.getElementById('nuId').value, email: document.getElementById('nuEmail').value,
-                    nome: document.getElementById('nuName').value, cargo: document.getElementById('nuRole').value,
-                    saldo: parseFloat(document.getElementById('nuBalance').value), admin: false 
-                });
-                logAdminAction(`Cadastrou usuário manual: ${document.getElementById('nuName').value}`);
-                await backgroundRefresh();
-            });
+            openModalGeneric('Cadastrar Usuário (Manual)', 'user-plus', html, async () => { await supabaseClient.from('usuarios').insert({ id: document.getElementById('nuId').value, email: document.getElementById('nuEmail').value, nome: document.getElementById('nuName').value, cargo: document.getElementById('nuRole').value, saldo: parseFloat(document.getElementById('nuBalance').value), admin: false }); logAdminAction(`Cadastrou usuário manual: ${document.getElementById('nuName').value}`); await backgroundRefresh(); });
         });
 
         window.openModalUser = function(uId) {
-            const u = AdminState.userStats[uId];
-            if(!u) return;
+            const u = AdminState.userStats[uId]; if(!u) return;
             const html = `
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Nome Completo</label><input type="text" id="euName" value="${u.name}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">Cargo</label><input type="text" id="euRole" value="${u.cargo}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                <div class="flex gap-2">
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Saldo Atual (R$)</label><input type="number" step="0.01" id="euBalance" value="${u.balance}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div>
-                    <div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">É Administrador?</label><select id="euAdmin" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"><option value="false" ${!u.isAdmin?'selected':''}>Não</option><option value="true" ${u.isAdmin?'selected':''}>Sim, Total</option></select></div>
-                </div>
+                <div class="flex gap-2"><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">Saldo Atual (R$)</label><input type="number" step="0.01" id="euBalance" value="${u.balance}" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none focus:border-brand-500"></div><div class="flex-1"><label class="block text-xs font-bold text-slate-500 mb-1">É Administrador?</label><select id="euAdmin" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white outline-none"><option value="false" ${!u.isAdmin?'selected':''}>Não</option><option value="true" ${u.isAdmin?'selected':''}>Sim, Total</option></select></div></div>
             `;
-            openModalGeneric('Editar Usuário', 'user-cog', html, async () => {
-                await supabaseClient.from('usuarios').update({ 
-                    nome: document.getElementById('euName').value, cargo: document.getElementById('euRole').value,
-                    saldo: parseFloat(document.getElementById('euBalance').value), admin: document.getElementById('euAdmin').value === "true"
-                }).eq('id', uId);
-                logAdminAction(`Alterou perfil do usuário: ${document.getElementById('euName').value}`);
-                await backgroundRefresh();
-            });
+            openModalGeneric('Editar Usuário', 'user-cog', html, async () => { await supabaseClient.from('usuarios').update({ nome: document.getElementById('euName').value, cargo: document.getElementById('euRole').value, saldo: parseFloat(document.getElementById('euBalance').value), admin: document.getElementById('euAdmin').value === "true" }).eq('id', uId); logAdminAction(`Alterou perfil do usuário: ${document.getElementById('euName').value}`); await backgroundRefresh(); });
         };
-
 
         // --- ÁREA COMERCIAL (UI) ---
-        const formatMoney = (value) => {
-            if (value === null) return "Valor a confirmar";
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        };
+        const formatMoney = (value) => { if (value === null) return "Valor a confirmar"; return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value); };
 
         function initDashboard() {
             const activeProducts = State.products.filter(p => p.ativo);
             const totalUnits = activeProducts.reduce((acc, curr) => acc + curr.stock, 0);
             els.statUnits.textContent = totalUnits;
             els.statItems.textContent = activeProducts.length;
+            
+            // Exibição simples do saldo
             if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
             if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
-
-            // Calcula progresso da barra
-            let perc = 0;
-            if (State.userTotalBudget > 0) {
-                let spent = State.userTotalBudget - State.userBalance;
-                perc = (spent / State.userTotalBudget) * 100;
-                if(perc > 100) perc = 100;
-                if(perc < 0) perc = 0;
-            }
-            if(els.headerBudgetBar) {
-                els.headerBudgetBar.style.width = `${perc}%`;
-                if(perc > 80) els.headerBudgetBar.classList.replace('bg-emerald-500', 'bg-red-500');
-                else els.headerBudgetBar.classList.replace('bg-red-500', 'bg-emerald-500');
-            }
-            if(els.cardBudgetBar) {
-                els.cardBudgetBar.style.width = `${perc}%`;
-                if(perc > 80) els.cardBudgetBar.classList.replace('bg-emerald-500', 'bg-red-500');
-                else els.cardBudgetBar.classList.replace('bg-red-500', 'bg-emerald-500');
-            }
         }
 
         function renderCategories() {
@@ -1948,96 +1429,38 @@
                 const isActive = State.selectedCategory === cat;
                 const btn = document.createElement('button');
                 btn.className = `px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all border ${
-                    isActive 
-                    ? 'bg-slate-900 dark:bg-brand-600 text-white border-slate-900 dark:border-brand-600 shadow-sm shadow-brand-500/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    isActive ? 'bg-slate-900 dark:bg-brand-600 text-white border-slate-900 dark:border-brand-600 shadow-sm shadow-brand-500/20' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`;
-                btn.textContent = cat;
-                btn.onclick = () => { State.selectedCategory = cat; renderCategories(); renderProducts(); };
-                els.categoryFilters.appendChild(btn);
+                btn.textContent = cat; btn.onclick = () => { State.selectedCategory = cat; renderCategories(); renderProducts(); }; els.categoryFilters.appendChild(btn);
             });
         }
         
-        const getProductOrderCount = (productId) => {
-            let count = 0;
-            if(State.ordersHistory) {
-                State.ordersHistory.forEach(order => {
-                    if(order.items && order.items[productId]) count += order.items[productId];
-                });
-            }
-            return count;
-        };
+        const getProductOrderCount = (productId) => { let count = 0; if(State.ordersHistory) { State.ordersHistory.forEach(order => { if(order.items && order.items[productId]) count += order.items[productId]; }); } return count; };
 
         function renderProducts() {
             els.productsGrid.innerHTML = '';
-            let filtered = State.products.filter(p => {
-                if (!p.ativo) return false; 
-                const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory;
-                const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
-                return matchCategory && matchSearch;
-            });
-            
-            filtered.sort((a, b) => {
-                if (State.sortBy === 'menor_preco') return a.price - b.price;
-                if (State.sortBy === 'maior_preco') return b.price - a.price;
-                if (State.sortBy === 'mais_pedidos') {
-                    const pedidosA = getProductOrderCount(a.id);
-                    const pedidosB = getProductOrderCount(b.id);
-                    return pedidosB - pedidosA;
-                }
-                return a.name.localeCompare(b.name); 
-            });
-            
+            let filtered = State.products.filter(p => { if (!p.ativo) return false; const matchCategory = State.selectedCategory === 'Todos' || p.category === State.selectedCategory; const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase()); return matchCategory && matchSearch; });
+            filtered.sort((a, b) => { if (State.sortBy === 'menor_preco') return a.price - b.price; if (State.sortBy === 'maior_preco') return b.price - a.price; if (State.sortBy === 'mais_pedidos') { const pedidosA = getProductOrderCount(a.id); const pedidosB = getProductOrderCount(b.id); return pedidosB - pedidosA; } return a.name.localeCompare(b.name); });
             els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
-            if (filtered.length === 0) {
-                els.productsGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"><i data-lucide="search-x" class="w-12 h-12 mb-3 opacity-30"></i><p class="font-medium text-sm">Nenhum brinde encontrado para sua busca.</p></div>`;
-                lucide.createIcons(); return;
-            }
+            if (filtered.length === 0) { els.productsGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"><i data-lucide="search-x" class="w-12 h-12 mb-3 opacity-30"></i><p class="font-medium text-sm">Nenhum brinde encontrado para sua busca.</p></div>`; lucide.createIcons(); return; }
 
             filtered.forEach(product => {
-                const qtyInCart = State.cart[product.id] || 0;
-                const stockRemaining = product.stock - qtyInCart;
-                const isOutOfStock = stockRemaining <= 0;
-
+                const qtyInCart = State.cart[product.id] || 0; const stockRemaining = product.stock - qtyInCart; const isOutOfStock = stockRemaining <= 0;
                 let imageSectionHtml = '';
-                if (product.icon.startsWith('http')) {
-                    imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center p-0">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500">
-                        </div>
-                    `;
-                } else {
-                    imageSectionHtml = `
-                        <div class="product-visual w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10 transition-transform duration-500 group-hover:scale-110">
-                            <i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i>
-                        </div>
-                    `;
-                }
+                if (product.icon.startsWith('http')) { imageSectionHtml = `<div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center p-0"><img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>`; } else { imageSectionHtml = `<div class="product-visual w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-800 dark:text-slate-200 overflow-hidden relative z-10 transition-transform duration-500 group-hover:scale-110"><i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i></div>`; }
 
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group relative";
+                const card = document.createElement('div'); card.className = "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group relative";
                 card.innerHTML = `
                     <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative aspect-square w-full overflow-hidden">
                         ${imageSectionHtml}
-                        <div class="absolute top-3 left-3 flex gap-2 z-20">
-                            <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm border border-slate-200 dark:border-slate-700">${product.id}</span>
-                        </div>
-                        <div class="absolute top-3 right-3 z-20">
-                            <span class="bg-amber-100/90 dark:bg-amber-900/80 backdrop-blur-md text-amber-800 dark:text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1 border border-amber-200 dark:border-amber-800/50">
-                                Estoque: ${product.stock} un.
-                            </span>
-                        </div>
+                        <div class="absolute top-3 left-3 flex gap-2 z-20"><span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm border border-slate-200 dark:border-slate-700">${product.id}</span></div>
+                        <div class="absolute top-3 right-3 z-20"><span class="bg-amber-100/90 dark:bg-amber-900/80 backdrop-blur-md text-amber-800 dark:text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1 border border-amber-200 dark:border-amber-800/50">Estoque: ${product.stock} un.</span></div>
                     </div>
                     <div class="p-5 flex-1 flex flex-col relative z-20 bg-white dark:bg-slate-800">
                         <span class="text-[10px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase mb-1.5">${product.category}</span>
                         <h3 class="text-slate-800 dark:text-white font-bold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        <div class="mt-auto pt-3 flex items-end justify-between">
-                            <div class="flex flex-col">
-                                <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span>
-                                <strong class="text-brand-600 dark:text-brand-400 font-black text-lg">${formatMoney(product.price)}</strong>
-                            </div>
-                        </div>
+                        <div class="mt-auto pt-3 flex items-end justify-between"><div class="flex flex-col"><span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${stockRemaining} un.</b></span><strong class="text-brand-600 dark:text-brand-400 font-black text-lg">${formatMoney(product.price)}</strong></div></div>
                     </div>
                     <div class="p-4 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2 relative z-30">
                         <div class="flex items-center justify-between gap-3">
@@ -2053,167 +1476,44 @@
                     </div>
                 `;
                 els.productsGrid.appendChild(card);
-            });
-            lucide.createIcons();
+            }); lucide.createIcons();
         }
         
         els.sortSelect?.addEventListener('change', (e) => { State.sortBy = e.target.value; renderProducts(); });
-
-        window.changeCardQty = function(productId, delta) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            if(!input) return;
-            const product = State.products.find(p => p.id === productId);
-            const qtyInCart = State.cart[productId] || 0;
-            const stockRemaining = product.stock - qtyInCart;
-            let newVal = parseInt(input.value) + delta;
-            if (newVal < 1) newVal = 1;
-            if (newVal > stockRemaining) newVal = stockRemaining;
-            input.value = newVal;
-        };
-
-        window.addMultipleToCart = function(productId, event) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            let qtyToAdd = input ? parseInt(input.value) : 1;
-            const product = State.products.find(p => p.id === productId);
-            const currentQty = State.cart[productId] || 0;
-            const stockRemaining = product.stock - currentQty;
-            
-            if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
-            if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
-            
-            if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) {
-                if (event) {
-                    let btn = event.currentTarget;
-                    let card = btn.closest('.group');
-                    let visualEl = card ? card.querySelector('.product-visual') : null;
-                    if (visualEl) animateFlyToCart(visualEl);
-                }
-                State.cart[productId] = currentQty + qtyToAdd;
-                updateCartUI();
-                renderProducts(); 
-            }
-        };
+        window.changeCardQty = function(productId, delta) { const input = document.getElementById(`card-qty-${productId}`); if(!input) return; const product = State.products.find(p => p.id === productId); const qtyInCart = State.cart[productId] || 0; const stockRemaining = product.stock - qtyInCart; let newVal = parseInt(input.value) + delta; if (newVal < 1) newVal = 1; if (newVal > stockRemaining) newVal = stockRemaining; input.value = newVal; };
+        window.addMultipleToCart = function(productId, event) { const input = document.getElementById(`card-qty-${productId}`); let qtyToAdd = input ? parseInt(input.value) : 1; const product = State.products.find(p => p.id === productId); const currentQty = State.cart[productId] || 0; const stockRemaining = product.stock - currentQty; if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1; if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining; if (qtyToAdd > 0 && currentQty + qtyToAdd <= product.stock) { if (event) { let btn = event.currentTarget; let card = btn.closest('.group'); let visualEl = card ? card.querySelector('.product-visual') : null; if (visualEl) animateFlyToCart(visualEl); } State.cart[productId] = currentQty + qtyToAdd; updateCartUI(); renderProducts(); } };
 
         function animateFlyToCart(sourceEl) {
-            const isDesktop = window.innerWidth >= 1024;
-            const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn');
-            if (!targetEl) return;
-
-            const sourceRect = sourceEl.getBoundingClientRect();
-            const targetRect = targetEl.getBoundingClientRect();
-
-            const clone = sourceEl.cloneNode(true);
-            clone.style.position = 'fixed';
-            clone.style.top = `${sourceRect.top}px`; clone.style.left = `${sourceRect.left}px`;
-            clone.style.width = `${sourceRect.width}px`; clone.style.height = `${sourceRect.height}px`;
-            clone.style.zIndex = '99999'; clone.style.pointerEvents = 'none';
-            clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-            clone.style.margin = '0';
-            clone.className = sourceEl.className.replace(/group-hover:scale-\d+/g, '');
-            document.body.appendChild(clone);
-
+            const isDesktop = window.innerWidth >= 1024; const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn'); if (!targetEl) return;
+            const sourceRect = sourceEl.getBoundingClientRect(); const targetRect = targetEl.getBoundingClientRect();
+            const clone = sourceEl.cloneNode(true); clone.style.position = 'fixed'; clone.style.top = `${sourceRect.top}px`; clone.style.left = `${sourceRect.left}px`; clone.style.width = `${sourceRect.width}px`; clone.style.height = `${sourceRect.height}px`; clone.style.zIndex = '99999'; clone.style.pointerEvents = 'none'; clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)'; clone.style.margin = '0'; clone.className = sourceEl.className.replace(/group-hover:scale-\d+/g, ''); document.body.appendChild(clone);
             clone.getBoundingClientRect();
-
-            const translateX = (targetRect.left + (targetRect.width / 2)) - (sourceRect.left + (sourceRect.width / 2));
-            const translateY = (targetRect.top + (targetRect.height / 2)) - (sourceRect.top + (sourceRect.height / 2));
-
-            clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1) rotate(15deg)`;
-            clone.style.opacity = '0.2';
-
-            setTimeout(() => {
-                clone.remove();
-                if (isDesktop) {
-                    const badge = document.getElementById('cartTotalItems');
-                    badge.classList.add('scale-[1.5]', 'text-brand-500', 'bg-brand-100');
-                    setTimeout(() => badge.classList.remove('scale-[1.5]', 'text-brand-500', 'bg-brand-100'), 300);
-                } else {
-                    targetEl.classList.add('scale-110'); setTimeout(() => targetEl.classList.remove('scale-110'), 250);
-                }
-            }, 600);
+            const translateX = (targetRect.left + (targetRect.width / 2)) - (sourceRect.left + (sourceRect.width / 2)); const translateY = (targetRect.top + (targetRect.height / 2)) - (sourceRect.top + (sourceRect.height / 2));
+            clone.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.1) rotate(15deg)`; clone.style.opacity = '0.2';
+            setTimeout(() => { clone.remove(); if (isDesktop) { const badge = document.getElementById('cartTotalItems'); badge.classList.add('scale-[1.5]', 'text-brand-500', 'bg-brand-100'); setTimeout(() => badge.classList.remove('scale-[1.5]', 'text-brand-500', 'bg-brand-100'), 300); } else { targetEl.classList.add('scale-110'); setTimeout(() => targetEl.classList.remove('scale-110'), 250); } }, 600);
         }
 
-        window.updateQuantity = function(productId, delta) {
-            const product = State.products.find(p => p.id === productId);
-            let newQty = (State.cart[productId] || 0) + delta;
-            if (newQty <= 0) delete State.cart[productId];
-            else if (newQty <= product.stock) State.cart[productId] = newQty;
-            else return; 
-            updateCartUI(); renderProducts();
-        };
-
-        window.removeFromCart = function(productId) {
-            delete State.cart[productId]; updateCartUI(); renderProducts();
-        };
+        window.updateQuantity = function(productId, delta) { const product = State.products.find(p => p.id === productId); let newQty = (State.cart[productId] || 0) + delta; if (newQty <= 0) delete State.cart[productId]; else if (newQty <= product.stock) State.cart[productId] = newQty; else return; updateCartUI(); renderProducts(); };
+        window.removeFromCart = function(productId) { delete State.cart[productId]; updateCartUI(); renderProducts(); };
 
         function updateCartUI() {
-            els.cartItemsContainer.innerHTML = '';
-            let totalItems = 0; let totalValue = 0;
-            const cartKeys = Object.keys(State.cart);
-
-            if (cartKeys.length === 0) {
-                els.cartItemsContainer.appendChild(els.emptyCartState);
-                els.emptyCartState.classList.remove('hidden');
-                els.checkoutBtn.disabled = true; els.checkoutForm.classList.add('hidden'); 
-                els.cartTotalItems.textContent = "0";
-                if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
-                if (els.balanceWarning) els.balanceWarning.classList.add('hidden');
-                els.mobileCartBadge.textContent = "0"; els.mobileCartBadge.classList.add('hidden');
-                return;
-            }
-
-            els.emptyCartState.classList.add('hidden');
-            els.checkoutForm.classList.remove('hidden'); 
-
+            els.cartItemsContainer.innerHTML = ''; let totalItems = 0; let totalValue = 0; const cartKeys = Object.keys(State.cart);
+            if (cartKeys.length === 0) { els.cartItemsContainer.appendChild(els.emptyCartState); els.emptyCartState.classList.remove('hidden'); els.checkoutBtn.disabled = true; els.checkoutForm.classList.add('hidden'); els.cartTotalItems.textContent = "0"; if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00"; if (els.balanceWarning) els.balanceWarning.classList.add('hidden'); els.mobileCartBadge.textContent = "0"; els.mobileCartBadge.classList.add('hidden'); return; }
+            els.emptyCartState.classList.add('hidden'); els.checkoutForm.classList.remove('hidden'); 
             cartKeys.forEach(id => {
-                const product = State.products.find(p => p.id === id);
-                const qty = State.cart[id];
-                totalItems += qty;
-                if (product.price) totalValue += (product.price * qty);
-
-                const iconCartHtml = product.icon.startsWith('http') 
-                    ? `<img src="${product.icon}" class="w-full h-full object-cover rounded-lg">`
-                    : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
-
-                const itemEl = document.createElement('div');
-                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
-                itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">
-                        ${iconCartHtml}
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
-                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                        <span class="text-sm font-bold w-4 text-center dark:text-white">${qty}</span>
-                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                    </div>
-                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>
-                `;
+                const product = State.products.find(p => p.id === id); const qty = State.cart[id]; totalItems += qty; if (product.price) totalValue += (product.price * qty);
+                const iconCartHtml = product.icon.startsWith('http') ? `<img src="${product.icon}" class="w-full h-full object-cover rounded-lg">` : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
+                const itemEl = document.createElement('div'); itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
+                itemEl.innerHTML = `<div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">${iconCartHtml}</div><div class="flex-1 flex flex-col justify-center min-w-0"><h4 class="text-sm font-bold text-slate-800 dark:text-white truncate pr-6">${product.name}</h4><span class="text-[10px] text-slate-400 dark:text-slate-500">${product.id}</span></div><div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-1"><button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button><span class="text-sm font-bold w-4 text-center dark:text-white">${qty}</span><button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button></div><button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 rounded-full flex items-center justify-center border border-white dark:border-slate-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity lg:hover:bg-red-200 dark:lg:hover:bg-red-800 sm:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>`;
                 els.cartItemsContainer.appendChild(itemEl);
             });
 
-            // LÓGICA DE SUGESTÃO DE SACOLA
+            // Sugestão Inteligente
             if (totalItems >= 4) {
                 const sacola = State.products.find(p => p.name.toLowerCase().includes('sacola') && p.ativo && p.stock > 0);
                 if (sacola && !State.cart[sacola.id]) {
-                    const sacolaEl = document.createElement('div');
-                    sacolaEl.className = "bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl p-3 mt-3 mb-2 flex items-center justify-between gap-3 shadow-sm transform transition-all animate-pulse duration-1000";
-                    sacolaEl.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">
-                                ${sacola.icon.startsWith('http') ? `<img src="${sacola.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${sacola.icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>`}
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-brand-900 dark:text-brand-100 leading-tight mb-0.5">Levar numa ${sacola.name}?</h4>
-                                <p class="text-[10px] text-brand-700 dark:text-brand-300">Sugerido para ${totalItems} itens.</p>
-                            </div>
-                        </div>
-                        <button onclick="updateQuantity('${sacola.id}', 1)" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-sm">
-                            + Incluir
-                        </button>
-                    `;
+                    const sacolaEl = document.createElement('div'); sacolaEl.className = "bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl p-3 mt-3 mb-2 flex items-center justify-between gap-3 shadow-sm transform transition-all animate-pulse duration-1000";
+                    sacolaEl.innerHTML = `<div class="flex items-center gap-3"><div class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">${sacola.icon.startsWith('http') ? `<img src="${sacola.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${sacola.icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>`}</div><div><h4 class="text-xs font-bold text-brand-900 dark:text-brand-100 leading-tight mb-0.5">Levar numa ${sacola.name}?</h4><p class="text-[10px] text-brand-700 dark:text-brand-300">Sugerido para ${totalItems} itens.</p></div></div><button onclick="updateQuantity('${sacola.id}', 1)" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-sm">+ Incluir</button>`;
                     els.cartItemsContainer.appendChild(sacolaEl);
                 }
             }
@@ -2221,299 +1521,115 @@
             els.cartTotalItems.textContent = totalItems;
             if (els.cartTotalValue) {
                 els.cartTotalValue.textContent = formatMoney(totalValue);
-                if (totalValue > State.userBalance) {
-                    els.cartTotalValue.classList.remove('text-brand-600'); els.cartTotalValue.classList.add('text-red-600');
-                    els.balanceWarning.classList.remove('hidden');
-                    els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5"></i> Saldo Insuficiente`;
-                } else {
-                    els.cartTotalValue.classList.remove('text-red-600'); els.cartTotalValue.classList.add('text-brand-600');
-                    els.balanceWarning.classList.add('hidden');
-                    els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i> Enviar Solicitação`;
-                }
+                if (totalValue > State.userBalance) { els.cartTotalValue.classList.remove('text-brand-600'); els.cartTotalValue.classList.add('text-red-600'); els.balanceWarning.classList.remove('hidden'); els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5"></i> Saldo Insuficiente`; } else { els.cartTotalValue.classList.remove('text-red-600'); els.cartTotalValue.classList.add('text-brand-600'); els.balanceWarning.classList.add('hidden'); els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i> Enviar Solicitação`; }
             }
-            els.mobileCartBadge.textContent = totalItems;
-            if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
-            lucide.createIcons();
+            els.mobileCartBadge.textContent = totalItems; if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden'); lucide.createIcons();
         }
 
         els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
+        const toggleSidebar = () => { const isClosed = els.cartSidebar.classList.contains('translate-x-full'); if (isClosed) { els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden'); setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); } else { els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.remove('opacity-100'); setTimeout(() => els.cartOverlay.classList.add('hidden'), 300); } };
+        els.mobileCartBtn.addEventListener('click', toggleSidebar); els.closeCartBtn.addEventListener('click', toggleSidebar); els.cartOverlay.addEventListener('click', toggleSidebar);
+        const setupDateInput = () => { const today = new Date(); const tzOffset = today.getTimezoneOffset() * 60000; const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0]; els.separationDate.min = localISOTime; els.separationDate.value = ""; els.btnToday.addEventListener('click', () => { els.separationDate.value = localISOTime; els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); }); els.separationDate.addEventListener('change', () => { if (els.separationDate.value) { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); } }); };
 
-        const toggleSidebar = () => {
-            const isClosed = els.cartSidebar.classList.contains('translate-x-full');
-            if (isClosed) {
-                els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden');
-                setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
-            } else {
-                els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.remove('opacity-100');
-                setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
-            }
-        };
-
-        els.mobileCartBtn.addEventListener('click', toggleSidebar);
-        els.closeCartBtn.addEventListener('click', toggleSidebar);
-        els.cartOverlay.addEventListener('click', toggleSidebar);
-
-        const setupDateInput = () => {
-            const today = new Date();
-            const tzOffset = today.getTimezoneOffset() * 60000;
-            const localISOTime = (new Date(today - tzOffset)).toISOString().split('T')[0];
-            els.separationDate.min = localISOTime; els.separationDate.value = ""; 
-            els.btnToday.addEventListener('click', () => { els.separationDate.value = localISOTime; els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); });
-            els.separationDate.addEventListener('change', () => { if (els.separationDate.value) { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); } });
-        };
-
-        // --- CHECKOUT COM WEBHOOK FIRE-AND-FORGET ---
         els.checkoutBtn.addEventListener('click', async () => {
-            if (!els.separationDate.value) {
-                els.separationDate.classList.add('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.remove('hidden'); els.separationDate.focus();
-                setTimeout(() => { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.add('hidden'); }, 3500); return;
-            }
-
-            let orderTotalValue = 0;
-            Object.keys(State.cart).forEach(id => {
-                const prod = State.products.find(p => p.id === id);
-                if (prod && prod.price) orderTotalValue += (prod.price * State.cart[id]);
-            });
-
+            if (!els.separationDate.value) { els.separationDate.classList.add('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.remove('hidden'); els.separationDate.focus(); setTimeout(() => { els.separationDate.classList.remove('border-red-500', 'ring-red-500'); els.dateErrorMsg.classList.add('hidden'); }, 3500); return; }
+            let orderTotalValue = 0; Object.keys(State.cart).forEach(id => { const prod = State.products.find(p => p.id === id); if (prod && prod.price) orderTotalValue += (prod.price * State.cart[id]); });
             const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Registrando...'; lucide.createIcons();
-            
             let orderItems = [];
 
             if (State.userId) {
                 try {
                     await supabaseClient.from('pedidos').insert({ id: orderId, usuario_id: State.userId, data_pedido: new Date().toISOString(), data_separacao: els.separationDate.value, observacoes: els.orderNotes.value, status: 'Enviado para Separação', valor_total: orderTotalValue });
-                    
-                    orderItems = Object.keys(State.cart).map(prodId => {
-                        const prod = State.products.find(p => p.id === prodId);
-                        return { pedido_id: orderId, produto_id: prodId, quantidade: State.cart[prodId], preco_unitario: prod && prod.price ? prod.price : 0 };
-                    });
-                    
+                    orderItems = Object.keys(State.cart).map(prodId => { const prod = State.products.find(p => p.id === prodId); return { pedido_id: orderId, produto_id: prodId, quantidade: State.cart[prodId], preco_unitario: prod && prod.price ? prod.price : 0 }; });
                     await supabaseClient.from('pedido_itens').insert(orderItems);
+                    State.userBalance -= orderTotalValue; await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
+                    for (let prodId of Object.keys(State.cart)) { const prod = State.products.find(p => p.id === prodId); if (prod) { prod.stock -= State.cart[prodId]; await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); } }
                     
-                    State.userBalance -= orderTotalValue;
-                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-
-                    for (let prodId of Object.keys(State.cart)) {
-                        const prod = State.products.find(p => p.id === prodId);
-                        if (prod) {
-                            prod.stock -= State.cart[prodId]; 
-                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); 
-                        }
-                    }
-
-                    // Webhook Rápido (Sem await)
                     try {
                         const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
-                        const webhookData = {
-                            orderId: orderId, userName: State.userName, date: new Date().toISOString(),
-                            separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação',
-                            items: orderItems.map(item => {
-                                const prod = State.products.find(p => p.id === item.produto_id);
-                                return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario };
-                            })
-                        };
+                        const webhookData = { orderId: orderId, userName: State.userName, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação', items: orderItems.map(item => { const prod = State.products.find(p => p.id === item.produto_id); return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; }) };
                         fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(webhookData) }).catch(()=>{});
                     } catch(e) { }
-
                 } catch (error) { console.error("Erro banco", error); }
             }
 
             State.ordersHistory.unshift({ id: orderId, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, items: { ...State.cart }, status: 'Enviado para Separação', valor_total: orderTotalValue });
-
-            State.cart = {}; els.orderNotes.value = ""; setupDateInput();
-            updateCartUI(); renderProducts(); initDashboard();
-            lastOrdersHash = JSON.stringify(State.ordersHistory);
+            State.cart = {}; els.orderNotes.value = ""; setupDateInput(); updateCartUI(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
             
-            els.successModal.classList.remove('hidden');
-            setTimeout(() => { els.successModalContent.classList.remove('scale-95', 'opacity-0'); els.successModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
+            els.successModal.classList.remove('hidden'); setTimeout(() => { els.successModalContent.classList.remove('scale-95', 'opacity-0'); els.successModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
             if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
         });
 
-        els.closeModalBtn.addEventListener('click', () => {
-            els.successModalContent.classList.remove('scale-100', 'opacity-100'); els.successModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.successModal.classList.add('hidden'); }, 300);
-        });
+        els.closeModalBtn.addEventListener('click', () => { els.successModalContent.classList.remove('scale-100', 'opacity-100'); els.successModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.successModal.classList.add('hidden'); }, 300); });
 
         const renderOrdersHistory = () => {
             els.ordersListContainer.innerHTML = '';
-            if (State.ordersHistory.length === 0) {
-                els.ordersListContainer.innerHTML = `<div class="py-12 flex flex-col items-center text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800"><i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-30"></i><p class="font-medium text-sm">Nenhuma solicitação realizada.</p></div>`;
-                lucide.createIcons(); return;
-            }
+            if (State.ordersHistory.length === 0) { els.ordersListContainer.innerHTML = `<div class="py-12 flex flex-col items-center text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800"><i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-30"></i><p class="font-medium text-sm">Nenhuma solicitação realizada.</p></div>`; lucide.createIcons(); return; }
             State.ordersHistory.forEach(order => {
-                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
-                const sepDateParts = order.separationDate.split('-');
-                const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
-                const isCancelled = order.status === 'Cancelado';
-                const isCompleted = order.status === 'Separação Concluída';
-                
-                const card = document.createElement('div');
-                card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors shadow-sm ${isCancelled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' : 'bg-slate-50 dark:bg-slate-900/30 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'}`;
-                
-                let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = State.products.find(p => p.id === id); 
-                    const name = productInfo ? productInfo.name : id;
-                    return `<li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0"><span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate pr-4">${name}</span><strong class="text-sm font-black text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-200 dark:border-slate-700">${order.items[id]} un.</strong></li>`;
-                }).join('');
-
-                const statusColors = {
-                    'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50',
-                    'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50',
-                    'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50'
-                };
-                const stColor = statusColors[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
-
+                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' }); const sepDateParts = order.separationDate.split('-'); const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; const isCancelled = order.status === 'Cancelado'; const isCompleted = order.status === 'Separação Concluída';
+                const card = document.createElement('div'); card.className = `border border-slate-200 dark:border-slate-700 rounded-xl p-4 relative transition-colors shadow-sm ${isCancelled ? 'bg-slate-100 dark:bg-slate-800/40 opacity-70 grayscale-[30%]' : 'bg-slate-50 dark:bg-slate-900/30 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'}`;
+                let itemsListHtml = Object.keys(order.items).map(id => { const productInfo = State.products.find(p => p.id === id); const name = productInfo ? productInfo.name : id; return `<li class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0"><span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate pr-4">${name}</span><strong class="text-sm font-black text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm border border-slate-200 dark:border-slate-700">${order.items[id]} un.</strong></li>`; }).join('');
+                const statusColors = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200 dark:bg-brand-900/30 dark:text-brand-400 dark:border-brand-800/50' }; const stColor = statusColors[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
                 card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-black text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded shadow-sm tracking-wider">${order.id}</span>
-                                <span class="text-[10px] font-bold ${stColor} px-2 py-1 rounded border">${order.status}</span>
-                            </div>
-                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-2">Para Separar: <span class="text-brand-600 dark:text-brand-400 font-bold">${sepDate}</span></div>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <strong class="text-lg font-black text-slate-800 dark:text-white">${formatMoney(order.valor_total)}</strong>
-                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3 h-3"></i> ${orderDate}</span>
-                        </div>
-                    </div>
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2"><div><div class="flex items-center gap-2 mb-1"><span class="text-xs font-black text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded shadow-sm tracking-wider">${order.id}</span><span class="text-[10px] font-bold ${stColor} px-2 py-1 rounded border">${order.status}</span></div><div class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-2">Para Separar: <span class="text-brand-600 dark:text-brand-400 font-bold">${sepDate}</span></div></div><div class="flex flex-col items-end"><strong class="text-lg font-black text-slate-800 dark:text-white">${formatMoney(order.valor_total)}</strong><span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3 h-3"></i> ${orderDate}</span></div></div>
                     ${order.notes ? `<div class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-amber-100 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-900/20 flex gap-3 items-start shadow-inner"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0"></i><p class="text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed font-medium">"${order.notes}"</p></div>` : ''}
-                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                        <div class="bg-slate-50 dark:bg-slate-700/50 px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 flex justify-between"><span>Itens Solicitados</span></div>
-                        <ul class="px-4 py-2 divide-y divide-slate-100 dark:divide-slate-700/50">${itemsListHtml}</ul>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-wrap justify-end gap-2">
-                        <button onclick="repeatOrder('${order.id}')" class="px-3 py-2 text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm mr-auto"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Pedir Novamente</button>
-                        ${!isCancelled && !isCompleted ? `
-                        <button onclick="editOrder('${order.id}')" class="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button>
-                        <button onclick="cancelOrder('${order.id}')" class="px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button>` : ''}
-                    </div>
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm"><div class="bg-slate-50 dark:bg-slate-700/50 px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 flex justify-between"><span>Itens Solicitados</span></div><ul class="px-4 py-2 divide-y divide-slate-100 dark:divide-slate-700/50">${itemsListHtml}</ul></div>
+                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-wrap justify-end gap-2"><button onclick="repeatOrder('${order.id}')" class="px-3 py-2 text-xs font-bold text-brand-700 dark:text-brand-300 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm mr-auto"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Pedir Novamente</button>
+                    ${!isCancelled && !isCompleted ? `<button onclick="editOrder('${order.id}')" class="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button>` : ''}</div>
                 `;
                 els.ordersListContainer.appendChild(card);
-            });
-            lucide.createIcons();
+            }); lucide.createIcons();
         };
 
-        const toggleOrdersModal = () => {
-            if (els.ordersModal.classList.contains('hidden')) {
-                renderOrdersHistory(); els.ordersModal.classList.remove('hidden');
-                setTimeout(() => { els.ordersModalContent.classList.remove('scale-95', 'opacity-0'); els.ordersModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-            } else {
-                els.ordersModalContent.classList.remove('scale-100', 'opacity-100'); els.ordersModalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => { els.ordersModal.classList.add('hidden'); }, 300);
-            }
-        };
+        const toggleOrdersModal = () => { if (els.ordersModal.classList.contains('hidden')) { renderOrdersHistory(); els.ordersModal.classList.remove('hidden'); setTimeout(() => { els.ordersModalContent.classList.remove('scale-95', 'opacity-0'); els.ordersModalContent.classList.add('scale-100', 'opacity-100'); }, 10); } else { els.ordersModalContent.classList.remove('scale-100', 'opacity-100'); els.ordersModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.ordersModal.classList.add('hidden'); }, 300); } };
 
         window.cancelOrder = function(orderId) {
             showActionConfirm('Cancelar Solicitação', 'Esta solicitação será cancelada. O saldo e o estoque dos produtos serão restaurados.', 'danger', 'Sim, Cancelar', async () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex];
-                let orderCost = parseFloat(order.valor_total || 0);
-                
-                Object.keys(order.items).forEach(itemId => {
-                    const product = State.products.find(p => p.id === itemId);
-                    if (product) { product.stock += order.items[itemId]; }
-                });
-                
+                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId); if(orderIndex === -1) return; const order = State.ordersHistory[orderIndex]; let orderCost = parseFloat(order.valor_total || 0);
+                Object.keys(order.items).forEach(itemId => { const product = State.products.find(p => p.id === itemId); if (product) { product.stock += order.items[itemId]; } });
                 State.userBalance += orderCost; order.status = 'Cancelado';
                 if (State.userId) {
                     try {
                         await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
                         await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                        for (let itemId of Object.keys(order.items)) {
-                            const product = State.products.find(p => p.id === itemId);
-                            if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
-                        }
-                        
-                        try {
-                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
-                            fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }).catch(()=>{});
-                        } catch (e) { }
-
+                        for (let itemId of Object.keys(order.items)) { const product = State.products.find(p => p.id === itemId); if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId); }
+                        try { const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec'; fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }).catch(()=>{}); } catch (e) { }
                     } catch(err) { console.error('Erro banco', err); }
                 }
-                
-                backgroundRefresh(); 
-                renderOrdersHistory(); renderProducts(); initDashboard();
-                lastOrdersHash = JSON.stringify(State.ordersHistory);
+                backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
             });
         };
 
         window.editOrder = function(orderId) {
             const proceedWithEdit = async () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId);
-                if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex];
-                let orderCost = parseFloat(order.valor_total || 0);
-                
-                Object.keys(order.items).forEach(itemId => {
-                    const product = State.products.find(p => p.id === itemId);
-                    if (product) { product.stock += order.items[itemId]; }
-                });
+                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId); if(orderIndex === -1) return; const order = State.ordersHistory[orderIndex]; let orderCost = parseFloat(order.valor_total || 0);
+                Object.keys(order.items).forEach(itemId => { const product = State.products.find(p => p.id === itemId); if (product) { product.stock += order.items[itemId]; } });
                 State.userBalance += orderCost;
-                
-                if (State.userId) {
-                    try {
-                        await supabaseClient.from('pedidos').delete().eq('id', orderId); 
-                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                        for (let itemId of Object.keys(order.items)) {
-                            const product = State.products.find(p => p.id === itemId);
-                            if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId);
-                        }
-                    } catch (err) {}
-                }
-                
-                State.cart = { ...order.items }; els.separationDate.value = order.separationDate; els.orderNotes.value = order.notes || '';
-                State.ordersHistory.splice(orderIndex, 1);
-                
-                backgroundRefresh(); 
-                renderOrdersHistory(); renderProducts(); initDashboard(); updateCartUI();
-                lastOrdersHash = JSON.stringify(State.ordersHistory);
-                
+                if (State.userId) { try { await supabaseClient.from('pedidos').delete().eq('id', orderId); await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId); for (let itemId of Object.keys(order.items)) { const product = State.products.find(p => p.id === itemId); if (product) await supabaseClient.from('produtos').update({ estoque: product.stock }).eq('id', itemId); } } catch (err) {} }
+                State.cart = { ...order.items }; els.separationDate.value = order.separationDate; els.orderNotes.value = order.notes || ''; State.ordersHistory.splice(orderIndex, 1);
+                backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); updateCartUI(); lastOrdersHash = JSON.stringify(State.ordersHistory);
                 toggleOrdersModal(); if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
             };
-            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho Atual', 'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?', 'warning', 'Sim, Substituir', proceedWithEdit);
-            else proceedWithEdit(); 
+            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho Atual', 'Você já possui itens no seu carrinho atual. Ao alterar este pedido antigo, seus itens atuais serão perdidos. Deseja continuar?', 'warning', 'Sim, Substituir', proceedWithEdit); else proceedWithEdit(); 
         };
 
         window.repeatOrder = function(orderId) {
-            const order = State.ordersHistory.find(o => o.id === orderId);
-            if(!order) return;
-            
+            const order = State.ordersHistory.find(o => o.id === orderId); if(!order) return;
             const proceedWithRepeat = () => {
-                State.cart = {};
-                let missingItems = [];
+                State.cart = {}; let missingItems = [];
                 Object.keys(order.items).forEach(itemId => {
                     const product = State.products.find(p => p.id === itemId);
-                    if(product && product.ativo) {
-                        const qtyWanted = order.items[itemId];
-                        if(product.stock >= qtyWanted) { State.cart[itemId] = qtyWanted; } 
-                        else if(product.stock > 0) { State.cart[itemId] = product.stock; missingItems.push(`${product.name} (estoque reduzido)`); }
-                        else { missingItems.push(`${product.name} (esgotado)`); }
-                    } else { missingItems.push(`Item #${itemId} (indisponível)`); }
+                    if(product && product.ativo) { const qtyWanted = order.items[itemId]; if(product.stock >= qtyWanted) { State.cart[itemId] = qtyWanted; } else if(product.stock > 0) { State.cart[itemId] = product.stock; missingItems.push(`${product.name} (estoque reduzido)`); } else { missingItems.push(`${product.name} (esgotado)`); } } else { missingItems.push(`Item indisponível`); }
                 });
-                
-                updateCartUI();
-                toggleOrdersModal();
-                if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
-                
-                if(missingItems.length > 0) {
-                    setTimeout(() => alert("Alguns itens foram ajustados no carrinho devido à falta de estoque:\n- " + missingItems.join("\n- ")), 500);
-                }
+                updateCartUI(); toggleOrdersModal(); if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
+                if(missingItems.length > 0) { setTimeout(() => alert("Alguns itens foram ajustados no carrinho devido à falta de estoque:\n- " + missingItems.join("\n- ")), 500); }
             };
-            if(Object.keys(State.cart).length > 0) showActionConfirm('Limpar Carrinho Atual', 'Para repetir este pedido, precisamos limpar seu carrinho atual. Deseja continuar?', 'warning', 'Sim, Repetir', proceedWithRepeat);
-            else proceedWithRepeat();
+            if(Object.keys(State.cart).length > 0) showActionConfirm('Limpar Carrinho Atual', 'Para repetir este pedido, precisamos limpar seu carrinho atual. Deseja continuar?', 'warning', 'Sim, Repetir', proceedWithRepeat); else proceedWithRepeat();
         };
 
-        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal);
-        els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkAuth(); lucide.createIcons();
-        });
+        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal); els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal); els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
+        window.addEventListener('DOMContentLoaded', () => { checkAuth(); lucide.createIcons(); });
     </script>
 </body>
 </html>
