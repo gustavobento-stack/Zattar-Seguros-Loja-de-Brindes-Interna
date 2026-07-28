@@ -729,7 +729,7 @@
             sortBy: "relevancia",
             ordersHistory: [], 
             userBalance: 0,
-            isAdmin: false // Adicionado para controle de UI ADM
+            isAdmin: false
         };
 
         const AdminState = {
@@ -926,13 +926,12 @@
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 
-                // Busca dados adicionais, incluindo admin
                 const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo, admin').eq('id', State.userId).single();
                 if (userData) {
                     State.userBalance = parseFloat(userData.saldo || 0);
                     State.userName = userData.nome || formattedName;
                     State.userRole = userData.cargo || 'Comercial';
-                    State.isAdmin = userData.admin || false;
+                    State.isAdmin = userData.admin === true;
                 } else {
                     State.userName = formattedName;
                     State.userRole = 'Comercial';
@@ -976,14 +975,14 @@
             
             try {
                 const { data, error } = await supabaseClient.functions.invoke('verify-hcaptcha', {
-                    body: { response: hcaptchaResponse },
+                    body: { response: hcaptchaResponse }
                 });
 
-                if (error || (data && !data.success)) {
+                if (error || (data && data.success === false)) {
                     throw new Error("Captcha inválido de acordo com a verificação da API.");
                 }
             } catch (err) {
-                console.warn("Aviso na verificação do hCaptcha:", err);
+                console.warn("Aviso na verificação edge do hCaptcha:", err);
                 if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
                 els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Falha na verificação do Captcha. Tente novamente.</span>';
@@ -992,13 +991,15 @@
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
-                return; // Impede o login se falhar
+                return;
             }
             
             const { error } = await supabaseClient.auth.signInWithPassword({
                 email: els.loginEmail.value,
                 password: els.loginPassword.value,
-                // Não precisa mais enviar para o Auth Options se a validação custom já foi feita antes
+                options: {
+                    captchaToken: hcaptchaResponse
+                }
             });
             
             if (error) {
@@ -1212,7 +1213,7 @@
                         State.userBalance = parseFloat(userData.saldo || 0);
                         State.userName = userData.nome || State.userName;
                         State.userRole = userData.cargo || State.userRole;
-                        State.isAdmin = userData.admin || false;
+                        State.isAdmin = userData.admin === true;
                         els.userNameDisplay.textContent = State.userName;
                         if(els.userRoleDisplay) els.userRoleDisplay.textContent = State.userRole;
                     }
@@ -1261,8 +1262,8 @@
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
                 const menu = els.customContextMenu;
-                // Mostra a opção de Admin apenas se o usuário estiver logado e tiver admin=true
-                if(State.userId && State.isAdmin && !els.loginScreen.classList.contains('hidden') === false) {
+                const isLoginHidden = els.loginScreen.classList.contains('hidden');
+                if(State.userId && State.isAdmin && isLoginHidden) {
                     els.contextAdminMode.classList.remove('hidden');
                 } else {
                     els.contextAdminMode.classList.add('hidden');
@@ -1282,13 +1283,11 @@
 
         els.contextAdminMode.addEventListener('click', () => {
             els.customContextMenu.classList.add('hidden');
-            // Remove a requisição de senha, abre direto se for admin
             if (State.isAdmin) {
                 els.adminScreen.classList.remove('hidden');
                 initialAdminLoad();
             }
         });
-
 
         els.closeAdminBtn.addEventListener('click', () => {
             showActionConfirm('Sair do Painel ADM', 'Deseja encerrar a visão de administrador e voltar ao sistema comum?', 'warning', 'Sair do ADM', () => {
@@ -2319,13 +2318,11 @@
                 if (prod && prod.price) orderTotalValue += (prod.price * State.cart[id]);
             });
 
-            // Ajuste na animação/popup e tempo de processamento
             els.checkoutBtn.disabled = true; 
             els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...'; 
             lucide.createIcons();
             
-            // Força um pequeno delay para garantir que a UI tenha atualizado o botão antes do processamento pesado
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 50));
 
             const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             let orderItems = [];
@@ -2344,15 +2341,16 @@
                     State.userBalance -= orderTotalValue;
                     await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
 
-                    for (let prodId of Object.keys(State.cart)) {
+                    const updatePromises = Object.keys(State.cart).map(async prodId => {
                         const prod = State.products.find(p => p.id === prodId);
                         if (prod) {
                             prod.stock -= State.cart[prodId]; 
-                            await supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); 
+                            return supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); 
                         }
-                    }
+                    });
+                    await Promise.all(updatePromises);
 
-                    // Dispara webhook assíncrono para não travar a UI
+                    // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ASYNC ---
                     setTimeout(async () => {
                         try {
                             const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
@@ -2376,14 +2374,14 @@
                                 body: JSON.stringify(webhookData) 
                             });
                         } catch(webhookErr) { console.error('Erro local Webhook', webhookErr); }
-                    }, 500); // 500ms de delay
+                    }, 100);
 
                 } catch (error) { 
                     console.error("Erro banco", error); 
                     els.checkoutBtn.disabled = false;
-                    els.checkoutBtn.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i> Erro ao Enviar`;
+                    els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
                     lucide.createIcons();
-                    return; // Interrompe se deu erro no DB
+                    return; 
                 }
             }
 
@@ -2395,7 +2393,6 @@
             lastOrdersHash = JSON.stringify(State.ordersHistory);
             
             els.successModal.classList.remove('hidden');
-            // Remove o delay grande do setTimeout, mostra o popup rapidamente
             requestAnimationFrame(() => {
                 els.successModalContent.classList.remove('scale-95', 'opacity-0'); 
                 els.successModalContent.classList.add('scale-100', 'opacity-100'); 
