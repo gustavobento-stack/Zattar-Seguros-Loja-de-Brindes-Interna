@@ -974,48 +974,47 @@
             lucide.createIcons();
             
             try {
-                // Invocação da Edge Function para validação segura (o token de resposta vai no body)
+                // Invocação da Edge Function
                 const { data, error } = await supabaseClient.functions.invoke('verify-hcaptcha', {
                     body: { response: hcaptchaResponse }
                 });
 
+                // Verifica se a requisição deu erro ou se a Edge Function respondeu com success: false
                 if (error || (data && data.success === false)) {
-                    throw new Error("Captcha inválido de acordo com a verificação da API.");
+                     throw new Error("Captcha inválido de acordo com a verificação da API.");
                 }
+                
+                // --- LOGIN NO SUPABASE ---
+                const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+                    email: els.loginEmail.value,
+                    password: els.loginPassword.value,
+                });
+                
+                if (signInError) {
+                    if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
+                    els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
+                    els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
+                    els.loginErrorMsg.classList.remove('hidden');
+                    
+                    els.loginSubmitBtn.disabled = false;
+                    els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+                    lucide.createIcons();
+                } else {
+                    els.loginSubmitBtn.innerHTML = '<span>Entrando...</span> <i data-lucide="check" class="w-4 h-4"></i>';
+                    lucide.createIcons();
+                    checkAuth();
+                }
+
             } catch (err) {
-                console.warn("Aviso na verificação edge do hCaptcha:", err);
+                console.error("Erro no processo de login:", err);
                 if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Falha na verificação do Captcha. Tente novamente.</span>';
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Falha ao validar. Tente novamente.</span>';
                 els.loginErrorMsg.classList.remove('hidden');
                 
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
-                return; 
-            }
-            
-            const { error } = await supabaseClient.auth.signInWithPassword({
-                email: els.loginEmail.value,
-                password: els.loginPassword.value,
-                options: {
-                    captchaToken: hcaptchaResponse
-                }
-            });
-            
-            if (error) {
-                if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
-                els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
-                els.loginErrorMsg.classList.remove('hidden');
-                
-                els.loginSubmitBtn.disabled = false;
-                els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
-                lucide.createIcons();
-            } else {
-                els.loginSubmitBtn.innerHTML = '<span>Entrando...</span> <i data-lucide="check" class="w-4 h-4"></i>';
-                lucide.createIcons();
-                checkAuth();
             }
         });
 
