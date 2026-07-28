@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Portal de Brindes</title>
+    <title>Painel ADM Brindes</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -15,9 +15,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' }
-                    }
+                    colors: { brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' } }
                 }
             }
         }
@@ -32,19 +30,16 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); } 
+        else { document.documentElement.classList.remove('dark'); }
     </script>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans h-screen flex flex-col overflow-hidden transition-colors duration-300 relative">
 
-    <!-- TELA DE LOADING E VALIDAÇÃO ADM -->
-    <div id="loaderScreen" class="fixed inset-0 z-[999] bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-300">
-        <i data-lucide="loader-2" class="w-8 h-8 text-brand-500 animate-spin mb-4"></i>
-        <span class="text-slate-500 font-medium text-sm">Validando permissões de acesso...</span>
+    <div id="loaderScreen" class="fixed inset-0 z-[999] bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-300 px-4">
+        <i data-lucide="loader-2" class="w-8 h-8 text-brand-500 animate-spin mb-4" id="loaderIcon"></i>
+        <span class="text-slate-500 font-medium text-sm text-center" id="loaderText">Validando permissões de acesso...</span>
+        <div id="loaderError" class="hidden mt-4 p-6 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 rounded-2xl text-center max-w-sm w-full shadow-2xl"></div>
     </div>
 
     <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex justify-between items-center z-10 transition-colors duration-300 shadow-sm">
@@ -60,60 +55,50 @@
             <button id="openAdminProductsBtn" class="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 border border-transparent text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
                 <i data-lucide="package" class="w-4 h-4"></i> <span class="hidden sm:inline">Catálogo</span>
             </button>
-            <button id="closeAdminBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                <i data-lucide="store" class="w-4 h-4"></i> <span class="hidden sm:inline">Voltar p/ Loja</span>
-            </button>
-            <button id="logoutBtnAdmin" class="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
+            <button id="closeAdminBtn" onclick="safeNavigate('index.html')" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                <i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Voltar ao Comercial</span>
             </button>
         </div>
     </header>
 
     <div class="flex-1 overflow-y-auto p-6 lg:p-10 relative">
-        <div id="adminContent" class="hidden max-w-7xl mx-auto space-y-8 transition-opacity duration-500">
+        <div id="adminContent" class="hidden max-w-7xl mx-auto space-y-8 transition-opacity duration-300 opacity-0">
             <!-- Cards ADM -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden group relative">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 pointer-events-none"></div>
-                    <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center border border-red-100"><i data-lucide="trending-down" class="w-7 h-7"></i></div>
-                    <div><p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Custo Total Gerado</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalSpent">R$ 0,00</h3></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden relative group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-110"></div>
+                    <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center shrink-0 border border-red-100 dark:border-red-800/50"><i data-lucide="trending-down" class="w-7 h-7"></i></div>
+                    <div><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Custo Total Gerado</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalSpent">R$ 0,00</h3></div>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden group relative">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 pointer-events-none"></div>
-                    <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center border border-blue-100"><i data-lucide="layers" class="w-7 h-7"></i></div>
-                    <div><p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Total de Pedidos</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalOrders">0</h3></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden relative group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-110"></div>
+                    <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/50"><i data-lucide="layers" class="w-7 h-7"></i></div>
+                    <div><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total de Pedidos</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalOrders">0</h3></div>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden group relative">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110 pointer-events-none"></div>
-                    <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-100"><i data-lucide="package-check" class="w-7 h-7"></i></div>
-                    <div><p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Itens Movimentados</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalItems">0 un.</h3></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5 overflow-hidden relative group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-110"></div>
+                    <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800/50"><i data-lucide="package-check" class="w-7 h-7"></i></div>
+                    <div><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Itens Movimentados</p><h3 class="text-3xl font-black text-slate-800 dark:text-white" id="admTotalItems">0 un.</h3></div>
                 </div>
             </div>
 
-            <!-- Tabelas Detalhadas -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Consumo por Usuário -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[550px]">
                     <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Desempenho por Usuário</h3>
-                            <p class="text-xs text-slate-500 mt-1">Busque, ordene e gerencie o time.</p>
-                        </div>
+                        <div><h3 class="font-bold flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-brand-600"></i> Desempenho por Usuário</h3></div>
                         <div class="flex items-center gap-2">
-                            <div class="relative w-full sm:w-48">
-                                <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i>
-                                <input type="text" id="admUserSearchInput" placeholder="Buscar usuário..." class="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border rounded-lg text-xs outline-none focus:border-brand-500">
-                            </div>
-                            <button id="admExportUsersBtn" title="Exportar CSV" class="p-2 bg-white dark:bg-slate-800 border rounded-lg hover:bg-slate-50 text-slate-600 shadow-sm"><i data-lucide="download" class="w-4 h-4"></i></button>
+                            <div class="relative w-full sm:w-48"><i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5"></i><input type="text" id="admUserSearchInput" placeholder="Buscar usuário..." class="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-xs outline-none focus:border-brand-500"></div>
+                            <button id="admExportUsersBtn" title="Exportar CSV" class="p-2 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"><i data-lucide="download" class="w-4 h-4 text-slate-600 dark:text-slate-300"></i></button>
                         </div>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-0 no-scrollbar relative">
+                    <div class="flex-1 overflow-y-auto no-scrollbar relative">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-white dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
-                                <tr class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b select-none">
-                                    <th class="p-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors group" onclick="sortAdmUsers('name')"><div class="flex items-center gap-1">Usuário <i data-lucide="arrow-down-up" id="sort-icon-name" class="w-3 h-3 text-slate-300"></i></div></th>
-                                    <th class="p-4 py-3 text-right cursor-pointer hover:bg-slate-50 transition-colors group" onclick="sortAdmUsers('balance')"><div class="flex items-center justify-end gap-1">Budget <i data-lucide="arrow-down-up" id="sort-icon-balance" class="w-3 h-3 text-slate-300"></i></div></th>
-                                    <th class="p-4 py-3 text-right cursor-pointer hover:bg-slate-50 transition-colors group" onclick="sortAdmUsers('spent')"><div class="flex items-center justify-end gap-1">Gasto <i data-lucide="arrow-down-up" id="sort-icon-spent" class="w-3 h-3 text-slate-300"></i></div></th>
+                                <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 select-none">
+                                    <th class="p-4 py-3 cursor-pointer group" onclick="sortAdmUsers('name')"><div class="flex items-center gap-1">Usuário <i data-lucide="arrow-down-up" id="sort-icon-name" class="w-3 h-3"></i></div></th>
+                                    <th class="p-4 py-3 text-right cursor-pointer group" onclick="sortAdmUsers('balance')"><div class="flex items-center justify-end gap-1">Budget <i data-lucide="arrow-down-up" id="sort-icon-balance" class="w-3 h-3"></i></div></th>
+                                    <th class="p-4 py-3 text-right cursor-pointer group" onclick="sortAdmUsers('spent')"><div class="flex items-center justify-end gap-1">Gasto <i data-lucide="arrow-down-up" id="sort-icon-spent" class="w-3 h-3"></i></div></th>
                                 </tr>
                             </thead>
                             <tbody id="admUsersTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
@@ -124,17 +109,16 @@
                 <!-- Pedidos do Dia -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-[550px]">
                     <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center gap-2">
-                        <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="calendar-clock" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Pedidos</h3>
-                            <p class="text-xs text-slate-500 mt-1">Acompanhamento logístico diário</p>
-                        </div>
-                        <input type="date" id="admDailyDate" class="px-3 py-2 bg-white dark:bg-slate-800 border rounded-lg text-xs font-semibold outline-none w-[140px] shadow-sm">
+                        <div><h3 class="font-bold flex items-center gap-2"><i data-lucide="calendar-clock" class="w-5 h-5 text-brand-600"></i> Pedidos</h3></div>
+                        <input type="date" id="admDailyDate" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-semibold outline-none w-[140px]">
                     </div>
-                    <div class="flex-1 overflow-y-auto p-0 no-scrollbar relative">
+                    <div class="flex-1 overflow-y-auto no-scrollbar relative">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-white dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
-                                <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200">
-                                    <th class="p-4 py-3">ID / Hora</th><th class="p-4 py-3">Usuário</th><th class="p-4 py-3 text-center">Status</th>
+                                <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                    <th class="p-4 py-3">ID / Hora</th>
+                                    <th class="p-4 py-3">Usuário</th>
+                                    <th class="p-4 py-3 text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="admDailyOrdersTable" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-sm"></tbody>
@@ -145,105 +129,83 @@
         </div>
     </div>
 
-    <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="actionConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer"><i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i></div>
-            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
-            <p class="text-center text-slate-500 mb-6 text-sm" id="actionConfirmText">Tem certeza?</p>
-            <div class="flex gap-3">
-                <button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl">Voltar</button>
-                <button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white font-semibold rounded-xl shadow-sm">Confirmar</button>
+    <!-- Modal Detalhes do Usuário ADM -->
+    <div id="adminUserDetailsModal" class="fixed inset-0 z-[1100] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminUserDetailsModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-4xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[90vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminUserDetailsModalContent">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-700 pb-5">
+                <div>
+                    <h3 class="text-2xl font-bold flex items-center gap-3">
+                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center border border-brand-100"><i data-lucide="user" class="w-5 h-5 text-brand-600"></i></div>
+                        <span id="adminUserDetailName">Usuário</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2 ml-13" id="adminUserDetailRole">Comercial</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="openEditUserBtn" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold transition-colors border border-transparent"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Editar Perfil</button>
+                    <button id="closeAdminUserModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
             </div>
-        </div>
-    </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 mb-6 shrink-0">
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 flex-1 relative overflow-hidden">
+                    <p class="text-[11px] text-emerald-700 font-bold uppercase tracking-widest">Saldo Restante</p>
+                    <p class="text-3xl font-black text-emerald-800 mt-1" id="adminUserDetailBalance">R$ 0,00</p>
+                </div>
+                <div class="bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-red-100 flex-1 relative overflow-hidden">
+                    <p class="text-[11px] text-red-700 font-bold uppercase tracking-widest">Custo Gerado</p>
+                    <p class="text-3xl font-black text-red-800 mt-1" id="adminUserDetailSpent">R$ 0,00</p>
+                </div>
+            </div>
 
-    <div id="logoutConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="logoutConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4"><i data-lucide="log-out" class="h-8 w-8 text-red-500"></i></div>
-            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
-            <p class="text-center text-slate-500 mb-6 text-sm">Tem certeza que deseja desconectar sua conta?</p>
-            <div class="flex gap-3">
-                <button id="logoutCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl">Cancelar</button>
-                <button id="logoutConfirmBtn" class="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-xl">Sim, sair</button>
-            </div>
+            <h4 class="font-bold mb-4 flex items-center gap-2 tracking-wide shrink-0"><i data-lucide="list-ordered" class="w-5 h-5 text-slate-400"></i> Pedidos Solicitados</h4>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-5 rounded-xl" id="adminUserOrdersList"></div>
         </div>
     </div>
 
     <!-- Modal Editar Usuário ADM -->
     <div id="adminEditUserModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminEditUserModalContent">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="user-cog" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Editar Usuário</h3>
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminEditUserModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="adminEditUserModalContent">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="user-cog" class="w-5 h-5 text-brand-600"></i> Editar Usuário</h3>
             <div class="space-y-4">
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome Completo</label><input type="text" id="editUserName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cargo / Setor</label><input type="text" id="editUserRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Saldo (R$)</label><input type="number" id="editUserBalance" step="0.01" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
-            </div>
-            <div class="flex gap-3 mt-6">
-                <button id="cancelEditUserBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
-                <button id="saveEditUserBtn" class="flex-1 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">Salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Editar Produto ADM -->
-    <div id="adminEditProductModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminEditProductModalContent">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Editar Produto</h3>
-            <div class="space-y-4">
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome do Produto</label><input type="text" id="editProdName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
-                <div class="flex gap-4">
-                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Estoque Físico</label><input type="number" id="editProdStock" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
-                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Preço Unit. (R$)</label><input type="number" step="0.01" id="editProdPrice" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nome Completo</label>
+                    <input type="text" id="editUserName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Ícone ou Link da Imagem</label>
-                    <input type="text" id="editProdIcon" placeholder="Ex: box ou https://i.imgur.com/img.png" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Cargo / Setor</label>
+                    <input type="text" id="editUserRole" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Status no Catálogo</label>
-                    <select id="editProdStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none">
-                        <option value="ativo">🟢 Ativo (Visível para o time)</option><option value="pausado">🔴 Pausado (Oculto / Bloqueado)</option>
-                    </select>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Saldo (R$)</label>
+                    <input type="number" id="editUserBalance" step="0.01" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm outline-none">
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
-                <button id="cancelEditProdBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold transition-colors">Cancelar</button>
-                <button id="saveEditProdBtn" class="flex-1 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">Salvar Alterações</button>
+                <button id="cancelEditUserBtn" class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold">Cancelar</button>
+                <button id="saveEditUserBtn" class="flex-1 px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2">Salvar</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal Visualização de Pedido ADM -->
-    <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminSingleOrderModalContent">
-            <div class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4">
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i> Detalhes do Pedido</h3>
-                <button id="closeSingleOrderModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody"></div>
         </div>
     </div>
 
     <!-- Modal Gerenciar Produtos ADM -->
     <div id="adminProductsModal" class="fixed inset-0 z-[1150] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-5xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminProductsModalContent">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminProductsModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-5xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300" id="adminProductsModalContent">
             <div class="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-700 pb-5">
                 <div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3"><div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center border"><i data-lucide="package" class="w-5 h-5 text-brand-600"></i></div>Gerenciamento de Catálogo</h3>
+                    <h3 class="text-2xl font-bold flex items-center gap-3"><div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center border border-brand-100"><i data-lucide="package" class="w-5 h-5 text-brand-600"></i></div>Gerenciamento de Catálogo</h3>
                     <p class="text-sm text-slate-500 mt-2 ml-13">Altere nomes, preços, estoque ou pause produtos.</p>
                 </div>
-                <button id="closeAdminProductsBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <button id="closeAdminProductsBtn" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto no-scrollbar border border-slate-200 dark:border-slate-700 rounded-xl relative bg-slate-50 dark:bg-slate-900/50">
+            <div class="flex-1 overflow-y-auto no-scrollbar border rounded-xl relative bg-slate-50 dark:bg-slate-900/50">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-100 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
-                        <tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b"><th class="p-4 py-3">Produto</th><th class="p-4 py-3 text-center">Estoque Atual</th><th class="p-4 py-3 text-right">Preço (R$)</th><th class="p-4 py-3 text-center">Status</th><th class="p-4 py-3 text-right">Ação</th></tr>
+                        <tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b">
+                            <th class="p-4 py-3">Produto</th><th class="p-4 py-3 text-center">Estoque Atual</th><th class="p-4 py-3 text-right">Preço (R$)</th><th class="p-4 py-3 text-center">Status</th><th class="p-4 py-3 text-right">Ação</th>
+                        </tr>
                     </thead>
                     <tbody id="adminProductsList" class="divide-y divide-slate-200 dark:divide-slate-700/50 text-sm bg-white dark:bg-slate-800"></tbody>
                 </table>
@@ -251,59 +213,68 @@
         </div>
     </div>
 
-    <!-- Modal Detalhes do Usuário ADM -->
-    <div id="adminUserDetailsModal" class="fixed inset-0 z-[1100] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-4xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[90vh] transform scale-95 opacity-0 transition-all duration-300 border border-slate-100 dark:border-slate-700" id="adminUserDetailsModalContent">
-            <div class="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-700 pb-5">
-                <div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3"><div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center border"><i data-lucide="user" class="w-5 h-5 text-brand-600"></i></div><span id="adminUserDetailName">Usuário</span></h3>
-                    <p class="text-sm text-slate-500 mt-2 ml-13" id="adminUserDetailRole">Comercial</p>
+    <!-- Modal Editar Produto ADM -->
+    <div id="adminEditProductModal" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg" id="adminEditProductModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="adminEditProductModalContent">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5 text-brand-600"></i> Editar Produto</h3>
+            <div class="space-y-4">
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome do Produto</label><input type="text" id="editProdName" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
+                <div class="flex gap-4">
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Estoque Físico</label><input type="number" id="editProdStock" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Preço Unit. (R$)</label><input type="number" step="0.01" id="editProdPrice" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button id="openEditUserBtn" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Editar Perfil</button>
-                    <button id="closeAdminUserModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ícone ou Link da Imagem</label><input type="text" id="editProdIcon" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status no Catálogo</label><select id="editProdStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none"><option value="ativo">🟢 Ativo (Visível)</option><option value="pausado">🔴 Pausado (Oculto)</option></select></div>
             </div>
-            
-            <div class="flex flex-col sm:flex-row gap-4 mb-6 shrink-0">
-                <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-100 flex-1 relative overflow-hidden"><p class="text-[11px] text-emerald-700 font-bold uppercase tracking-widest">Saldo Restante</p><p class="text-3xl font-black text-emerald-800 mt-1" id="adminUserDetailBalance">R$ 0,00</p></div>
-                <div class="bg-red-50 p-5 rounded-2xl border border-red-100 flex-1 relative overflow-hidden"><p class="text-[11px] text-red-700 font-bold uppercase tracking-widest">Custo Gerado</p><p class="text-3xl font-black text-red-800 mt-1" id="adminUserDetailSpent">R$ 0,00</p></div>
+            <div class="flex gap-3 mt-6">
+                <button id="cancelEditProdBtn" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200 rounded-xl text-sm font-semibold">Cancelar</button>
+                <button id="saveEditProdBtn" class="flex-1 px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2">Salvar Alterações</button>
             </div>
-
-            <h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2 tracking-wide shrink-0"><i data-lucide="list-ordered" class="w-5 h-5 text-slate-400"></i> Pedidos Solicitados</h4>
-            <div class="flex-1 overflow-y-auto pr-2 space-y-5 rounded-xl" id="adminUserOrdersList"></div>
         </div>
     </div>
 
-    <!-- Menu de Contexto (Botão Direito) -->
-    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border shadow-xl rounded-xl py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
-        <button class="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextReload">
-            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
-        </button>
-        <button class="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextTheme">
-            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
-        </button>
-        <div class="h-px bg-slate-100 dark:bg-slate-700/50 my-1"></div>
-        <button class="w-full text-left px-4 py-2.5 text-brand-600 hover:bg-brand-50 flex items-center gap-3 font-bold" id="contextStoreMode">
-            <i data-lucide="store" class="w-4 h-4"></i> Voltar para Loja
-        </button>
+    <!-- Modal Visualização e Edição de Pedido Individual ADM -->
+    <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="adminSingleOrderModalBg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transform scale-95 opacity-0 transition-all duration-300" id="adminSingleOrderModalContent">
+            <div class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-brand-600"></i> Detalhes do Pedido</h3>
+                <button id="closeSingleOrderModalBtn" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody"></div>
+        </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="admToast" class="fixed bottom-6 right-6 bg-slate-900 border text-white px-5 py-4 rounded-2xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-500 z-[9999] flex items-center gap-4 hidden cursor-pointer hover:bg-slate-800" onclick="this.classList.add('translate-y-24', 'opacity-0'); setTimeout(() => this.classList.add('hidden'), 500);">
-        <div class="w-10 h-10 bg-brand-500/20 rounded-full flex items-center justify-center border shrink-0"><i data-lucide="bell-ring" class="w-5 h-5 text-brand-400 animate-bounce"></i></div>
+    <!-- Modal Ação Global ADM -->
+    <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="actionConfirmModalContent">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer"><i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i></div>
+            <h3 class="text-xl font-bold text-center mb-2" id="actionConfirmTitle">Atenção</h3>
+            <p class="text-center text-slate-500 mb-6 text-sm" id="actionConfirmText">Tem certeza?</p>
+            <div class="flex gap-3">
+                <button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200 font-semibold rounded-xl">Voltar</button>
+                <button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white font-semibold rounded-xl shadow-sm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION NOVO PEDIDO -->
+    <div id="admToast" class="fixed bottom-6 right-6 bg-slate-900 dark:bg-slate-800 border border-brand-500/30 text-white px-5 py-4 rounded-2xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-500 z-[9999] flex items-center gap-4 hidden cursor-pointer hover:bg-slate-800 transition-colors" onclick="this.classList.add('translate-y-24', 'opacity-0'); setTimeout(() => this.classList.add('hidden'), 500);">
+        <div class="w-10 h-10 bg-brand-500/20 rounded-full flex items-center justify-center border border-brand-500/50 shrink-0"><i data-lucide="bell-ring" class="w-5 h-5 text-brand-400 animate-bounce"></i></div>
         <div><p class="text-sm font-bold text-white mb-0.5">Novo Pedido!</p><p class="text-xs text-slate-300" id="admToastText">Verifique o painel.</p></div>
     </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+        // === CONEXÃO SUPABASE ===
         const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        const State = { products: [] }; // O admin precisa dos produtos apenas para visualizar os pedidos
+        const State = { products: [] };
         const AdminState = { users: [], orders: [], userStats: {}, itemStats: {}, lastKnownOrderId: null, userSearchQuery: "", userSortBy: "spent", userSortDesc: true };
 
         let lastAdminHash = "";
@@ -313,6 +284,7 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
+        // Função de Navegação Segura (Evita quebra no Sandbox e iFrames)
         function safeNavigate(url) {
             try {
                 window.location.href = url;
@@ -322,9 +294,9 @@
                     <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
                         <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
                             <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento</h2>
-                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação para:<br><strong class="text-brand-600">${url}</strong></p>
-                            <p class="text-sm text-slate-400">Em produção real, você seria redirecionado normalmente.</p>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento Protegido</h2>
+                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação automática. <br>Você seria redirecionado para:<br><strong class="text-brand-600">${url}</strong></p>
+                            <p class="text-sm text-slate-400">Em produção real, você será redirecionado normalmente.</p>
                         </div>
                     </div>
                 `;
@@ -332,37 +304,57 @@
             }
         }
 
+        // Função de Erro Visual na Tela
+        function showAuthError(msg) {
+            const icon = document.getElementById('loaderIcon');
+            const text = document.getElementById('loaderText');
+            const errDiv = document.getElementById('loaderError');
+            
+            if(icon) icon.classList.add('hidden');
+            if(text) text.classList.add('hidden');
+            if(errDiv) {
+                errDiv.innerHTML = `
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 mb-4 text-red-500">
+                        <i data-lucide="shield-alert" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Acesso Negado</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">${msg}</p>
+                    <button onclick="safeNavigate('index.html')" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold shadow-sm transition-colors">Voltar para a Loja</button>
+                `;
+                errDiv.classList.remove('hidden');
+                lucide.createIcons();
+            } else {
+                safeNavigate('index.html');
+            }
+        }
+
         const els = {
-            closeAdminBtn: document.getElementById('closeAdminBtn'), adminContent: document.getElementById('adminContent'),
-            admTotalSpent: document.getElementById('admTotalSpent'), admTotalOrders: document.getElementById('admTotalOrders'),
-            admTotalItems: document.getElementById('admTotalItems'), admUsersTable: document.getElementById('admUsersTable'),
-            admDailyDate: document.getElementById('admDailyDate'), admDailyOrdersTable: document.getElementById('admDailyOrdersTable'),
-            admUserSearchInput: document.getElementById('admUserSearchInput'), admExportUsersBtn: document.getElementById('admExportUsersBtn'),
-            adminUserDetailsModal: document.getElementById('adminUserDetailsModal'), adminUserDetailsModalContent: document.getElementById('adminUserDetailsModalContent'),
-            closeAdminUserModalBtn: document.getElementById('closeAdminUserModalBtn'), adminUserDetailName: document.getElementById('adminUserDetailName'),
-            adminUserDetailRole: document.getElementById('adminUserDetailRole'), adminUserDetailBalance: document.getElementById('adminUserDetailBalance'),
-            adminUserDetailSpent: document.getElementById('adminUserDetailSpent'), adminUserOrdersList: document.getElementById('adminUserOrdersList'),
-            openEditUserBtn: document.getElementById('openEditUserBtn'), adminEditUserModal: document.getElementById('adminEditUserModal'),
-            adminEditUserModalContent: document.getElementById('adminEditUserModalContent'), editUserName: document.getElementById('editUserName'),
-            editUserRole: document.getElementById('editUserRole'), editUserBalance: document.getElementById('editUserBalance'),
-            cancelEditUserBtn: document.getElementById('cancelEditUserBtn'), saveEditUserBtn: document.getElementById('saveEditUserBtn'),
-            openAdminProductsBtn: document.getElementById('openAdminProductsBtn'), adminProductsModal: document.getElementById('adminProductsModal'),
-            adminProductsModalContent: document.getElementById('adminProductsModalContent'), closeAdminProductsBtn: document.getElementById('closeAdminProductsBtn'),
-            adminProductsList: document.getElementById('adminProductsList'), adminEditProductModal: document.getElementById('adminEditProductModal'),
-            adminEditProductModalContent: document.getElementById('adminEditProductModalContent'), editProdName: document.getElementById('editProdName'),
-            editProdStock: document.getElementById('editProdStock'), editProdPrice: document.getElementById('editProdPrice'),
-            editProdIcon: document.getElementById('editProdIcon'), editProdStatus: document.getElementById('editProdStatus'),
-            cancelEditProdBtn: document.getElementById('cancelEditProdBtn'), saveEditProdBtn: document.getElementById('saveEditProdBtn'),
-            adminSingleOrderModal: document.getElementById('adminSingleOrderModal'), adminSingleOrderModalContent: document.getElementById('adminSingleOrderModalContent'),
-            closeSingleOrderModalBtn: document.getElementById('closeSingleOrderModalBtn'), adminSingleOrderBody: document.getElementById('adminSingleOrderBody'),
-            logoutBtnAdmin: document.getElementById('logoutBtnAdmin'), logoutConfirmModal: document.getElementById('logoutConfirmModal'),
-            logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'), logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
-            logoutCancelBtn: document.getElementById('logoutCancelBtn'), actionConfirmModal: document.getElementById('actionConfirmModal'),
+            adminContent: document.getElementById('adminContent'), admTotalSpent: document.getElementById('admTotalSpent'),
+            admTotalOrders: document.getElementById('admTotalOrders'), admTotalItems: document.getElementById('admTotalItems'),
+            admUsersTable: document.getElementById('admUsersTable'), admDailyDate: document.getElementById('admDailyDate'),
+            admDailyOrdersTable: document.getElementById('admDailyOrdersTable'), admUserSearchInput: document.getElementById('admUserSearchInput'),
+            admExportUsersBtn: document.getElementById('admExportUsersBtn'), adminUserDetailsModal: document.getElementById('adminUserDetailsModal'),
+            adminUserDetailsModalContent: document.getElementById('adminUserDetailsModalContent'), closeAdminUserModalBtn: document.getElementById('closeAdminUserModalBtn'),
+            adminUserDetailName: document.getElementById('adminUserDetailName'), adminUserDetailRole: document.getElementById('adminUserDetailRole'),
+            adminUserDetailBalance: document.getElementById('adminUserDetailBalance'), adminUserDetailSpent: document.getElementById('adminUserDetailSpent'),
+            adminUserOrdersList: document.getElementById('adminUserOrdersList'), openEditUserBtn: document.getElementById('openEditUserBtn'),
+            adminEditUserModal: document.getElementById('adminEditUserModal'), adminEditUserModalContent: document.getElementById('adminEditUserModalContent'),
+            editUserName: document.getElementById('editUserName'), editUserRole: document.getElementById('editUserRole'),
+            editUserBalance: document.getElementById('editUserBalance'), cancelEditUserBtn: document.getElementById('cancelEditUserBtn'),
+            saveEditUserBtn: document.getElementById('saveEditUserBtn'), openAdminProductsBtn: document.getElementById('openAdminProductsBtn'),
+            adminProductsModal: document.getElementById('adminProductsModal'), adminProductsModalContent: document.getElementById('adminProductsModalContent'),
+            closeAdminProductsBtn: document.getElementById('closeAdminProductsBtn'), adminProductsList: document.getElementById('adminProductsList'),
+            adminEditProductModal: document.getElementById('adminEditProductModal'), adminEditProductModalContent: document.getElementById('adminEditProductModalContent'),
+            editProdName: document.getElementById('editProdName'), editProdStock: document.getElementById('editProdStock'),
+            editProdPrice: document.getElementById('editProdPrice'), editProdIcon: document.getElementById('editProdIcon'),
+            editProdStatus: document.getElementById('editProdStatus'), cancelEditProdBtn: document.getElementById('cancelEditProdBtn'),
+            saveEditProdBtn: document.getElementById('saveEditProdBtn'), adminSingleOrderModal: document.getElementById('adminSingleOrderModal'),
+            adminSingleOrderModalContent: document.getElementById('adminSingleOrderModalContent'), closeSingleOrderModalBtn: document.getElementById('closeSingleOrderModalBtn'),
+            adminSingleOrderBody: document.getElementById('adminSingleOrderBody'), actionConfirmModal: document.getElementById('actionConfirmModal'),
             actionConfirmModalContent: document.getElementById('actionConfirmModalContent'), actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
             actionConfirmIcon: document.getElementById('actionConfirmIcon'), actionConfirmTitle: document.getElementById('actionConfirmTitle'),
             actionConfirmText: document.getElementById('actionConfirmText'), actionCancelBtn: document.getElementById('actionCancelBtn'),
-            actionConfirmBtn: document.getElementById('actionConfirmBtn'), customContextMenu: document.getElementById('customContextMenu'),
-            themeToggleBtn: document.getElementById('themeToggleBtn'), contextStoreMode: document.getElementById('contextStoreMode')
+            actionConfirmBtn: document.getElementById('actionConfirmBtn')
         };
 
         function resetInactivityTimer() {
@@ -374,16 +366,30 @@
         }
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
 
-        // Verifica a Autenticação no carregamento da tela
         async function checkAuth() {
             try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (!session) { safeNavigate('index.html'); return; }
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                if (sessionError) throw sessionError;
                 
-                const { data: userData } = await supabaseClient.from('usuarios').select('admin').eq('id', session.user.id).single();
-                if (!userData || userData.admin !== true) { safeNavigate('index.html'); return; } // Bloqueio total
+                if (!session) { 
+                    showAuthError("Nenhuma sessão de login encontrada. (Se você está testando no Sandbox, faça o login completo primeiro, ou rode localmente).");
+                    return; 
+                }
+                
+                const { data: userData, error: userError } = await supabaseClient.from('usuarios').select('*').eq('id', session.user.id).single();
+                
+                if (userError) {
+                    console.error("Erro no Banco (RLS):", userError);
+                    showAuthError("Erro de permissão (RLS)! O Supabase bloqueou a leitura do seu perfil. Verifique as Políticas de Segurança (Row Level Security) da tabela 'usuarios' e certifique-se de que a política SELECT permite sua leitura.");
+                    return;
+                }
 
-                // É admin!
+                if (!userData || userData.admin !== true) { 
+                    showAuthError(`Acesso restrito. O usuário <b>${userData?.nome || session.user.email}</b> não possui permissão de Administrador (coluna admin: true).`);
+                    return; 
+                }
+
+                // Permissão concedida!
                 document.getElementById('loaderScreen').classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => document.getElementById('loaderScreen').classList.add('hidden'), 300);
                 
@@ -393,25 +399,84 @@
                 await initialAdminLoad();
                 resetInactivityTimer();
             } catch (e) {
-                console.error("Erro na verificação de autenticação:", e);
-                safeNavigate('index.html');
+                console.error("Erro geral na verificação de autenticação:", e);
+                showAuthError("Ocorreu um erro inesperado ao checar seu acesso: " + e.message);
             }
         }
 
-        els.logoutBtnAdmin?.addEventListener('click', () => {
-            els.logoutConfirmModal.classList.remove('hidden');
-            setTimeout(() => { els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-        });
-        els.logoutCancelBtn?.addEventListener('click', () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
-        });
-        els.logoutConfirmBtn?.addEventListener('click', async () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            await supabaseClient.auth.signOut();
-            safeNavigate('index.html');
-        });
+        const overrideImages = {
+            "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
+            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
+            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
+            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
+            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
+            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
+            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
+        };
 
-        els.closeAdminBtn.addEventListener('click', () => { safeNavigate('index.html'); });
+        async function fetchBaseData() {
+            const { data: cats } = await supabaseClient.from('categorias').select('*');
+            let catMap = {}; if(cats) cats.forEach(c => catMap[c.id] = c.nome);
+            
+            const { data: prods } = await supabaseClient.from('produtos').select('*');
+            if (prods) {
+                State.products = prods.map(p => {
+                    let finalIcon = overrideImages[p.nome] || p.icone || 'box';
+                    return { id: p.id, category: catMap[p.categoria_id] || 'Outros', name: p.nome, stock: p.estoque, price: p.preco, icon: finalIcon, ativo: p.ativo !== false };
+                });
+            }
+        }
+
+        async function initialAdminLoad() {
+            const today = new Date();
+            els.admDailyDate.value = (new Date(today - today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            
+            await fetchBaseData();
+            
+            const { data: users, error: errUsers } = await supabaseClient.from('usuarios').select('*');
+            if (errUsers) console.error("Erro RLS ao carregar usuários:", errUsers);
+            
+            const { data: orders, error: errOrders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
+            if (errOrders) console.error("Erro RLS ao carregar pedidos:", errOrders);
+
+            AdminState.users = users || [];
+            AdminState.orders = orders || [];
+            if (orders && orders.length > 0) AdminState.lastKnownOrderId = orders[0].id;
+            
+            buildAndRenderAdminStats();
+            lastAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
+            lucide.createIcons();
+        }
+
+        async function backgroundRefresh() {
+            try {
+                const icon = document.getElementById('admSyncStatus');
+                icon.classList.remove('bg-emerald-500'); icon.classList.add('bg-brand-500');
+                
+                await fetchBaseData(); 
+                const { data: users } = await supabaseClient.from('usuarios').select('*');
+                const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
+                
+                if (orders && orders.length > 0) {
+                    if (AdminState.lastKnownOrderId && AdminState.lastKnownOrderId !== orders[0].id) {
+                        const oldLatest = AdminState.orders.find(o => o.id === AdminState.lastKnownOrderId);
+                        const newDate = new Date(orders[0].data_pedido);
+                        const oldDate = oldLatest ? new Date(oldLatest.data_pedido) : new Date(0);
+                        if (newDate > oldDate) showAdmToast(orders[0]);
+                    }
+                    AdminState.lastKnownOrderId = orders[0].id;
+                }
+                
+                AdminState.users = users || []; AdminState.orders = orders || [];
+                
+                const newAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
+                if(newAdminHash !== lastAdminHash) { buildAndRenderAdminStats(); lastAdminHash = newAdminHash; }
+                if (!els.adminProductsModal.classList.contains('hidden')) renderAdminProductsList();
+                
+                setTimeout(() => { icon.classList.remove('bg-brand-500'); icon.classList.add('bg-emerald-500'); }, 1000);
+            } catch (err) { console.warn("Erro no sync de background", err); }
+        }
+        setInterval(backgroundRefresh, 5000);
 
         let pendingActionCallback = null;
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
@@ -429,95 +494,31 @@
             els.actionConfirmModal.classList.remove('hidden');
             setTimeout(() => { els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         }
-        els.actionCancelBtn?.addEventListener('click', () => { els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300); });
+
+        els.actionCancelBtn?.addEventListener('click', () => {
+            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300);
+        });
         els.actionConfirmBtn?.addEventListener('click', () => { if (pendingActionCallback) pendingActionCallback(); els.actionCancelBtn.click(); });
 
         function showAdmToast(order) {
             const toast = document.getElementById('admToast'); const text = document.getElementById('admToastText');
-            let uName = AdminState.userStats[order.usuario_id] ? AdminState.userStats[order.usuario_id].name : order.usuario_id;
+            let uName = order.usuario_id; if(AdminState.userStats[order.usuario_id]) uName = AdminState.userStats[order.usuario_id].name;
             text.textContent = `${uName} solicitou ${formatMoney(order.valor_total)}.`;
             toast.classList.remove('hidden'); void toast.offsetWidth; toast.classList.remove('translate-y-24', 'opacity-0');
             setTimeout(() => { toast.classList.add('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('hidden'), 500); }, 6000);
         }
 
-        const formatMoney = (value) => value === null ? "Valor a confirmar" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-
-        const overrideImages = {
-            "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
-            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
-            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
-            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
-            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
-            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
-            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
-        };
-
-        async function fetchBaseData() {
-            const { data: cats } = await supabaseClient.from('categorias').select('*');
-            let catMap = {}; if(cats) cats.forEach(c => catMap[c.id] = c.nome);
-            const { data: prods } = await supabaseClient.from('produtos').select('*');
-            if (prods) {
-                State.products = prods.map(p => {
-                    let finalIcon = overrideImages[p.nome] || p.icone || 'box';
-                    return { id: p.id, category: catMap[p.categoria_id] || 'Outros', name: p.nome, stock: p.estoque, price: p.preco, icon: finalIcon, ativo: p.ativo !== false };
-                });
-            }
-        }
-
-        async function initialAdminLoad() {
-            const today = new Date();
-            els.admDailyDate.value = (new Date(today - today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            await fetchBaseData();
-            const { data: users } = await supabaseClient.from('usuarios').select('*');
-            const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
-
-            AdminState.users = users || []; AdminState.orders = orders || [];
-            if (orders && orders.length > 0) AdminState.lastKnownOrderId = orders[0].id;
-            buildAndRenderAdminStats();
-            lastAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
-            lucide.createIcons();
-        }
-
-        async function backgroundRefresh() {
-            try {
-                await fetchBaseData(); 
-                const { data: users } = await supabaseClient.from('usuarios').select('*');
-                const { data: orders } = await supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false });
-                
-                if (orders && orders.length > 0 && AdminState.lastKnownOrderId && AdminState.lastKnownOrderId !== orders[0].id) {
-                    const oldLatest = AdminState.orders.find(o => o.id === AdminState.lastKnownOrderId);
-                    if (new Date(orders[0].data_pedido) > (oldLatest ? new Date(oldLatest.data_pedido) : new Date(0))) showAdmToast(orders[0]);
-                    AdminState.lastKnownOrderId = orders[0].id;
-                }
-                
-                AdminState.users = users || []; AdminState.orders = orders || [];
-                const newAdminHash = JSON.stringify({ u: AdminState.users, o: AdminState.orders, p: State.products });
-                if(newAdminHash !== lastAdminHash) { buildAndRenderAdminStats(); lastAdminHash = newAdminHash; }
-                if (!els.adminProductsModal.classList.contains('hidden')) renderAdminProductsList();
-            } catch (err) {}
-        }
-        setInterval(backgroundRefresh, 5000);
-
-        els.admDailyDate.addEventListener('change', () => renderAdminDailyOrders());
-        els.admUserSearchInput?.addEventListener('input', (e) => { AdminState.userSearchQuery = e.target.value; renderAdmUsersTable(); });
-
-        els.admExportUsersBtn?.addEventListener('click', () => {
-            let csvContent = "data:text/csv;charset=utf-8,Nome,Cargo,Saldo Restante,Custo Gerado\n";
-            Object.values(AdminState.userStats).forEach(u => csvContent += `"${u.name}","${u.cargo}","${u.balance.toFixed(2)}","${u.spent.toFixed(2)}"\n`);
-            try {
-                const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `zattar_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            } catch (e) {
-                console.error("Download bloqueado no ambiente de preview.", e);
-            }
-        });
+        const formatMoney = (value) => value === null ? "R$ --" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
         function buildAndRenderAdminStats() {
-            let totalSpentGlobal = 0; let totalItemsGlobal = 0; AdminState.userStats = {}; AdminState.itemStats = {};
+            let totalSpentGlobal = 0; let totalItemsGlobal = 0;
+            AdminState.userStats = {}; AdminState.itemStats = {};
+
             if(AdminState.users) {
                 AdminState.users.forEach(u => {
                     let userName = u.nome || u.email || `ID: ${u.id.split('-')[0]}`;
-                    if (userName.includes('@')) userName = userName.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+                    if (userName.includes('@')) { let namePart = userName.split('@')[0]; userName = namePart.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' '); }
                     AdminState.userStats[u.id] = { id: u.id, name: userName, cargo: u.cargo || 'Comercial', balance: parseFloat(u.saldo || 0), spent: 0 };
                 });
             }
@@ -531,65 +532,47 @@
                     }
                 });
             }
+
             els.admTotalSpent.textContent = formatMoney(totalSpentGlobal);
             els.admTotalOrders.textContent = (AdminState.orders ? AdminState.orders.filter(o => o.status !== 'Cancelado').length : 0);
             els.admTotalItems.textContent = totalItemsGlobal + ' un.';
+
             renderAdmUsersTable(); renderAdminDailyOrders();
             
             if(!els.adminUserDetailsModal.classList.contains('hidden')) { const openUserId = els.adminUserDetailsModal.getAttribute('data-open-user'); if(openUserId) window.openAdminUserDetails(openUserId, true); }
             if(!els.adminSingleOrderModal.classList.contains('hidden')) { if(currentEditOrderId && !document.getElementById('editAdmSepDate')) window.openAdminSingleOrder(currentEditOrderId, true); }
         }
 
-        function renderAdminDailyOrders() {
-            const table = els.admDailyOrdersTable; table.innerHTML = ''; const selectedDate = els.admDailyDate.value;
-            if(!AdminState.orders) return;
-            const dailyOrders = AdminState.orders.filter(o => o.data_pedido.startsWith(selectedDate));
-            if(dailyOrders.length === 0) { table.innerHTML = `<tr><td colspan="3" class="text-center p-8 text-slate-400 text-sm"><i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>Nenhum pedido nesta data.</td></tr>`; lucide.createIcons(); return; }
-            
-            dailyOrders.forEach(o => {
-                const timeStr = new Date(o.data_pedido).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                let uName = AdminState.userStats[o.usuario_id] ? AdminState.userStats[o.usuario_id].name : o.usuario_id;
-                const stColor = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200' }[o.status] || 'text-slate-700 bg-slate-100 border-slate-200';
-                table.innerHTML += `
-                    <tr class="cursor-pointer hover:bg-slate-50 transition-colors" onclick="openAdminSingleOrder('${o.id}')">
-                        <td class="p-4 py-3 text-xs leading-tight"><strong class="text-brand-600 font-black tracking-wider uppercase">${o.id}</strong><br><span class="text-[10px] text-slate-400">${timeStr}</span></td>
-                        <td class="p-4 py-3 text-xs font-semibold text-slate-700 truncate max-w-[120px]">${uName}</td>
-                        <td class="p-4 py-3 text-center"><span class="text-[10px] font-bold ${stColor} px-2 py-0.5 rounded-md border whitespace-nowrap">${o.status}</span></td>
-                    </tr>
-                `;
-            });
-            lucide.createIcons();
-        }
-
         function renderAdmUsersTable() {
             const table = els.admUsersTable; if (!table) return; table.innerHTML = '';
             let usersArray = Object.values(AdminState.userStats);
+            
             if (AdminState.userSearchQuery) {
-                const q = AdminState.userSearchQuery.toLowerCase(); usersArray = usersArray.filter(u => u.name.toLowerCase().includes(q) || u.cargo.toLowerCase().includes(q));
+                const q = AdminState.userSearchQuery.toLowerCase();
+                usersArray = usersArray.filter(u => u.name.toLowerCase().includes(q) || u.cargo.toLowerCase().includes(q));
             }
+
             usersArray.sort((a, b) => {
-                let valA = typeof a[AdminState.userSortBy] === 'string' ? a[AdminState.userSortBy].toLowerCase() : a[AdminState.userSortBy];
-                let valB = typeof b[AdminState.userSortBy] === 'string' ? b[AdminState.userSortBy].toLowerCase() : b[AdminState.userSortBy];
-                if (valA < valB) return AdminState.userSortDesc ? 1 : -1;
-                if (valA > valB) return AdminState.userSortDesc ? -1 : 1;
-                return 0;
+                let valA = a[AdminState.userSortBy]; let valB = b[AdminState.userSortBy];
+                if (typeof valA === 'string') valA = valA.toLowerCase(); if (typeof valB === 'string') valB = valB.toLowerCase();
+                if (valA < valB) return AdminState.userSortDesc ? 1 : -1; if (valA > valB) return AdminState.userSortDesc ? -1 : 1; return 0;
             });
+
             ['name', 'balance', 'spent'].forEach(field => {
                 const iconEl = document.getElementById(`sort-icon-${field}`);
                 if (iconEl) {
-                    if (AdminState.userSortBy === field) { iconEl.setAttribute('data-lucide', AdminState.userSortDesc ? 'arrow-down' : 'arrow-up'); iconEl.className = 'w-3 h-3 text-brand-500'; } 
-                    else { iconEl.setAttribute('data-lucide', 'arrow-down-up'); iconEl.className = 'w-3 h-3 text-slate-300'; }
+                    if (AdminState.userSortBy === field) { iconEl.setAttribute('data-lucide', AdminState.userSortDesc ? 'arrow-down' : 'arrow-up'); iconEl.classList.add('text-brand-500'); iconEl.classList.remove('text-slate-300'); } 
+                    else { iconEl.setAttribute('data-lucide', 'arrow-down-up'); iconEl.classList.remove('text-brand-500'); iconEl.classList.add('text-slate-300'); }
                 }
             });
-            if (usersArray.length === 0) { table.innerHTML = '<tr><td colspan="3" class="text-center p-8 text-slate-400 text-sm"><i data-lucide="users" class="w-8 h-8 mx-auto mb-2 opacity-30"></i>Nenhum usuário encontrado.</td></tr>'; lucide.createIcons(); return; }
+
+            if (usersArray.length === 0) {
+                table.innerHTML = '<tr><td colspan="3" class="text-center p-8 text-slate-400 text-sm"><i data-lucide="users" class="w-8 h-8 mx-auto mb-2 opacity-30"></i>Nenhum usuário encontrado.</td></tr>'; lucide.createIcons(); return;
+            }
+
             usersArray.forEach(u => {
-                const tr = document.createElement('tr'); tr.className = "cursor-pointer hover:bg-slate-50 transition-colors group"; tr.onclick = () => window.openAdminUserDetails(u.id);
-                tr.innerHTML = `
-                    <td class="p-4 py-3 font-semibold text-slate-700 group-hover:text-brand-600 flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border shadow-sm"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
-                    <div class="flex flex-col"><span class="leading-none">${u.name}</span><span class="text-[10px] text-slate-400 font-normal mt-1">${u.cargo}</span></div></td>
-                    <td class="p-4 py-3 text-right font-medium text-emerald-600">${formatMoney(u.balance)}</td>
-                    <td class="p-4 py-3 text-right font-bold text-slate-800">${formatMoney(u.spent)}</td>
-                `;
+                const tr = document.createElement('tr'); tr.className = "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"; tr.onclick = () => window.openAdminUserDetails(u.id);
+                tr.innerHTML = `<td class="p-4 py-3 font-semibold flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div><div class="flex flex-col"><span class="leading-none">${u.name}</span><span class="text-[10px] text-slate-400 font-normal mt-1">${u.cargo}</span></div></td><td class="p-4 py-3 text-right font-medium text-emerald-600">${formatMoney(u.balance)}</td><td class="p-4 py-3 text-right font-bold">${formatMoney(u.spent)}</td>`;
                 table.appendChild(tr);
             });
             lucide.createIcons();
@@ -601,19 +584,29 @@
             renderAdmUsersTable();
         };
 
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault(); els.customContextMenu.classList.remove('hidden');
-                const rect = els.customContextMenu.getBoundingClientRect();
-                let x = e.clientX; let y = e.clientY;
-                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
-                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
-                els.customContextMenu.style.left = `${x}px`; els.customContextMenu.style.top = `${y}px`;
-            }
+        els.admUserSearchInput?.addEventListener('input', (e) => { AdminState.userSearchQuery = e.target.value; renderAdmUsersTable(); });
+        els.admExportUsersBtn?.addEventListener('click', () => {
+            let csvContent = "data:text/csv;charset=utf-8,Nome,Cargo,Saldo Restante,Custo Gerado\n";
+            Object.values(AdminState.userStats).forEach(u => { csvContent += `"${u.name}","${u.cargo}","${u.balance.toFixed(2)}","${u.spent.toFixed(2)}"\n`; });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `usuarios_${new Date().toISOString().split('T')[0]}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
-        document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
-        document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e){} });
-        els.contextStoreMode.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); safeNavigate('index.html'); });
+
+        function renderAdminDailyOrders() {
+            const table = els.admDailyOrdersTable; table.innerHTML = '';
+            const selectedDate = els.admDailyDate.value;
+            if(!AdminState.orders) return;
+            const dailyOrders = AdminState.orders.filter(o => o.data_pedido.startsWith(selectedDate));
+            if(dailyOrders.length === 0) { table.innerHTML = `<tr><td colspan="3" class="text-center p-8 text-slate-400 text-sm"><i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>Nenhum pedido nesta data.</td></tr>`; lucide.createIcons(); return; }
+            
+            dailyOrders.forEach(o => {
+                const timeStr = new Date(o.data_pedido).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                let uName = o.usuario_id; if(AdminState.userStats[o.usuario_id]) uName = AdminState.userStats[o.usuario_id].name;
+                const stColor = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200' }[o.status] || 'text-slate-700 bg-slate-100 border-slate-200';
+                table.innerHTML += `<tr class="cursor-pointer hover:bg-slate-50 transition-colors" onclick="openAdminSingleOrder('${o.id}')"><td class="p-4 py-3 text-xs leading-tight"><strong class="text-brand-600 font-black tracking-wider uppercase">${o.id}</strong><br><span class="text-[10px] text-slate-400">${timeStr}</span></td><td class="p-4 py-3 text-xs font-semibold truncate max-w-[120px]">${uName}</td><td class="p-4 py-3 text-center"><span class="text-[10px] font-bold ${stColor} px-2 py-0.5 rounded-md border whitespace-nowrap">${o.status}</span></td></tr>`;
+            });
+            lucide.createIcons();
+        }
+        els.admDailyDate.addEventListener('change', () => { renderAdminDailyOrders(); });
 
         window.openAdminSingleOrder = function(orderId, isSilentRefresh = false) {
             const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
@@ -624,86 +617,64 @@
             
             let itemsHtml = order.pedido_itens.map(item => {
                 const productInfo = State.products.find(p => p.id === item.produto_id); const pName = productInfo ? productInfo.name : item.produto_id;
-                return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium text-slate-700">${pName}</span><strong class="text-sm text-slate-900 bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`;
+                return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium">${pName}</span><strong class="text-sm bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`;
             }).join('');
 
             const stColor = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200' }[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
 
             els.adminSingleOrderBody.innerHTML = `
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4 border-b pb-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black text-slate-700 bg-white border px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColor} px-2.5 py-1 rounded-md border">${order.status}</span></div>
-                        <p class="text-sm text-slate-700 mb-1">Solicitado por: <strong>${uStats.name}</strong></p>
-                        <div class="text-sm text-slate-600" id="displaySepDateArea">Data p/ separar: <strong class="text-slate-900">${sepDate}</strong></div>
-                    </div>
-                    <div class="text-right flex flex-col items-end"><strong class="text-2xl font-black text-slate-900">${formatMoney(order.valor_total)}</strong><div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}</div></div>
+                    <div><div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white border px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColor} px-2.5 py-1 rounded-md border">${order.status}</span></div><p class="text-sm mb-1">Solicitado por: <strong>${uStats.name}</strong></p><div class="text-sm" id="displaySepDateArea">Data p/ separar: <strong>${sepDate}</strong></div></div>
+                    <div class="text-right flex flex-col items-end"><strong class="text-2xl font-black">${formatMoney(order.valor_total)}</strong><div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}</div></div>
                 </div>
-                <div id="displayNotesArea">${order.observacoes ? `<div class="mb-5 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic">"${order.observacoes}"</p></div>` : ''}</div>
+                <div id="displayNotesArea">${order.observacoes ? `<div class="mb-5 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}</div>
                 
                 <div id="editFieldsArea" class="hidden mb-5 bg-blue-50 border border-blue-100 p-4 rounded-xl space-y-4 shadow-inner">
                     <p class="text-xs font-bold text-blue-800 mb-2 uppercase tracking-wider flex items-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Modo de Edição ADM</p>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Nova Data de Separação</label><input type="date" id="editAdmSepDate" value="${order.data_separacao}" class="w-full px-3 py-2 bg-white border rounded-lg text-sm outline-none focus:border-brand-500"></div>
-                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">Observações do Pedido</label><textarea id="editAdmNotes" rows="2" class="w-full px-3 py-2 bg-white border rounded-lg text-sm outline-none focus:border-brand-500">${order.observacoes || ''}</textarea></div>
+                    <div><label class="block text-xs font-semibold mb-1">Nova Data</label><input type="date" id="editAdmSepDate" value="${order.data_separacao}" class="w-full px-3 py-2 bg-white border rounded-lg text-sm outline-none"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Observações</label><textarea id="editAdmNotes" rows="2" class="w-full px-3 py-2 bg-white border rounded-lg text-sm outline-none">${order.observacoes || ''}</textarea></div>
                     <div class="flex gap-2 justify-end pt-2"><button onclick="cancelAdmOrderEdit()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Cancelar</button><button onclick="saveAdmOrderEdit('${order.id}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-2" id="saveAdmOrderBtn"><i data-lucide="save" class="w-3.5 h-3.5"></i> Salvar</button></div>
                 </div>
 
-                <div class="bg-white rounded-xl border overflow-hidden mb-2 shadow-sm"><div class="bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b flex justify-between"><span>Itens Solicitados</span></div><ul class="px-4 py-1 divide-y divide-slate-50">${itemsHtml}</ul></div>
+                <div class="bg-white rounded-xl border overflow-hidden mb-2 shadow-sm"><div class="bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b"><span>Itens Solicitados</span></div><ul class="px-4 py-1 divide-y divide-slate-50">${itemsHtml}</ul></div>
                 <div class="mt-6 flex flex-wrap justify-end gap-3" id="admSingleOrderFooter">
-                    ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `<button onclick="adminCompleteOrder('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button><button onclick="startAdmOrderEdit()" class="px-4 py-2.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="edit" class="w-4 h-4"></i> Alterar Pedido</button>` : ''}
-                    <button onclick="adminDeleteOrder('${order.id}', '${order.usuario_id}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Registro</button>
+                    ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `<button onclick="adminCompleteOrder('${order.id}', '${order.usuario_id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button><button onclick="startAdmOrderEdit()" class="px-4 py-2.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="edit" class="w-4 h-4"></i> Alterar</button>` : ''}
+                    <button onclick="adminDeleteOrder('${order.id}', '${order.usuario_id}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir</button>
                 </div>
             `;
             lucide.createIcons();
-            if(!isSilentRefresh) {
-                els.adminSingleOrderModal.classList.remove('hidden'); setTimeout(() => { els.adminSingleOrderModalContent.classList.remove('scale-95', 'opacity-0'); els.adminSingleOrderModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-            }
+            if(!isSilentRefresh) { els.adminSingleOrderModal.classList.remove('hidden'); setTimeout(() => { els.adminSingleOrderModalContent.classList.remove('scale-95', 'opacity-0'); els.adminSingleOrderModalContent.classList.add('scale-100', 'opacity-100'); }, 10); }
         };
 
         window.startAdmOrderEdit = function() { document.getElementById('editFieldsArea').classList.remove('hidden'); document.getElementById('displaySepDateArea').classList.add('hidden'); document.getElementById('displayNotesArea').classList.add('hidden'); document.getElementById('admSingleOrderFooter').classList.add('hidden'); };
         window.cancelAdmOrderEdit = function() { document.getElementById('editFieldsArea').classList.add('hidden'); document.getElementById('displaySepDateArea').classList.remove('hidden'); document.getElementById('displayNotesArea').classList.remove('hidden'); document.getElementById('admSingleOrderFooter').classList.remove('hidden'); };
-
         window.saveAdmOrderEdit = async function(orderId) {
             const btn = document.getElementById('saveAdmOrderBtn'); btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Salvando...'; lucide.createIcons();
             const newDate = document.getElementById('editAdmSepDate').value; const newNotes = document.getElementById('editAdmNotes').value;
             try {
                 await supabaseClient.from('pedidos').update({ data_separacao: newDate, observacoes: newNotes }).eq('id', orderId);
-                const orderIndex = AdminState.orders.findIndex(o => o.id === orderId);
-                if(orderIndex !== -1) { AdminState.orders[orderIndex].data_separacao = newDate; AdminState.orders[orderIndex].observacoes = newNotes; }
+                const orderIndex = AdminState.orders.findIndex(o => o.id === orderId); if(orderIndex !== -1) { AdminState.orders[orderIndex].data_separacao = newDate; AdminState.orders[orderIndex].observacoes = newNotes; }
                 backgroundRefresh(); window.openAdminSingleOrder(orderId, true);
-            } catch(e) { btn.innerHTML = 'Erro!'; }
+            } catch(e) { console.error("Erro", e); btn.innerHTML = 'Erro!'; }
         };
 
         els.closeSingleOrderModalBtn.addEventListener('click', () => { els.adminSingleOrderModalContent.classList.remove('scale-100', 'opacity-100'); els.adminSingleOrderModalContent.classList.add('scale-95', 'opacity-0'); currentEditOrderId = null; setTimeout(() => { els.adminSingleOrderModal.classList.add('hidden'); }, 300); });
-
+        
         window.openAdminUserDetails = function(userId, isSilentRefresh = false) {
-            const uStats = AdminState.userStats[userId]; if(!uStats) return; editingUserId = userId; 
-            els.adminUserDetailsModal.setAttribute('data-open-user', userId); els.adminUserDetailName.textContent = uStats.name; els.adminUserDetailRole.textContent = uStats.cargo; els.adminUserDetailBalance.textContent = formatMoney(uStats.balance); els.adminUserDetailSpent.textContent = formatMoney(uStats.spent);
+            const uStats = AdminState.userStats[userId]; if(!uStats) return;
+            editingUserId = userId; els.adminUserDetailsModal.setAttribute('data-open-user', userId);
+            els.adminUserDetailName.textContent = uStats.name; els.adminUserDetailRole.textContent = uStats.cargo; els.adminUserDetailBalance.textContent = formatMoney(uStats.balance); els.adminUserDetailSpent.textContent = formatMoney(uStats.spent);
             const userOrders = AdminState.orders.filter(o => o.usuario_id === userId); els.adminUserOrdersList.innerHTML = '';
             
-            if (userOrders.length === 0) { els.adminUserOrdersList.innerHTML = `<p class="text-slate-500 text-sm text-center py-6 bg-slate-50 rounded-xl border">Nenhum pedido encontrado para este usuário.</p>`; } 
+            if (userOrders.length === 0) els.adminUserOrdersList.innerHTML = `<p class="text-slate-500 text-sm text-center py-6 bg-slate-50 rounded-xl border">Nenhum pedido encontrado.</p>`;
             else {
                 userOrders.forEach(order => {
                     const orderDate = new Date(order.data_pedido).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
                     const sepDateParts = order.data_separacao.split('-'); const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
-                    let itemsHtml = order.pedido_itens.map(item => {
-                        const productInfo = State.products.find(p => p.id === item.produto_id); const pName = productInfo ? productInfo.name : item.produto_id;
-                        return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium text-slate-700">${pName}</span><strong class="text-sm text-slate-900 bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`;
-                    }).join('');
+                    let itemsHtml = order.pedido_itens.map(item => { const pInfo = State.products.find(p => p.id === item.produto_id); const pName = pInfo ? pInfo.name : item.produto_id; return `<li class="flex justify-between items-center py-2"><span class="text-sm font-medium">${pName}</span><strong class="text-sm bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`; }).join('');
                     const stColor = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200' }[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
-
                     const card = document.createElement('div'); card.className = "bg-white p-5 rounded-2xl border shadow-sm";
-                    card.innerHTML = `
-                        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4 border-b pb-4">
-                            <div><div class="flex items-center gap-2 mb-2"><span class="text-xs font-black text-slate-700 bg-white border px-2.5 py-1 rounded-md uppercase">${order.id}</span><span class="text-[10px] font-bold ${stColor} px-2.5 py-1 rounded-md border">${order.status}</span></div><div class="text-sm text-slate-600">Data p/ separar: <strong class="text-slate-900">${sepDate}</strong></div></div>
-                            <div class="text-right flex flex-col items-end"><strong class="text-xl font-black text-slate-900">${formatMoney(order.valor_total)}</strong><div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}</div></div>
-                        </div>
-                        ${order.observacoes ? `<div class="mb-4 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic">"${order.observacoes}"</p></div>` : ''}
-                        <div class="bg-white rounded-xl border overflow-hidden mb-2"><div class="bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500 uppercase border-b">Itens Solicitados</div><ul class="px-4 py-1 divide-y divide-slate-50">${itemsHtml}</ul></div>
-                        <div class="mt-4 pt-4 border-t flex justify-end gap-3">
-                            ${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `<button onclick="adminCompleteOrder('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir</button>` : ''}
-                            <button onclick="adminDeleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Registro</button>
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4 border-b pb-4"><div><div class="flex items-center gap-2 mb-2"><span class="text-xs font-black bg-white border px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[10px] font-bold ${stColor} px-2.5 py-1 rounded-md border">${order.status}</span></div><div class="text-sm">Data p/ separar: <strong>${sepDate}</strong></div></div><div class="text-right flex flex-col items-end"><strong class="text-xl font-black">${formatMoney(order.valor_total)}</strong><div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Feito em ${orderDate}</div></div></div>${order.observacoes ? `<div class="mb-4 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}<div class="bg-white rounded-xl border overflow-hidden mb-2"><div class="bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b">Itens Solicitados</div><ul class="px-4 py-1 divide-y divide-slate-50">${itemsHtml}</ul></div><div class="mt-4 pt-4 border-t flex justify-end gap-3">${order.status !== 'Separação Concluída' && order.status !== 'Cancelado' ? `<button onclick="adminCompleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir</button>` : ''}<button onclick="adminDeleteOrder('${order.id}', '${userId}')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Registro</button></div>`;
                     els.adminUserOrdersList.appendChild(card);
                 });
             }
@@ -711,18 +682,13 @@
             if(!isSilentRefresh) { els.adminUserDetailsModal.classList.remove('hidden'); setTimeout(() => { els.adminUserDetailsModalContent.classList.remove('scale-95', 'opacity-0'); els.adminUserDetailsModalContent.classList.add('scale-100', 'opacity-100'); }, 10); }
         };
 
-        // Modal Produtos
         function renderAdminProductsList() {
             els.adminProductsList.innerHTML = '';
             State.products.forEach(p => {
                 const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition-colors";
                 const iconDisplay = p.icon.startsWith('http') ? `<img src="${p.icon}" class="w-8 h-8 object-cover rounded bg-white border">` : `<div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center border"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500"></i></div>`;
-                const statusBadge = p.ativo ? `<span class="bg-emerald-100 text-emerald-700 border px-2.5 py-1 rounded-md text-[10px] font-bold">Ativo</span>` : `<span class="bg-slate-200 text-slate-600 border px-2.5 py-1 rounded-md text-[10px] font-bold">Pausado</span>`;
-                tr.innerHTML = `
-                    <td class="p-4 py-3"><div class="flex items-center gap-3">${iconDisplay}<div class="flex flex-col"><strong class="text-sm text-slate-800">${p.name}</strong><span class="text-[10px] text-slate-400">${p.id}</span></div></div></td>
-                    <td class="p-4 py-3 text-center font-bold text-slate-700">${p.stock}</td><td class="p-4 py-3 text-right font-semibold text-brand-600">${formatMoney(p.price)}</td><td class="p-4 py-3 text-center">${statusBadge}</td>
-                    <td class="p-4 py-3 text-right"><button onclick="openAdminEditProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
-                `;
+                const statusBadge = p.ativo ? `<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-md text-[10px] font-bold">Ativo</span>` : `<span class="bg-slate-200 text-slate-600 border border-slate-300 px-2.5 py-1 rounded-md text-[10px] font-bold">Pausado</span>`;
+                tr.innerHTML = `<td class="p-4 py-3"><div class="flex items-center gap-3">${iconDisplay}<div class="flex flex-col"><strong class="text-sm">${p.name}</strong><span class="text-[10px] text-slate-400 tracking-wider">${p.id}</span></div></div></td><td class="p-4 py-3 text-center font-bold">${p.stock}</td><td class="p-4 py-3 text-right font-semibold text-brand-600">${formatMoney(p.price)}</td><td class="p-4 py-3 text-center">${statusBadge}</td><td class="p-4 py-3 text-right"><button onclick="openAdminEditProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold shadow-sm inline-flex items-center gap-1.5"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>`;
                 els.adminProductsList.appendChild(tr);
             });
             lucide.createIcons();
@@ -736,17 +702,17 @@
             els.editProdName.value = product.name; els.editProdStock.value = product.stock; els.editProdPrice.value = product.price ? product.price.toFixed(2) : 0; els.editProdIcon.value = product.icon; els.editProdStatus.value = product.ativo ? "ativo" : "pausado";
             els.adminEditProductModal.classList.remove('hidden'); setTimeout(() => { els.adminEditProductModalContent.classList.remove('scale-95', 'opacity-0'); els.adminEditProductModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         };
-        els.cancelEditProdBtn.addEventListener('click', () => { els.adminEditProductModalContent.classList.remove('scale-100', 'opacity-100'); els.adminEditProductModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.adminEditProductModal.classList.add('hidden'), 300); });
 
+        els.cancelEditProdBtn.addEventListener('click', () => { els.adminEditProductModalContent.classList.remove('scale-100', 'opacity-100'); els.adminEditProductModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.adminEditProductModal.classList.add('hidden'), 300); });
         els.saveEditProdBtn.addEventListener('click', async () => {
-            if (!editingProductId) return; els.saveEditProdBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons();
+            if (!editingProductId) return;
+            const newName = els.editProdName.value; const newStock = parseInt(els.editProdStock.value) || 0; const newPrice = parseFloat(els.editProdPrice.value) || 0; const newIcon = els.editProdIcon.value || "box"; const newActive = els.editProdStatus.value === "ativo";
+            els.saveEditProdBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons();
             try {
-                const pActive = els.editProdStatus.value === "ativo";
-                await supabaseClient.from('produtos').update({ nome: els.editProdName.value, estoque: parseInt(els.editProdStock.value) || 0, preco: parseFloat(els.editProdPrice.value) || 0, icone: els.editProdIcon.value || "box", ativo: pActive }).eq('id', editingProductId);
-                const pIndex = State.products.findIndex(p => p.id === editingProductId);
-                if (pIndex !== -1) { State.products[pIndex].name = els.editProdName.value; State.products[pIndex].stock = parseInt(els.editProdStock.value) || 0; State.products[pIndex].price = parseFloat(els.editProdPrice.value) || 0; State.products[pIndex].icon = els.editProdIcon.value || "box"; State.products[pIndex].ativo = pActive; }
+                await supabaseClient.from('produtos').update({ nome: newName, estoque: newStock, preco: newPrice, icone: newIcon, ativo: newActive }).eq('id', editingProductId);
+                const pIndex = State.products.findIndex(p => p.id === editingProductId); if (pIndex !== -1) { State.products[pIndex].name = newName; State.products[pIndex].stock = newStock; State.products[pIndex].price = newPrice; State.products[pIndex].icon = newIcon; State.products[pIndex].ativo = newActive; }
                 els.cancelEditProdBtn.click(); renderAdminProductsList(); backgroundRefresh(); 
-            } catch (err) {} finally { els.saveEditProdBtn.innerHTML = 'Salvar Alterações'; }
+            } catch (err) { console.error("Erro:", err); } finally { els.saveEditProdBtn.innerHTML = 'Salvar Alterações'; }
         });
 
         els.openEditUserBtn?.addEventListener('click', () => {
@@ -754,37 +720,39 @@
             els.editUserName.value = uStats.name; els.editUserRole.value = uStats.cargo; els.editUserBalance.value = uStats.balance.toFixed(2);
             els.adminEditUserModal.classList.remove('hidden'); setTimeout(() => { els.adminEditUserModalContent.classList.remove('scale-95', 'opacity-0'); els.adminEditUserModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         });
-        els.cancelEditUserBtn?.addEventListener('click', () => { els.adminEditUserModalContent.classList.remove('scale-100', 'opacity-100'); els.adminEditUserModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.adminEditUserModal.classList.add('hidden'), 300); });
 
+        els.cancelEditUserBtn?.addEventListener('click', () => { els.adminEditUserModalContent.classList.remove('scale-100', 'opacity-100'); els.adminEditUserModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.adminEditUserModal.classList.add('hidden'), 300); });
         els.saveEditUserBtn?.addEventListener('click', async () => {
-            if (!editingUserId) return; els.saveEditUserBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons();
+            if (!editingUserId) return;
+            const newName = els.editUserName.value; const newRole = els.editUserRole.value; const newBalance = parseFloat(els.editUserBalance.value);
+            els.saveEditUserBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>'; lucide.createIcons();
             try {
-                await supabaseClient.from('usuarios').update({ nome: els.editUserName.value, cargo: els.editUserRole.value, saldo: parseFloat(els.editUserBalance.value) }).eq('id', editingUserId);
-                if (AdminState.userStats[editingUserId]) { AdminState.userStats[editingUserId].name = els.editUserName.value; AdminState.userStats[editingUserId].cargo = els.editUserRole.value; AdminState.userStats[editingUserId].balance = parseFloat(els.editUserBalance.value); }
+                await supabaseClient.from('usuarios').update({ nome: newName, cargo: newRole, saldo: newBalance }).eq('id', editingUserId);
+                if (AdminState.userStats[editingUserId]) { AdminState.userStats[editingUserId].name = newName; AdminState.userStats[editingUserId].cargo = newRole; AdminState.userStats[editingUserId].balance = newBalance; }
                 els.cancelEditUserBtn.click(); window.openAdminUserDetails(editingUserId, true); backgroundRefresh(); 
-            } catch (err) {} finally { els.saveEditUserBtn.innerHTML = 'Salvar'; }
+            } catch (err) { console.error("Erro:", err); } finally { els.saveEditUserBtn.innerHTML = 'Salvar'; }
         });
 
         els.closeAdminUserModalBtn.addEventListener('click', () => { els.adminUserDetailsModalContent.classList.remove('scale-100', 'opacity-100'); els.adminUserDetailsModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.adminUserDetailsModal.classList.add('hidden'); els.adminUserDetailsModal.removeAttribute('data-open-user'); }, 300); });
 
-        window.adminCompleteOrder = function(orderId) {
+        window.adminCompleteOrder = function(orderId, userId) {
             showActionConfirm('Concluir Separação', 'Deseja marcar este pedido como Concluído?', 'warning', 'Sim, Concluir', async () => {
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
-                try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Separação Concluída' }) }); } catch (e) {}
+                try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Separação Concluída' }) }).catch(e=>e); } catch(e){}
                 backgroundRefresh(); if(currentEditOrderId === orderId) els.closeSingleOrderModalBtn.click();
             });
         };
 
         window.adminDeleteOrder = function(orderId, userId) {
-            showActionConfirm('Excluir Registro', 'Deseja apagar da base? O valor será devolvido e os brindes retornarão.', 'danger', 'Sim, Excluir', async () => {
+            showActionConfirm('Excluir Registro Totalmente', 'Deseja apagar este registro da base de dados? O valor em reais será devolvido ao usuário e os brindes retornarão ao estoque.', 'danger', 'Sim, Excluir', async () => {
                 const order = AdminState.orders.find(o => o.id === orderId); if (!order) return;
-                let uStats = AdminState.userStats[userId]; if(uStats) await supabaseClient.from('usuarios').update({ saldo: uStats.balance + parseFloat(order.valor_total || 0) }).eq('id', userId);
+                let uStats = AdminState.userStats[userId]; if(uStats) { let newBalance = uStats.balance + parseFloat(order.valor_total || 0); await supabaseClient.from('usuarios').update({ saldo: newBalance }).eq('id', userId); }
                 if(order.pedido_itens) { for(let item of order.pedido_itens) { const product = State.products.find(p => p.id === item.produto_id); if (product) await supabaseClient.from('produtos').update({ estoque: product.stock + item.quantidade }).eq('id', item.produto_id); } }
-                await supabaseClient.from('pedidos').delete().eq('id', orderId);
-                backgroundRefresh(); if(currentEditOrderId === orderId) els.closeSingleOrderModalBtn.click();
+                await supabaseClient.from('pedidos').delete().eq('id', orderId); backgroundRefresh(); if(currentEditOrderId === orderId) els.closeSingleOrderModalBtn.click();
             });
         };
 
+        // Inicialização Final
         window.addEventListener('DOMContentLoaded', () => { checkAuth(); lucide.createIcons(); });
     </script>
 </body>
