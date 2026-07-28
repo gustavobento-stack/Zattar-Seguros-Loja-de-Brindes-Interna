@@ -979,9 +979,14 @@
                     body: { response: hcaptchaResponse }
                 });
 
-                // Verifica se a requisição deu erro ou se a Edge Function respondeu com success: false
-                if (error || (data && data.success === false)) {
-                     throw new Error("Captcha inválido de acordo com a verificação da API.");
+                if (error) {
+                    console.error("Erro na Edge Function ou CORS:", error);
+                    throw new Error("Erro de comunicação com o servidor. A função pode estar bloqueada (CORS) ou offline.");
+                }
+
+                if (data && data.success === false) {
+                    console.error("hCaptcha falhou:", data);
+                    throw new Error("Captcha inválido de acordo com a verificação de segurança.");
                 }
                 
                 // --- LOGIN NO SUPABASE ---
@@ -1009,7 +1014,7 @@
                 console.error("Erro no processo de login:", err);
                 if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Falha ao validar. Tente novamente.</span>';
+                els.loginErrorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>${err.message || "Falha ao validar. Tente novamente."}</span>`;
                 els.loginErrorMsg.classList.remove('hidden');
                 
                 els.loginSubmitBtn.disabled = false;
