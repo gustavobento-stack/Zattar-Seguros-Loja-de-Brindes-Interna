@@ -1108,11 +1108,11 @@
         // Mapeamento automático de imagens (Override)
         const overrideImages = {
             "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
-            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
-            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
-            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
-            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
-            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
+            "Caneca - Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
+            "Caneca - Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
+            "Faca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/FACA.webp",
+            "Garrafa": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
+            "Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
             "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
         };
 
@@ -2248,6 +2248,30 @@
                 `;
                 els.cartItemsContainer.appendChild(itemEl);
             });
+
+            // LÓGICA DE SUGESTÃO DE SACOLA
+            if (totalItems >= 4) {
+                const sacola = State.products.find(p => p.name.toLowerCase().includes('sacola') && p.ativo && p.stock > 0);
+                if (sacola && !State.cart[sacola.id]) {
+                    const sacolaEl = document.createElement('div');
+                    sacolaEl.className = "bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl p-3 mt-2 mb-2 flex items-center justify-between gap-3 shadow-sm transform transition-all animate-pulse duration-1000";
+                    sacolaEl.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden p-1">
+                                ${sacola.icon.startsWith('http') ? `<img src="${sacola.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${sacola.icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>`}
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-brand-900 dark:text-brand-100 leading-tight mb-0.5">Levar numa ${sacola.name}?</h4>
+                                <p class="text-[10px] text-brand-700 dark:text-brand-300">Sugerido para ${totalItems} itens.</p>
+                            </div>
+                        </div>
+                        <button onclick="updateQuantity('${sacola.id}', 1)" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-sm">
+                            + Incluir
+                        </button>
+                    `;
+                    els.cartItemsContainer.appendChild(sacolaEl);
+                }
+            }
 
             els.cartTotalItems.textContent = totalItems;
             if (els.cartTotalValue) {
