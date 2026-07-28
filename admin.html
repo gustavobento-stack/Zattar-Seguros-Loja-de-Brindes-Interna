@@ -31,8 +31,8 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* Classes utilitárias para transição das abas */
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
+        .tab-content { animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.is-hidden { display: none !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
     <script>
@@ -170,7 +170,7 @@
             </section>
 
             <!-- TAB: ORDERS -->
-            <section id="tab-orders" class="tab-content h-full flex flex-col">
+            <section id="tab-orders" class="tab-content is-hidden h-full flex flex-col">
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 shrink-0">
                     <h3 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-brand-500"></i> Filtros Avançados</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -204,7 +204,7 @@
             </section>
 
             <!-- TAB: CATALOG -->
-            <section id="tab-catalog" class="tab-content h-full flex flex-col">
+            <section id="tab-catalog" class="tab-content is-hidden h-full flex flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
@@ -235,7 +235,7 @@
             </section>
 
             <!-- TAB: CATEGORIES -->
-            <section id="tab-categories" class="tab-content h-full flex flex-col">
+            <section id="tab-categories" class="tab-content is-hidden h-full flex flex-col">
                 <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-2xl mx-auto w-full">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="tags" class="w-5 h-5 text-brand-500"></i> Categorias de Brindes</h3>
@@ -248,7 +248,7 @@
             </section>
 
             <!-- TAB: USERS -->
-            <section id="tab-users" class="tab-content h-full flex flex-col">
+            <section id="tab-users" class="tab-content is-hidden h-full flex flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
@@ -283,7 +283,7 @@
             </section>
 
             <!-- TAB: AUDIT -->
-            <section id="tab-audit" class="tab-content h-full flex flex-col">
+            <section id="tab-audit" class="tab-content is-hidden h-full flex flex-col">
                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-xl mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300 shrink-0">
                     <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600"></i>
                     <p>O Log de Auditoria rastreia ações críticas feitas por administradores (criação de produtos, alteração de saldos, cancelamentos). <em>Nota: Requer a tabela `logs_auditoria` no Supabase para persistência histórica.</em></p>
@@ -417,13 +417,25 @@
         // Lógica de abas (Sidebar)
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active', 'bg-slate-100', 'dark:bg-slate-800'); b.classList.add('text-slate-600', 'dark:text-slate-400'); });
+                document.querySelectorAll('.nav-btn').forEach(b => { 
+                    b.classList.remove('active', 'bg-slate-100', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-brand-400'); 
+                    b.classList.add('text-slate-600', 'dark:text-slate-400'); 
+                });
                 const target = e.currentTarget.getAttribute('data-target');
                 e.currentTarget.classList.add('active', 'bg-slate-100', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-brand-400');
                 e.currentTarget.classList.remove('text-slate-600', 'dark:text-slate-400');
                 
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                document.getElementById(`tab-${target}`).classList.add('active');
+                // Oculta todas as abas
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('is-hidden'));
+                
+                // Revela a aba selecionada e reinicia a animação
+                const targetTab = document.getElementById(`tab-${target}`);
+                targetTab.classList.remove('is-hidden');
+                
+                targetTab.style.animation = 'none';
+                void targetTab.offsetWidth; // Reflow forçado para a animação
+                targetTab.style.animation = null;
+
                 document.getElementById('pageTitle').textContent = e.currentTarget.innerText;
                 
                 if(target === 'dashboard') updateDashboardCharts();
