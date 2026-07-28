@@ -388,9 +388,21 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters"></div>
-                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
+            <!-- Filtros de Categoria e Select de Ordenação -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
+                <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap block" id="itemsCountLabel">0 itens</span>
+                    <div class="relative w-full md:w-48">
+                        <select id="sortSelect" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-brand-500 appearance-none shadow-sm cursor-pointer transition-colors">
+                            <option value="relevancia">Relevância</option>
+                            <option value="mais_pedidos">Mais Pedidos</option>
+                            <option value="menor_preco">Menor Preço</option>
+                            <option value="maior_preco">Maior Preço</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12 relative" id="productsGrid"></div>
@@ -732,6 +744,7 @@
             searchQuery: "",
             selectedCategory: "Todos",
             categories: ["Todos"],
+            sortBy: "relevancia",
             ordersHistory: [], 
             userBalance: 0
         };
@@ -763,6 +776,7 @@
             productsGrid: document.getElementById('productsGrid'),
             categoryFilters: document.getElementById('categoryFilters'),
             searchInput: document.getElementById('searchInput'),
+            sortSelect: document.getElementById('sortSelect'),
             itemsCountLabel: document.getElementById('itemsCountLabel'),
             cartItemsContainer: document.getElementById('cartItemsContainer'),
             emptyCartState: document.getElementById('emptyCartState'),
@@ -2020,6 +2034,16 @@
                 els.categoryFilters.appendChild(btn);
             });
         }
+        
+        const getProductOrderCount = (productId) => {
+            let count = 0;
+            if(State.ordersHistory) {
+                State.ordersHistory.forEach(order => {
+                    if(order.items && order.items[productId]) count += order.items[productId];
+                });
+            }
+            return count;
+        };
 
         function renderProducts() {
             els.productsGrid.innerHTML = '';
@@ -2029,6 +2053,19 @@
                 const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
                 return matchCategory && matchSearch;
             });
+            
+            // Lógica de Ordenação
+            filtered.sort((a, b) => {
+                if (State.sortBy === 'menor_preco') return a.price - b.price;
+                if (State.sortBy === 'maior_preco') return b.price - a.price;
+                if (State.sortBy === 'mais_pedidos') {
+                    const pedidosA = getProductOrderCount(a.id);
+                    const pedidosB = getProductOrderCount(b.id);
+                    return pedidosB - pedidosA;
+                }
+                return a.name.localeCompare(b.name); // Relevância / Alfabética
+            });
+            
             els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
             if (filtered.length === 0) {
@@ -2044,7 +2081,7 @@
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center p-0">
                             <img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                         </div>
                     `;
@@ -2097,6 +2134,11 @@
             });
             lucide.createIcons();
         }
+        
+        els.sortSelect?.addEventListener('change', (e) => {
+            State.sortBy = e.target.value;
+            renderProducts();
+        });
 
         window.changeCardQty = function(productId, delta) {
             const input = document.getElementById(`card-qty-${productId}`);
