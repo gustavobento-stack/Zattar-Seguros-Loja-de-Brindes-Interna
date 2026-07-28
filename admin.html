@@ -313,6 +313,25 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
+        function safeNavigate(url) {
+            try {
+                window.location.href = url;
+            } catch (e) {
+                console.warn("Redirecionamento bloqueado pelo ambiente de visualização:", e);
+                document.body.innerHTML = `
+                    <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
+                        <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
+                            <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento</h2>
+                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação para:<br><strong class="text-brand-600">${url}</strong></p>
+                            <p class="text-sm text-slate-400">Em produção real, você seria redirecionado normalmente.</p>
+                        </div>
+                    </div>
+                `;
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        }
+
         const els = {
             closeAdminBtn: document.getElementById('closeAdminBtn'), adminContent: document.getElementById('adminContent'),
             admTotalSpent: document.getElementById('admTotalSpent'), admTotalOrders: document.getElementById('admTotalOrders'),
@@ -350,34 +369,33 @@
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(async () => {
                 await supabaseClient.auth.signOut();
-                window.location.href = 'index.html?session_expired=true';
+                safeNavigate('index.html?session_expired=true');
             }, INACTIVITY_LIMIT);
         }
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
 
-        const toggleTheme = () => {
-            if (document.documentElement.classList.contains('dark')) { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; } 
-            else { document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; }
-        };
-        els.themeToggleBtn?.addEventListener('click', toggleTheme);
-
         // Verifica a Autenticação no carregamento da tela
         async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = 'index.html'; return; }
-            
-            const { data: userData } = await supabaseClient.from('usuarios').select('admin').eq('id', session.user.id).single();
-            if (!userData || userData.admin !== true) { window.location.href = 'index.html'; return; } // Bloqueio total
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) { safeNavigate('index.html'); return; }
+                
+                const { data: userData } = await supabaseClient.from('usuarios').select('admin').eq('id', session.user.id).single();
+                if (!userData || userData.admin !== true) { safeNavigate('index.html'); return; } // Bloqueio total
 
-            // É admin!
-            document.getElementById('loaderScreen').classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => document.getElementById('loaderScreen').classList.add('hidden'), 300);
-            
-            els.adminContent.classList.remove('hidden');
-            setTimeout(() => els.adminContent.classList.remove('opacity-0'), 50);
-            
-            await initialAdminLoad();
-            resetInactivityTimer();
+                // É admin!
+                document.getElementById('loaderScreen').classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => document.getElementById('loaderScreen').classList.add('hidden'), 300);
+                
+                els.adminContent.classList.remove('hidden');
+                setTimeout(() => els.adminContent.classList.remove('opacity-0'), 50);
+                
+                await initialAdminLoad();
+                resetInactivityTimer();
+            } catch (e) {
+                console.error("Erro na verificação de autenticação:", e);
+                safeNavigate('index.html');
+            }
         }
 
         els.logoutBtnAdmin?.addEventListener('click', () => {
@@ -390,10 +408,10 @@
         els.logoutConfirmBtn?.addEventListener('click', async () => {
             els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
             await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+            safeNavigate('index.html');
         });
 
-        els.closeAdminBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+        els.closeAdminBtn.addEventListener('click', () => { safeNavigate('index.html'); });
 
         let pendingActionCallback = null;
         function showActionConfirm(title, text, type, confirmBtnText, callback) {
@@ -486,8 +504,12 @@
         els.admExportUsersBtn?.addEventListener('click', () => {
             let csvContent = "data:text/csv;charset=utf-8,Nome,Cargo,Saldo Restante,Custo Gerado\n";
             Object.values(AdminState.userStats).forEach(u => csvContent += `"${u.name}","${u.cargo}","${u.balance.toFixed(2)}","${u.spent.toFixed(2)}"\n`);
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `zattar_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            try {
+                const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `zattar_usuarios_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            } catch (e) {
+                console.error("Download bloqueado no ambiente de preview.", e);
+            }
         });
 
         function buildAndRenderAdminStats() {
@@ -590,8 +612,8 @@
             }
         });
         document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
-        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
-        els.contextStoreMode.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); window.location.href = 'index.html'; });
+        document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e){} });
+        els.contextStoreMode.addEventListener('click', () => { els.customContextMenu.classList.add('hidden'); safeNavigate('index.html'); });
 
         window.openAdminSingleOrder = function(orderId, isSilentRefresh = false) {
             const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
