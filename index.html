@@ -1105,6 +1105,17 @@
             }, 6000);
         }
 
+        // Mapeamento automático de imagens (Override)
+        const overrideImages = {
+            "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
+            "Caneca - Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
+            "Caneca - Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
+            "Faca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/FACA.webp",
+            "Garrafa": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
+            "Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
+            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
+        };
+
         async function fetchBaseData() {
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
@@ -1117,15 +1128,23 @@
 
             const { data: prods } = await supabaseClient.from('produtos').select('*');
             if (prods) {
-                State.products = prods.map(p => ({
-                    id: p.id, 
-                    category: catMap[p.categoria_id] || 'Outros',
-                    name: p.nome, 
-                    stock: p.estoque, 
-                    price: p.preco, 
-                    icon: p.icone || 'box',
-                    ativo: p.ativo !== false 
-                }));
+                State.products = prods.map(p => {
+                    // Força a inserção da imagem real caso o nome bata
+                    let finalIcon = p.icone || 'box';
+                    if (overrideImages[p.nome]) {
+                        finalIcon = overrideImages[p.nome];
+                    }
+
+                    return {
+                        id: p.id, 
+                        category: catMap[p.categoria_id] || 'Outros',
+                        name: p.nome, 
+                        stock: p.estoque, 
+                        price: p.preco, 
+                        icon: finalIcon,
+                        ativo: p.ativo !== false 
+                    };
+                });
             }
         }
 
@@ -1751,7 +1770,7 @@
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors";
                 
                 const iconDisplay = p.icon.startsWith('http') 
-                    ? `<img src="${p.icon}" class="w-8 h-8 object-contain rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-0.5">`
+                    ? `<img src="${p.icon}" class="w-8 h-8 object-cover rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600">`
                     : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center border border-slate-200 dark:border-slate-600"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i></div>`;
                 
                 const statusBadge = p.ativo 
@@ -1929,7 +1948,7 @@
                 try {
                     const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
-                    fetch(webhookUrl, { 
+                    await fetch(webhookUrl, { 
                         method: 'POST', 
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'text/plain' },
@@ -2025,8 +2044,8 @@
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center p-0">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-contain hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                         </div>
                     `;
                 } else {
@@ -2207,13 +2226,13 @@
                 if (product.price) totalValue += (product.price * qty);
 
                 const iconCartHtml = product.icon.startsWith('http') 
-                    ? `<img src="${product.icon}" class="w-8 h-8 object-contain">`
+                    ? `<img src="${product.icon}" class="w-full h-full object-cover rounded-md">`
                     : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
 
                 const itemEl = document.createElement('div');
                 itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
                 itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden p-1">
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">
                         ${iconCartHtml}
                     </div>
                     <div class="flex-1 flex flex-col justify-center min-w-0">
@@ -2331,7 +2350,7 @@
                             })
                         };
                         
-                        fetch(webhookUrl, { 
+                        await fetch(webhookUrl, { 
                             method: 'POST', 
                             mode: 'no-cors',
                             headers: { 'Content-Type': 'text/plain' },
@@ -2446,7 +2465,7 @@
                         try {
                             const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
-                            fetch(webhookUrl, { 
+                            await fetch(webhookUrl, { 
                                 method: 'POST', 
                                 mode: 'no-cors',
                                 headers: { 'Content-Type': 'text/plain' },
