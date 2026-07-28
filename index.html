@@ -998,7 +998,14 @@
                 if (signInError) {
                     if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
                     els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                    els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
+                    
+                    // Traduz o erro real do Supabase para sabermos o que está falhando
+                    let msgErro = signInError.message;
+                    if (msgErro === "Invalid login credentials") msgErro = "E-mail ou senha incorretos.";
+                    else if (msgErro.includes("Email not confirmed")) msgErro = "E-mail ainda não foi confirmado.";
+                    else if (msgErro.toLowerCase().includes("captcha")) msgErro = "Erro de Captcha no Auth: Token já foi consumido pela Edge Function.";
+                    
+                    els.loginErrorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>${msgErro}</span>`;
                     els.loginErrorMsg.classList.remove('hidden');
                     
                     els.loginSubmitBtn.disabled = false;
