@@ -56,15 +56,29 @@
         
         /* Fundo corporativo premium do login */
         .login-bg-pattern {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(173,100%,35%,0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(173,100%,35%,0.05) 0px, transparent 50%);
+        }
+        
+        .dark .login-bg-pattern {
             background-color: #0b0f19;
             background-image: 
                 radial-gradient(at 0% 0%, hsla(173,100%,35%,0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, hsla(173,100%,35%,0.15) 0px, transparent 50%);
         }
+
         .login-glass-card {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .login-glass-card {
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
@@ -82,68 +96,78 @@
 
     <!-- TELA DE LOGIN CORPORATIVA -->
     <div id="loginScreen" class="fixed inset-0 z-[100] login-bg-pattern flex items-center justify-center transition-opacity duration-300 p-4">
-        <div class="login-glass-card w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative">
+        <div class="login-glass-card w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative transition-colors duration-300">
             
             <!-- Efeito de brilho sutil animado no fundo -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-500/10 blur-[100px] mix-blend-screen animate-pulse duration-10000"></div>
-                <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[80px] mix-blend-screen animate-pulse duration-7000 delay-1000"></div>
+                <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-500/10 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-10000"></div>
+                <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[80px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-7000 delay-1000"></div>
             </div>
             
             <!-- Coluna Esquerda: Branding -->
-            <div class="hidden md:flex flex-col justify-between w-1/2 p-14 relative z-10 border-r border-white/5">
+            <div class="hidden md:flex flex-col justify-between w-1/2 p-14 relative z-10 border-r border-slate-200 dark:border-white/5">
                 <div class="relative z-10">
-                    <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 mb-12 opacity-90 brightness-200 contrast-125 grayscale">
-                    <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight mb-6 tracking-tight">Portal de<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-300">Brindes Comercial</span></h1>
-                    <p class="text-slate-300 text-base leading-relaxed max-w-md font-light">Acesse o catálogo interno para solicitar itens e controlar sua cota de brindes de forma autônoma e segura.</p>
+                    <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 mb-12 block dark:hidden">
+                    <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 mb-12 hidden dark:block">
+                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Portal de<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-emerald-500 dark:from-brand-400 dark:to-emerald-300">Brindes Comercial</span></h1>
+                    <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md font-light">Acesse o catálogo interno para solicitar itens e controlar sua cota de brindes de forma autônoma e segura.</p>
                 </div>
                 
                 <div class="relative z-10">
-                    <div class="inline-flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2.5 rounded-2xl shadow-lg">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center bg-brand-500/20 text-brand-400">
+                    <div class="inline-flex items-center gap-3 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md border border-slate-200/50 dark:border-white/10 px-4 py-2.5 rounded-2xl shadow-sm dark:shadow-lg">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400">
                             <i data-lucide="shield-check" class="w-4 h-4"></i>
                         </div>
-                        <span class="text-xs text-slate-300 font-medium uppercase tracking-widest">Acesso Autenticado</span>
+                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium uppercase tracking-widest">Acesso Autenticado</span>
                     </div>
                 </div>
             </div>
 
             <!-- Coluna Direita: Formulário -->
             <div class="w-full md:w-1/2 p-8 sm:p-14 flex flex-col justify-center relative z-10">
+                <div class="absolute top-4 right-4 z-20">
+                    <!-- Theme Toggle for Login Screen -->
+                    <button id="loginThemeToggleBtn" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                </div>
+
                 <div class="md:hidden flex justify-center mb-10">
-                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 block opacity-90 brightness-200 contrast-125 grayscale">
+                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 block dark:hidden">
+                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 hidden dark:block">
                 </div>
                 
                 <div class="mb-10 text-center md:text-left">
-                    <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">Bem-vindo(a)</h2>
-                    <p class="text-slate-400 text-sm font-light">Insira suas credenciais corporativas para entrar.</p>
+                    <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2 tracking-tight">Bem-vindo(a)</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-light">Insira suas credenciais corporativas para entrar.</p>
                 </div>
                 
                 <form id="loginForm" class="space-y-5 max-w-sm mx-auto md:mx-0 w-full">
                     <div class="space-y-1.5">
-                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 ml-1">E-mail Corporativo</label>
+                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 ml-1">E-mail Corporativo</label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-400 text-slate-500">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-500 dark:group-focus-within:text-brand-400 text-slate-400 dark:text-slate-500">
                                 <i data-lucide="mail" class="w-5 h-5"></i>
                             </div>
-                            <input type="email" id="loginEmail" required class="w-full pl-12 pr-4 py-3.5 bg-slate-900/50 border border-slate-700/50 rounded-2xl focus:bg-slate-900/80 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all duration-300 text-white text-sm placeholder-slate-600 shadow-inner" placeholder="seu.email@empresa.com">
+                            <input type="email" id="loginEmail" required class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl focus:bg-slate-50 dark:focus:bg-slate-900/80 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all duration-300 text-slate-800 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-600 shadow-sm dark:shadow-inner" placeholder="seu.email@empresa.com">
                         </div>
                     </div>
                     
                     <div class="space-y-1.5">
-                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 ml-1">Senha de Acesso</label>
+                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 ml-1">Senha de Acesso</label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-400 text-slate-500">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-500 dark:group-focus-within:text-brand-400 text-slate-400 dark:text-slate-500">
                                 <i data-lucide="key" class="w-5 h-5"></i>
                             </div>
-                            <input type="password" id="loginPassword" required class="w-full pl-12 pr-12 py-3.5 bg-slate-900/50 border border-slate-700/50 rounded-2xl focus:bg-slate-900/80 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all duration-300 text-white text-sm placeholder-slate-600 shadow-inner" placeholder="••••••••">
-                            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-white transition-colors focus:outline-none">
+                            <input type="password" id="loginPassword" required class="w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl focus:bg-slate-50 dark:focus:bg-slate-900/80 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all duration-300 text-slate-800 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-600 shadow-sm dark:shadow-inner" placeholder="••••••••">
+                            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white transition-colors focus:outline-none">
                                 <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div id="loginErrorMsg" class="hidden bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
+                    <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
                         <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
                         <span>E-mail ou senha incorretos.</span>
                     </div>
@@ -872,7 +896,7 @@
             lucide.createIcons();
         });
 
-        els.themeToggleBtn?.addEventListener('click', () => {
+        const toggleTheme = () => {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.theme = 'light';
@@ -880,7 +904,10 @@
                 document.documentElement.classList.add('dark');
                 localStorage.theme = 'dark';
             }
-        });
+        };
+
+        els.themeToggleBtn?.addEventListener('click', toggleTheme);
+        document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
