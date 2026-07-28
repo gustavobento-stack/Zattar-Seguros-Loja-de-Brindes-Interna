@@ -503,7 +503,12 @@
                     supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
                     supabaseClient.from('produtos').select('*').order('nome'),
                     supabaseClient.from('categorias').select('*').order('nome'),
-                    supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50).catch(() => ({ data: [] })) // Fallback se não existir tabela
+                    (async () => {
+                        try {
+                            const res = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
+                            return res.error ? { data: [] } : res;
+                        } catch(e) { return { data: [] }; }
+                    })()
                 ]);
 
                 AdminState.users = reqUsers.data || [];
