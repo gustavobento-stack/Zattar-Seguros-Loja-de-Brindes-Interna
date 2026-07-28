@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- hCaptcha Script -->
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -164,6 +167,11 @@
                     <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
                         <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
                         <span>E-mail ou senha incorretos.</span>
+                    </div>
+                    
+                    <!-- Validação hCaptcha -->
+                    <div class="flex justify-center md:justify-start pt-2">
+                        <div class="h-captcha overflow-hidden rounded-xl" data-theme="dark" data-sitekey="926c870e-f0c2-46c6-b18c-9bd4fff83cc6"></div>
                     </div>
                     
                     <div class="pt-4">
@@ -944,20 +952,35 @@
 
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Validação local do hCaptcha (Front-end)
+            const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
+            if (!hcaptchaResponse) {
+                els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Por favor, resolva o Captcha antes de acessar.</span>';
+                els.loginErrorMsg.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
             els.loginErrorMsg.classList.add('hidden');
             els.loginSubmitBtn.disabled = true;
             els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Aguarde...</span>';
             lucide.createIcons();
             
-            // Login simples (sem options: captchaToken) para o backend processar sem erros se não tiver Edge configurada lá.
+            // Envia o login nativamente pro Supabase, que fará a verificação segura do token no backend deles
             const { error } = await supabaseClient.auth.signInWithPassword({
                 email: els.loginEmail.value,
-                password: els.loginPassword.value
+                password: els.loginPassword.value,
+                options: {
+                    captchaToken: hcaptchaResponse // O Supabase pega este token e valida no backend com a sua Secret Key!
+                }
             });
             
             if (error) {
+                if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); // Reseta para nova tentativa
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail ou senha incorretos.</span>';
+                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>E-mail/senha incorretos ou Captcha expirado.</span>';
                 els.loginErrorMsg.classList.remove('hidden');
                 
                 els.loginSubmitBtn.disabled = false;
@@ -990,6 +1013,9 @@
             setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
             await supabaseClient.auth.signOut();
             els.loginEmail.value = ''; els.loginPassword.value = '';
+            
+            if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); // Reseta o captcha ao deslogar
+            
             els.loginSubmitBtn.disabled = false;
             els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
             checkAuth(); 
