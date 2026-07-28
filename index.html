@@ -109,7 +109,7 @@
                 <div class="relative z-10">
                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 mb-12 block dark:hidden">
                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 mb-12 hidden dark:block">
-                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Portal de<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-emerald-500 dark:from-brand-400 dark:to-emerald-300">Brindes Comercial</span></h1>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Loja Interna<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-sky-500 dark:from-sky-300 dark:to-sky-400">da Corretora</span></h1>
                     <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md font-light">Acesse o catálogo interno para solicitar itens e controlar sua cota de brindes de forma autônoma e segura.</p>
                 </div>
                 
@@ -388,9 +388,21 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full" id="categoryFilters"></div>
-                <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4 hidden md:block" id="itemsCountLabel">0 itens</span>
+            <!-- Filtros de Categoria e Select de Ordenação -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
+                <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap block" id="itemsCountLabel">0 itens</span>
+                    <div class="relative w-full md:w-48">
+                        <select id="sortSelect" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-brand-500 appearance-none shadow-sm cursor-pointer transition-colors">
+                            <option value="relevancia">Relevância</option>
+                            <option value="mais_pedidos">Mais Pedidos</option>
+                            <option value="menor_preco">Menor Preço</option>
+                            <option value="maior_preco">Maior Preço</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12 relative" id="productsGrid"></div>
@@ -732,6 +744,7 @@
             searchQuery: "",
             selectedCategory: "Todos",
             categories: ["Todos"],
+            sortBy: "relevancia",
             ordersHistory: [], 
             userBalance: 0
         };
@@ -763,6 +776,7 @@
             productsGrid: document.getElementById('productsGrid'),
             categoryFilters: document.getElementById('categoryFilters'),
             searchInput: document.getElementById('searchInput'),
+            sortSelect: document.getElementById('sortSelect'),
             itemsCountLabel: document.getElementById('itemsCountLabel'),
             cartItemsContainer: document.getElementById('cartItemsContainer'),
             emptyCartState: document.getElementById('emptyCartState'),
@@ -1105,6 +1119,17 @@
             }, 6000);
         }
 
+        // Mapeamento automático de imagens (Override)
+        const overrideImages = {
+            "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
+            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
+            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
+            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
+            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
+            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
+            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
+        };
+
         async function fetchBaseData() {
             const { data: cats } = await supabaseClient.from('categorias').select('*');
             let catMap = {};
@@ -1117,15 +1142,23 @@
 
             const { data: prods } = await supabaseClient.from('produtos').select('*');
             if (prods) {
-                State.products = prods.map(p => ({
-                    id: p.id, 
-                    category: catMap[p.categoria_id] || 'Outros',
-                    name: p.nome, 
-                    stock: p.estoque, 
-                    price: p.preco, 
-                    icon: p.icone || 'box',
-                    ativo: p.ativo !== false 
-                }));
+                State.products = prods.map(p => {
+                    // Força a inserção da imagem real caso o nome bata
+                    let finalIcon = p.icone || 'box';
+                    if (overrideImages[p.nome]) {
+                        finalIcon = overrideImages[p.nome];
+                    }
+
+                    return {
+                        id: p.id, 
+                        category: catMap[p.categoria_id] || 'Outros',
+                        name: p.nome, 
+                        stock: p.estoque, 
+                        price: p.preco, 
+                        icon: finalIcon,
+                        ativo: p.ativo !== false 
+                    };
+                });
             }
         }
 
@@ -1751,7 +1784,7 @@
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors";
                 
                 const iconDisplay = p.icon.startsWith('http') 
-                    ? `<img src="${p.icon}" class="w-8 h-8 object-contain rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-0.5">`
+                    ? `<img src="${p.icon}" class="w-8 h-8 object-cover rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600">`
                     : `<div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center border border-slate-200 dark:border-slate-600"><i data-lucide="${p.icon}" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i></div>`;
                 
                 const statusBadge = p.ativo 
@@ -1927,9 +1960,9 @@
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 
                 try {
-                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
-                    fetch(webhookUrl, { 
+                    await fetch(webhookUrl, { 
                         method: 'POST', 
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'text/plain' },
@@ -2001,6 +2034,16 @@
                 els.categoryFilters.appendChild(btn);
             });
         }
+        
+        const getProductOrderCount = (productId) => {
+            let count = 0;
+            if(State.ordersHistory) {
+                State.ordersHistory.forEach(order => {
+                    if(order.items && order.items[productId]) count += order.items[productId];
+                });
+            }
+            return count;
+        };
 
         function renderProducts() {
             els.productsGrid.innerHTML = '';
@@ -2010,6 +2053,19 @@
                 const matchSearch = p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase());
                 return matchCategory && matchSearch;
             });
+            
+            // Lógica de Ordenação
+            filtered.sort((a, b) => {
+                if (State.sortBy === 'menor_preco') return a.price - b.price;
+                if (State.sortBy === 'maior_preco') return b.price - a.price;
+                if (State.sortBy === 'mais_pedidos') {
+                    const pedidosA = getProductOrderCount(a.id);
+                    const pedidosB = getProductOrderCount(b.id);
+                    return pedidosB - pedidosA;
+                }
+                return a.name.localeCompare(b.name); // Relevância / Alfabética
+            });
+            
             els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
             if (filtered.length === 0) {
@@ -2026,7 +2082,7 @@
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
                         <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center p-0">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-contain hover:scale-105 transition-transform duration-500">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                         </div>
                     `;
                 } else {
@@ -2040,7 +2096,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative aspect-square w-full overflow-hidden">
                         ${imageSectionHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/80 dark:bg-slate-700/80 backdrop-blur-md text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300/50 dark:border-slate-600/50">${product.id}</span>
@@ -2078,6 +2134,11 @@
             });
             lucide.createIcons();
         }
+        
+        els.sortSelect?.addEventListener('change', (e) => {
+            State.sortBy = e.target.value;
+            renderProducts();
+        });
 
         window.changeCardQty = function(productId, delta) {
             const input = document.getElementById(`card-qty-${productId}`);
@@ -2207,13 +2268,13 @@
                 if (product.price) totalValue += (product.price * qty);
 
                 const iconCartHtml = product.icon.startsWith('http') 
-                    ? `<img src="${product.icon}" class="w-8 h-8 object-contain">`
+                    ? `<img src="${product.icon}" class="w-full h-full object-cover rounded-md">`
                     : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>`;
 
                 const itemEl = document.createElement('div');
                 itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative group";
                 itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden p-1">
+                    <div class="w-12 h-12 bg-slate-50 dark:bg-slate-700 rounded-lg flex items-center justify-center border border-slate-100 dark:border-slate-600 flex-shrink-0 overflow-hidden">
                         ${iconCartHtml}
                     </div>
                     <div class="flex-1 flex flex-col justify-center min-w-0">
@@ -2229,6 +2290,30 @@
                 `;
                 els.cartItemsContainer.appendChild(itemEl);
             });
+
+            // LÓGICA DE SUGESTÃO DE SACOLA
+            if (totalItems >= 4) {
+                const sacola = State.products.find(p => p.name.toLowerCase().includes('sacola') && p.ativo && p.stock > 0);
+                if (sacola && !State.cart[sacola.id]) {
+                    const sacolaEl = document.createElement('div');
+                    sacolaEl.className = "bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800/50 rounded-xl p-3 mt-2 mb-2 flex items-center justify-between gap-3 shadow-sm transform transition-all animate-pulse duration-1000";
+                    sacolaEl.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden p-1">
+                                ${sacola.icon.startsWith('http') ? `<img src="${sacola.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${sacola.icon}" class="w-5 h-5 text-brand-600 dark:text-brand-400"></i>`}
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-brand-900 dark:text-brand-100 leading-tight mb-0.5">Levar numa ${sacola.name}?</h4>
+                                <p class="text-[10px] text-brand-700 dark:text-brand-300">Sugerido para ${totalItems} itens.</p>
+                            </div>
+                        </div>
+                        <button onclick="updateQuantity('${sacola.id}', 1)" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-sm">
+                            + Incluir
+                        </button>
+                    `;
+                    els.cartItemsContainer.appendChild(sacolaEl);
+                }
+            }
 
             els.cartTotalItems.textContent = totalItems;
             if (els.cartTotalValue) {
@@ -2317,7 +2402,7 @@
 
                     // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ---
                     try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                         const webhookData = {
                             orderId: orderId,
                             userName: State.userName,
@@ -2331,7 +2416,7 @@
                             })
                         };
                         
-                        fetch(webhookUrl, { 
+                        await fetch(webhookUrl, { 
                             method: 'POST', 
                             mode: 'no-cors',
                             headers: { 'Content-Type': 'text/plain' },
@@ -2444,9 +2529,9 @@
                         }
                         
                         try {
-                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
-                            fetch(webhookUrl, { 
+                            await fetch(webhookUrl, { 
                                 method: 'POST', 
                                 mode: 'no-cors',
                                 headers: { 'Content-Type': 'text/plain' },
