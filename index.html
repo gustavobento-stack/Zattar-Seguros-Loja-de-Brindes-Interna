@@ -1927,7 +1927,7 @@
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 
                 try {
-                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
                     fetch(webhookUrl, { 
                         method: 'POST', 
@@ -2317,7 +2317,7 @@
 
                     // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ---
                     try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                         const webhookData = {
                             orderId: orderId,
                             userName: State.userName,
@@ -2444,7 +2444,7 @@
                         }
                         
                         try {
-                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
                             fetch(webhookUrl, { 
                                 method: 'POST', 
