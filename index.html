@@ -367,6 +367,25 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
+        function safeNavigate(url) {
+            try {
+                window.location.href = url;
+            } catch (e) {
+                console.warn("Redirecionamento bloqueado pelo ambiente de visualização:", e);
+                document.body.innerHTML = `
+                    <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
+                        <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
+                            <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento</h2>
+                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação para:<br><strong class="text-brand-600">${url}</strong></p>
+                            <p class="text-sm text-slate-400">Em produção real, você seria redirecionado normalmente.</p>
+                        </div>
+                    </div>
+                `;
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        }
+
         const els = {
             productsGrid: document.getElementById('productsGrid'), categoryFilters: document.getElementById('categoryFilters'),
             searchInput: document.getElementById('searchInput'), sortSelect: document.getElementById('sortSelect'),
@@ -474,7 +493,7 @@
             els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span>Sessão expirada. Faça login novamente.</span>';
             els.loginErrorMsg.className = 'bg-amber-50 text-amber-700 border border-amber-200 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
             els.loginErrorMsg.classList.remove('hidden');
-            window.history.replaceState({}, document.title, window.location.pathname); // limpa URL
+            try { window.history.replaceState({}, document.title, window.location.pathname || '/'); } catch(e) {}
         }
 
         els.loginForm?.addEventListener('submit', async (e) => {
@@ -660,12 +679,12 @@
             }
         });
         document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
-        document.getElementById('contextReload')?.addEventListener('click', () => location.reload());
+        document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
         
         // Redireciona para o arquivo de Admin
         els.contextAdminMode.addEventListener('click', () => {
             els.customContextMenu.classList.add('hidden');
-            window.location.href = 'admin.html';
+            safeNavigate('admin.html');
         });
 
         const formatMoney = (value) => value === null ? "R$ --" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
