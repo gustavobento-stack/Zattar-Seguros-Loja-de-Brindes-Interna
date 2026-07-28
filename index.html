@@ -1785,7 +1785,7 @@
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 
                 try {
-                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                    const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                     const webhookData = { action: "updateStatus", orderId: orderId, status: 'Separação Concluída' };
                     fetch(webhookUrl, { 
                         method: 'POST', 
@@ -1883,8 +1883,8 @@
                 let imageSectionHtml = '';
                 if (product.icon.startsWith('http')) {
                     imageSectionHtml = `
-                        <div class="absolute inset-0 w-full h-full">
-                            <img src="${product.icon}" class="product-visual w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-500 drop-shadow-sm">
+                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 flex items-center justify-center">
+                            <img src="${product.icon}" class="product-visual w-full h-full object-contain hover:scale-105 transition-transform duration-500 drop-shadow-sm p-4">
                         </div>
                     `;
                 } else {
@@ -1898,7 +1898,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative min-h-[200px] overflow-hidden">
                         ${imageSectionHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300 dark:border-slate-600">${product.id}</span>
@@ -1919,7 +1919,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-100 dark:border-slate-700 flex flex-col gap-2 relative z-30">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
                                 <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">-</button>
@@ -2175,7 +2175,7 @@
 
                     // --- INTEGRAÇÃO GOOGLE APPS SCRIPT (COM TEXT/PLAIN) ---
                     try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                         const webhookData = {
                             orderId: orderId,
                             userName: State.userName,
@@ -2303,7 +2303,7 @@
                         }
                         
                         try {
-                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbza0Mq5qk0q3EQw1phMeSf0tHWkmY7Gp2RrI4r5xE2rjBKYsDYzAB-JNKbicxISsYT6WQ/exec';
+                            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
                             const webhookData = { action: "updateStatus", orderId: orderId, status: 'Cancelado' };
                             fetch(webhookUrl, { 
                                 method: 'POST', 
