@@ -62,7 +62,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 relative">
 
-    <!-- TELA DE LOGIN CORPORATIVA -->
     <div id="loginScreen" class="fixed inset-0 z-[100] login-bg-pattern flex items-center justify-center transition-opacity duration-300 p-4">
         <div class="login-glass-card w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative transition-colors duration-300">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -121,7 +120,7 @@
 
                     <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
                         <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
-                        <span>E-mail ou senha incorretos.</span>
+                        <span id="loginErrorText">E-mail ou senha incorretos.</span>
                     </div>
                     
                     <div class="flex justify-center md:justify-start pt-2">
@@ -367,6 +366,7 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
+        // Função de Navegação Segura (Evita quebra no Sandbox e iFrames)
         function safeNavigate(url) {
             try {
                 window.location.href = url;
@@ -376,9 +376,9 @@
                     <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
                         <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
                             <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento</h2>
-                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação para:<br><strong class="text-brand-600">${url}</strong></p>
-                            <p class="text-sm text-slate-400">Em produção real, você seria redirecionado normalmente.</p>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento Protegido</h2>
+                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação automática para proteger contra scripts maliciosos. <br><br>Você seria redirecionado para:<br><strong class="text-brand-600">${url}</strong></p>
+                            <p class="text-sm text-slate-400">Em produção (servidor real), você será redirecionado normalmente.</p>
                         </div>
                     </div>
                 `;
@@ -426,7 +426,7 @@
                     await supabaseClient.auth.signOut();
                     els.loginEmail.value = ''; els.loginPassword.value = '';
                     State.userId = null; State.isAdmin = false;
-                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span>Sessão expirada por inatividade. Faça login novamente.</span>';
+                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada por inatividade. Faça login novamente.</span>';
                     els.loginErrorMsg.className = 'bg-amber-50 text-amber-700 border border-amber-200 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
                     els.loginScreen.classList.remove('hidden');
                     setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
@@ -487,10 +487,9 @@
             }
         }
 
-        // Verifica se há paramentro de expiração vindo do admin.html
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('session_expired')) {
-            els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span>Sessão expirada. Faça login novamente.</span>';
+            els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada. Faça login novamente.</span>';
             els.loginErrorMsg.className = 'bg-amber-50 text-amber-700 border border-amber-200 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
             els.loginErrorMsg.classList.remove('hidden');
             try { window.history.replaceState({}, document.title, window.location.pathname || '/'); } catch(e) {}
@@ -502,7 +501,7 @@
             const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
             if (!hcaptchaResponse) {
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 text-red-600 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>Resolva o Captcha antes de acessar.</span>';
+                document.getElementById('loginErrorText').innerHTML = 'Resolva o Captcha antes de acessar.';
                 els.loginErrorMsg.classList.remove('hidden');
                 lucide.createIcons(); return;
             }
@@ -513,12 +512,14 @@
             lucide.createIcons();
             
             try {
+                // Invoca a Edge Function
                 const { data: verifyData, error: verifyError } = await supabaseClient.functions.invoke('verify-hcaptcha', {
                     body: { response: hcaptchaResponse }
                 });
 
                 if (verifyError || (verifyData && verifyData.success === false)) {
-                    throw new Error("Captcha rejeitado pelo servidor de segurança.");
+                    console.error("Falha na Edge Function ou Captcha inválido:", verifyError || verifyData);
+                    throw new Error("Erro de Captcha no Auth: O servidor rejeitou a sua validação. Recarregue a página e tente novamente.");
                 }
 
                 els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Acessando...</span>';
@@ -536,7 +537,7 @@
             } catch (err) {
                 if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
                 els.loginErrorMsg.className = "bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                els.loginErrorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i><span>${err.message}</span>`;
+                document.getElementById('loginErrorText').innerHTML = err.message;
                 els.loginErrorMsg.classList.remove('hidden');
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
@@ -663,6 +664,7 @@
         }
         setInterval(backgroundRefresh, 5000);
 
+        // Menu de Contexto ADM
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
@@ -1057,6 +1059,8 @@
         };
 
         els.myOrdersBtn?.addEventListener('click', toggleOrdersModal); els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal); els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
+        
+        // Inicialização Final
         window.addEventListener('DOMContentLoaded', () => { checkAuth(); lucide.createIcons(); });
     </script>
 </body>
