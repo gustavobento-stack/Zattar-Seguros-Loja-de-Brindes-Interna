@@ -944,7 +944,7 @@
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
-                resetInactivityTimer(); 
+                resetInactivityTimer();
                 await initialLoad();
             } else {
                 State.userId = null;
@@ -958,7 +958,7 @@
         els.loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validação do hCaptcha chamando o Edge Function
+            // Validação do hCaptcha
             const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
             if (!hcaptchaResponse) {
                 els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
@@ -974,6 +974,7 @@
             lucide.createIcons();
             
             try {
+                // Invocação da Edge Function para validação segura (o token de resposta vai no body)
                 const { data, error } = await supabaseClient.functions.invoke('verify-hcaptcha', {
                     body: { response: hcaptchaResponse }
                 });
@@ -991,7 +992,7 @@
                 els.loginSubmitBtn.disabled = false;
                 els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
                 lucide.createIcons();
-                return;
+                return; 
             }
             
             const { error } = await supabaseClient.auth.signInWithPassword({
@@ -2321,10 +2322,8 @@
             els.checkoutBtn.disabled = true; 
             els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...'; 
             lucide.createIcons();
+            els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Aguarde...'; lucide.createIcons();
             
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             let orderItems = [];
 
             if (State.userId) {
@@ -2341,6 +2340,7 @@
                     State.userBalance -= orderTotalValue;
                     await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
 
+                    // Redução de estoque paralela (MUITO MAIS RÁPIDO)
                     const updatePromises = Object.keys(State.cart).map(async prodId => {
                         const prod = State.products.find(p => p.id === prodId);
                         if (prod) {
@@ -2350,7 +2350,8 @@
                     });
                     await Promise.all(updatePromises);
 
-                    // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ASYNC ---
+                    // --- INTEGRAÇÃO GOOGLE APPS SCRIPT ASSÍNCRONA ---
+                    // Envia silenciosamente em background sem travar o "Aguarde"
                     setTimeout(async () => {
                         try {
                             const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
