@@ -1108,11 +1108,11 @@
         // Mapeamento automático de imagens (Override)
         const overrideImages = {
             "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
-            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
-            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
-            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
-            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
-            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
+            "Caneca - Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
+            "Caneca - Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
+            "Faca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/FACA.webp",
+            "Garrafa": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
+            "Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
             "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
         };
 
@@ -2059,7 +2059,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
                 card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative min-h-[180px] overflow-hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center relative aspect-square w-full overflow-hidden">
                         ${imageSectionHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20">
                             <span class="bg-slate-200/80 dark:bg-slate-700/80 backdrop-blur-md text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-slate-300/50 dark:border-slate-600/50">${product.id}</span>
