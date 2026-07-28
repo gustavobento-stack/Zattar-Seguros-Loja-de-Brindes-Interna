@@ -30,9 +30,10 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Classes utilitárias para transição das abas */
+        /* A classe is-hidden com important garante que o flex do Tailwind não sobressaia quando a aba estiver inativa */
         .tab-content { animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.is-hidden { display: none !important; }
+        .is-hidden { display: none !important; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
     <script>
@@ -53,10 +54,8 @@
     <!-- Sidebar -->
     <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-colors z-40 hidden md:flex shrink-0">
         <div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-sm"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
-                <span class="font-bold text-lg tracking-tight">Admin<span class="text-brand-600 dark:text-brand-400">Panel</span></span>
-            </div>
+            <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-8 w-auto object-contain block dark:hidden">
+            <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-8 w-auto object-contain hidden dark:block">
         </div>
         
         <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
@@ -121,7 +120,7 @@
         <div class="flex-1 overflow-y-auto p-4 md:p-8 relative scroll-smooth">
             
             <!-- TAB: DASHBOARD -->
-            <section id="tab-dashboard" class="tab-content active space-y-6">
+            <section id="tab-dashboard" class="tab-content block space-y-6">
                 <!-- KPIs -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
@@ -170,7 +169,7 @@
             </section>
 
             <!-- TAB: ORDERS -->
-            <section id="tab-orders" class="tab-content is-hidden h-full flex flex-col">
+            <section id="tab-orders" class="tab-content is-hidden h-full flex-col">
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 shrink-0">
                     <h3 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-brand-500"></i> Filtros Avançados</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -204,7 +203,7 @@
             </section>
 
             <!-- TAB: CATALOG -->
-            <section id="tab-catalog" class="tab-content is-hidden h-full flex flex-col">
+            <section id="tab-catalog" class="tab-content is-hidden h-full flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
@@ -235,7 +234,7 @@
             </section>
 
             <!-- TAB: CATEGORIES -->
-            <section id="tab-categories" class="tab-content is-hidden h-full flex flex-col">
+            <section id="tab-categories" class="tab-content is-hidden h-full flex-col">
                 <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-2xl mx-auto w-full">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="tags" class="w-5 h-5 text-brand-500"></i> Categorias de Brindes</h3>
@@ -248,7 +247,7 @@
             </section>
 
             <!-- TAB: USERS -->
-            <section id="tab-users" class="tab-content is-hidden h-full flex flex-col">
+            <section id="tab-users" class="tab-content is-hidden h-full flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
@@ -283,7 +282,7 @@
             </section>
 
             <!-- TAB: AUDIT -->
-            <section id="tab-audit" class="tab-content is-hidden h-full flex flex-col">
+            <section id="tab-audit" class="tab-content is-hidden h-full flex-col">
                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-xl mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300 shrink-0">
                     <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600"></i>
                     <p>O Log de Auditoria rastreia ações críticas feitas por administradores (criação de produtos, alteração de saldos, cancelamentos). <em>Nota: Requer a tabela `logs_auditoria` no Supabase para persistência histórica.</em></p>
@@ -358,7 +357,7 @@
         </div>
     </div>
 
-    <!-- Modal Detalhes do Pedido (Reutilizado do anterior, mas isolado no script) -->
+    <!-- Modal Detalhes do Pedido -->
     <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" onclick="closeModal('adminSingleOrderModal')"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transition-all">
@@ -381,6 +380,20 @@
         </div>
     </div>
 
+    <!-- Menu de Contexto (Botão Direito) -->
+    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
+        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextReload">
+            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
+        </button>
+        <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextTheme">
+            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
+        </button>
+        <div class="h-px bg-slate-100 dark:bg-slate-700/50 my-1"></div>
+        <button class="w-full text-left px-4 py-2.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 hover:dark:bg-brand-900/20 flex items-center gap-3 font-bold" id="contextStoreMode">
+            <i data-lucide="store" class="w-4 h-4"></i> Voltar p/ Loja
+        </button>
+    </div>
+
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -401,7 +414,6 @@
         const formatMoney = (v) => v === null ? "R$ 0,00" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
         const formatDate = (iso) => { const d = new Date(iso); return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; };
 
-        // Wrapper seguro para navegação e fechamento de modais
         window.safeNavigate = function(url) {
             try { window.location.href = url; } 
             catch (e) {
@@ -414,7 +426,7 @@
             if(el) { el.classList.add('hidden'); }
         };
 
-        // Lógica de abas (Sidebar)
+        // Lógica de abas (Sidebar) - Corrigida a classe is-hidden
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.nav-btn').forEach(b => { 
@@ -425,15 +437,15 @@
                 e.currentTarget.classList.add('active', 'bg-slate-100', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-brand-400');
                 e.currentTarget.classList.remove('text-slate-600', 'dark:text-slate-400');
                 
-                // Oculta todas as abas
+                // Oculta todas as abas injetando is-hidden
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('is-hidden'));
                 
-                // Revela a aba selecionada e reinicia a animação
+                // Revela a aba selecionada removendo is-hidden
                 const targetTab = document.getElementById(`tab-${target}`);
                 targetTab.classList.remove('is-hidden');
                 
                 targetTab.style.animation = 'none';
-                void targetTab.offsetWidth; // Reflow forçado para a animação
+                void targetTab.offsetWidth;
                 targetTab.style.animation = null;
 
                 document.getElementById('pageTitle').textContent = e.currentTarget.innerText;
@@ -444,7 +456,7 @@
 
         document.getElementById('returnToStoreBtn').addEventListener('click', () => safeNavigate('index.html'));
 
-        // Central de Confirmações (Action Modal)
+        // Central de Confirmações
         let pendingAction = null;
         window.confirmAction = function(title, text, type, confirmText, callback) {
             document.getElementById('actionConfirmTitle').textContent = title;
@@ -473,10 +485,10 @@
             closeModal('actionConfirmModal');
         });
 
-        // Wrapper de Auditoria (Simula/Grava logs)
+        // Wrapper de Auditoria
         async function logAudit(action, details) {
             const logEntry = { admin_nome: AdminState.me?.nome || 'Admin Desconhecido', acao: action, detalhes: details, data: new Date().toISOString() };
-            AdminState.auditLogs.unshift(logEntry); // Atualiza UI imediato
+            AdminState.auditLogs.unshift(logEntry);
             renderAuditLog();
             try { await supabaseClient.from('logs_auditoria').insert([logEntry]); } catch (e) { /* Ignora se tabela não existir */ }
         }
@@ -509,25 +521,30 @@
                 AdminState.me = userData;
                 document.getElementById('adminHeaderName').textContent = userData.nome || 'Admin';
 
-                // Buscar todos os dados paralelamente
-                const [reqUsers, reqOrders, reqProds, reqCats, reqLogs] = await Promise.all([
+                // Tratamento específico e isolado para auditoria (para não quebrar se tabela não existir)
+                const fetchLogs = async () => {
+                    try {
+                        const { data, error } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
+                        if (error) return [];
+                        return data || [];
+                    } catch (e) {
+                        return [];
+                    }
+                };
+
+                const [reqUsers, reqOrders, reqProds, reqCats, logsData] = await Promise.all([
                     supabaseClient.from('usuarios').select('*'),
                     supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
                     supabaseClient.from('produtos').select('*').order('nome'),
                     supabaseClient.from('categorias').select('*').order('nome'),
-                    (async () => {
-                        try {
-                            const res = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
-                            return res.error ? { data: [] } : res;
-                        } catch(e) { return { data: [] }; }
-                    })()
+                    fetchLogs()
                 ]);
 
                 AdminState.users = reqUsers.data || [];
                 AdminState.orders = reqOrders.data || [];
                 AdminState.products = reqProds.data || [];
                 AdminState.categories = reqCats.data || [];
-                AdminState.auditLogs = (reqLogs && reqLogs.data) ? reqLogs.data : [];
+                AdminState.auditLogs = logsData;
 
                 buildDashboard();
                 renderOrdersTable();
@@ -536,7 +553,6 @@
                 renderUsersTable();
                 renderAuditLog();
 
-                // Setup Filtros de Pedidos
                 const today = new Date();
                 const tzOffset = today.getTimezoneOffset() * 60000;
                 const localDate = (new Date(today - tzOffset)).toISOString().split('T')[0];
@@ -592,7 +608,6 @@
         }
 
         function updateDashboardCharts() {
-            // Preparar dados Gráfico 1: Gasto Mensal
             const monthsMap = {};
             const last6Months = [];
             const d = new Date();
@@ -620,7 +635,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
-            // Gráfico 2: Top Produtos
             const prodCounts = {};
             AdminState.orders.filter(o => o.status !== 'Cancelado').forEach(o => {
                 if(o.pedido_itens) o.pedido_itens.forEach(item => { prodCounts[item.produto_id] = (prodCounts[item.produto_id] || 0) + item.quantidade; });
@@ -637,7 +651,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
             });
 
-            // Gráfico 3: Saldo Médio Setor
             const setorStats = {};
             AdminState.users.forEach(u => {
                 const setor = u.cargo || 'Geral';
@@ -836,7 +849,6 @@
             const filtered = AdminState.users.filter(u => (u.nome || u.email).toLowerCase().includes(q));
             
             filtered.forEach(u => {
-                // Calc gasto total localmente p/ exibição
                 let spent = 0;
                 AdminState.orders.filter(o => o.usuario_id === u.id && o.status !== 'Cancelado').forEach(o => spent += parseFloat(o.valor_total || 0));
                 
@@ -855,7 +867,6 @@
 
         document.getElementById('searchUsers').addEventListener('input', renderUsersTable);
 
-        // Ação de Novo Usuário abre Modal
         document.getElementById('btnNewUser').addEventListener('click', () => {
             document.getElementById('formUser').reset();
             document.getElementById('formUser').removeAttribute('data-edit-id');
@@ -892,7 +903,7 @@
                     await supabaseClient.from('usuarios').update(payload).eq('id', editId); 
                     logAudit('Usuário Editado', `Perfil de ${payload.nome} atualizado. Saldo final: ${formatMoney(payload.saldo)}`); 
                 } else { 
-                    payload.id = crypto.randomUUID(); // Mock ID for demo, usually Auth creates the UUID.
+                    payload.id = crypto.randomUUID();
                     await supabaseClient.from('usuarios').insert([payload]); 
                     logAudit('Usuário Criado', `Perfil para ${payload.nome} adicionado.`);
                 }
@@ -902,7 +913,6 @@
             btn.disabled = false; btn.innerHTML = 'Cadastrar Perfil';
         });
 
-        // Recarga em Lote
         document.getElementById('btnBatchRecharge').addEventListener('click', () => {
             document.getElementById('batchAmount').value = '';
             document.getElementById('modalBatchRecharge').classList.remove('hidden');
@@ -916,7 +926,6 @@
             confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base? Esta ação não pode ser desfeita.`, 'warning', `Sim, Aplicar ${formatMoney(amt)}`, async () => {
                 const btn = document.getElementById('actionConfirmBtn'); btn.innerHTML = 'Processando...';
                 
-                // Processar em batch
                 const updates = AdminState.users.map(u => {
                     const newBal = parseFloat(u.saldo || 0) + amt;
                     return supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id);
@@ -978,7 +987,6 @@
             confirmAction('Alterar Status do Pedido', `Você está alterando o pedido ${orderId} para "${newStatus}". Confirma a ação?`, newStatus === 'Cancelado' ? 'danger' : 'warning', 'Sim, Confirmar', async () => {
                 const order = AdminState.orders.find(o => o.id === orderId); if (!order) return;
                 
-                // Lógica de estorno se for cancelado
                 if (newStatus === 'Cancelado') {
                     const u = AdminState.users.find(x => x.id === order.usuario_id);
                     if(u) { const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0); await supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id); }
@@ -993,7 +1001,6 @@
                 await supabaseClient.from('pedidos').update({ status: newStatus }).eq('id', orderId);
                 logAudit('Status de Pedido Alterado', `Pedido ${orderId} atualizado para [${newStatus}].`);
                 
-                // Atualização silenciosa local e re-render
                 order.status = newStatus;
                 if(newStatus === 'Cancelado') {
                     const { data: usersReq } = await supabaseClient.from('usuarios').select('*'); AdminState.users = usersReq;
@@ -1004,6 +1011,41 @@
                 buildDashboard(); renderOrdersTable(); renderUsersTable(); renderCatalogTable();
             });
         };
+
+        // Lógica do Menu de Contexto (Botão Direito)
+        const customContextMenu = document.getElementById('customContextMenu');
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+                e.preventDefault();
+                customContextMenu.classList.remove('hidden');
+                
+                const rect = customContextMenu.getBoundingClientRect();
+                let x = e.clientX; let y = e.clientY;
+                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
+                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
+                customContextMenu.style.left = `${x}px`; customContextMenu.style.top = `${y}px`;
+            }
+        });
+
+        document.addEventListener('click', (e) => { 
+            if (customContextMenu && !customContextMenu.contains(e.target)) customContextMenu.classList.add('hidden'); 
+        });
+
+        document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
+        
+        document.getElementById('contextTheme')?.addEventListener('click', () => { 
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark'); localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
+            }
+            customContextMenu.classList.add('hidden');
+        });
+
+        document.getElementById('contextStoreMode')?.addEventListener('click', () => {
+            customContextMenu.classList.add('hidden');
+            safeNavigate('index.html');
+        });
 
         window.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons();
