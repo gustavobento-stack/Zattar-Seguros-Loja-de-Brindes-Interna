@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Brindes Comercial</title>
+    <title>Dashboard ADM - Portal de Brindes</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- hCaptcha Script -->
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -18,1050 +16,983 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' }
-                    }
+                    colors: { brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' } }
                 }
             }
         }
     </script>
     <style>
-        /* Estilos personalizados */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
         
-        .login-bg-pattern {
-            background-color: #f8fafc;
-            background-image: radial-gradient(at 0% 0%, hsla(173,100%,35%,0.05) 0px, transparent 50%), radial-gradient(at 100% 100%, hsla(173,100%,35%,0.05) 0px, transparent 50%);
-        }
-        .dark .login-bg-pattern {
-            background-color: #0b0f19;
-            background-image: radial-gradient(at 0% 0%, hsla(173,100%,35%,0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, hsla(173,100%,35%,0.15) 0px, transparent 50%);
-        }
-        .login-glass-card {
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-        }
-        .dark .login-glass-card {
-            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+        /* Classes utilitárias para transição das abas */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
     <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); } 
+        else { document.documentElement.classList.remove('dark'); }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 relative">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 selection:bg-brand-500 selection:text-white">
 
-    <div id="loginScreen" class="fixed inset-0 z-[100] login-bg-pattern flex items-center justify-center transition-opacity duration-300 p-4">
-        <div class="login-glass-card w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row min-h-[600px] relative transition-colors duration-300">
-            <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-500/10 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-10000"></div>
-                <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[80px] mix-blend-multiply dark:mix-blend-screen animate-pulse duration-7000 delay-1000"></div>
-            </div>
-            
-            <div class="hidden md:flex flex-col justify-between w-1/2 p-14 relative z-10 border-r border-slate-200 dark:border-white/5">
-                <div class="relative z-10">
-                    <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 mb-12 block dark:hidden">
-                    <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 mb-12 hidden dark:block">
-                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Loja Interna<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-sky-500 dark:from-sky-300 dark:to-sky-400">da Corretora</span></h1>
-                    <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md font-light">Acesse o catálogo interno para solicitar itens e controlar sua cota de brindes de forma autônoma e segura.</p>
-                </div>
-                <div class="relative z-10">
-                    <div class="inline-flex items-center gap-3 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md border border-slate-200/50 dark:border-white/10 px-4 py-2.5 rounded-2xl shadow-sm dark:shadow-lg">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
-                        <span class="text-xs text-slate-600 dark:text-slate-300 font-medium uppercase tracking-widest">Acesso Autenticado</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="w-full md:w-1/2 p-8 sm:p-14 flex flex-col justify-center relative z-10">
-                <div class="absolute top-4 right-4 z-20">
-                    <button id="loginThemeToggleBtn" type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors">
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-                    </button>
-                </div>
-                <div class="md:hidden flex justify-center mb-10">
-                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 block dark:hidden">
-                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 hidden dark:block">
-                </div>
-                
-                <div class="mb-10 text-center md:text-left">
-                    <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2 tracking-tight">Bem-vindo(a)</h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-light">Insira suas credenciais corporativas para entrar.</p>
-                </div>
-                
-                <form id="loginForm" class="space-y-5 max-w-sm mx-auto md:mx-0 w-full">
-                    <div class="space-y-1.5">
-                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 ml-1">E-mail Corporativo</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-500 text-slate-400"><i data-lucide="mail" class="w-5 h-5"></i></div>
-                            <input type="email" id="loginEmail" required class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl outline-none focus:border-brand-500 text-sm" placeholder="seu.email@empresa.com">
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 ml-1">Senha de Acesso</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand-500 text-slate-400"><i data-lucide="key" class="w-5 h-5"></i></div>
-                            <input type="password" id="loginPassword" required class="w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl outline-none focus:border-brand-500 text-sm" placeholder="••••••••">
-                            <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 focus:outline-none"><i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i></button>
-                        </div>
-                    </div>
-
-                    <div id="loginErrorMsg" class="hidden bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm">
-                        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
-                        <span id="loginErrorText">E-mail ou senha incorretos.</span>
-                    </div>
-                    
-                    <div class="flex justify-center md:justify-start pt-2">
-                        <div class="h-captcha overflow-hidden rounded-xl" data-theme="dark" data-sitekey="926c870e-f0c2-46c6-b18c-9bd4fff83cc6"></div>
-                    </div>
-                    
-                    <div class="pt-4">
-                        <button type="submit" id="loginSubmitBtn" class="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 text-white rounded-2xl font-bold shadow-lg transition-all duration-300 flex justify-center items-center gap-2 transform active:scale-[0.98]">
-                            <span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <!-- Tela de Loading de Permissão -->
+    <div id="loaderScreen" class="fixed inset-0 z-[999] bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-300 px-4">
+        <i data-lucide="loader-2" class="w-10 h-10 text-brand-600 dark:text-brand-400 animate-spin mb-4" id="loaderIcon"></i>
+        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2" id="loaderTitle">Iniciando Dashboard</h2>
+        <span class="text-slate-500 font-medium text-sm text-center" id="loaderText">Validando permissões e credenciais...</span>
+        <div id="loaderError" class="hidden mt-6 p-6 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 rounded-2xl text-center max-w-md w-full shadow-2xl"></div>
     </div>
 
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 z-10 transition-colors duration-300">
-            <div class="flex items-center gap-3">
-                <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 sm:h-12 w-auto object-contain block dark:hidden">
-                <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 sm:h-12 w-auto object-contain hidden dark:block">
-                <i data-lucide="refresh-cw" id="userSyncIcon" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden md:block" title="Sincronização"></i>
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-colors z-40 hidden md:flex shrink-0">
+        <div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-sm"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                <span class="font-bold text-lg tracking-tight">Admin<span class="text-brand-600 dark:text-brand-400">Panel</span></span>
             </div>
-            
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 rounded-lg">
-                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none mb-0.5">Meu Saldo</span>
-                    <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
-                </div>
-                
-                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700 ml-2">
-                    <div class="text-right">
-                        <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
-                        <p id="userRoleDisplay" class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
-                    </div>
-                    <button id="themeToggleBtn" type="button" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border hover:bg-slate-100 text-slate-500 ml-1">
-                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
-                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-                    </button>
-                    <button id="logoutBtn" type="button" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-700 border hover:bg-red-50 hover:text-red-600 text-slate-400">
-                        <i data-lucide="power" class="w-4 h-4"></i>
-                    </button>
-                </div>
-
-                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium whitespace-nowrap">
-                    <i data-lucide="list-ordered" class="w-4 h-4"></i> <span class="hidden md:inline">Histórico</span>
-                </button>
-                
-                <div class="relative w-full md:w-80">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar brindes..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-sm outline-none">
-                </div>
-            </div>
-
-            <button id="mobileCartBtn" class="lg:hidden fixed bottom-4 right-4 bg-brand-600 text-white p-4 rounded-full shadow-lg z-50 flex items-center gap-2 transition-transform duration-300">
-                <i data-lucide="shopping-cart"></i>
-                <span id="mobileCartBadge" class="bg-white text-brand-600 text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+            <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Visão Geral</p>
+            <button class="nav-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
             </button>
-        </header>
-
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col relative">
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
-                <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5"></i>
-                <p>Itens de brindes controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
-                    <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Unidades em Estoque</span>
-                    <strong class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-units">--</strong>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
-                    <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Itens no Catálogo</span>
-                    <strong class="text-2xl font-bold text-brand-600 dark:text-brand-400 mt-1" id="stat-items">--</strong>
-                </div>
-                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 flex flex-col justify-center">
-                    <span class="text-emerald-700 text-xs font-semibold uppercase tracking-wider">Meu Saldo</span>
-                    <strong class="text-2xl font-bold text-emerald-800 dark:text-emerald-300 mt-1 transition-all" id="stat-balance">--</strong>
-                </div>
-            </div>
-
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
-                <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
-                    <span class="text-sm font-medium text-slate-500 whitespace-nowrap block" id="itemsCountLabel">0 itens</span>
-                    <div class="relative w-full md:w-48">
-                        <select id="sortSelect" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border rounded-lg text-sm outline-none appearance-none cursor-pointer">
-                            <option value="relevancia">Relevância</option>
-                            <option value="mais_pedidos">Mais Pedidos</option>
-                            <option value="menor_preco">Menor Preço</option>
-                            <option value="maior_preco">Maior Preço</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12 relative" id="productsGrid"></div>
-        </div>
-    </main>
-
-    <aside id="cartSidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-slate-800 border-l shadow-2xl transform translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 z-40 flex flex-col">
-        <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
-            <div>
-                <h2 class="text-lg font-bold flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Sua Solicitação</h2>
-                <span class="text-xs text-slate-500 font-medium bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full mt-1 inline-block">Nova Requisição</span>
-            </div>
-            <button id="closeCartBtn" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"><i data-lucide="x"></i></button>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-4 space-y-4 relative" id="cartItemsContainer">
-            <div id="emptyCartState" class="h-full flex flex-col items-center justify-center text-center text-slate-400 space-y-3">
-                <i data-lucide="package-open" class="w-12 h-12 opacity-50"></i>
-                <p class="text-sm">Sua lista está vazia.<br>Selecione itens no catálogo.</p>
-            </div>
-        </div>
-
-        <div class="p-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 relative z-10">
-            <div id="checkoutForm" class="mb-5 space-y-3 hidden">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Data da Separação <span class="text-red-500">*</span></label>
-                    <div class="flex gap-2">
-                        <input type="date" id="separationDate" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none">
-                        <button id="btnToday" type="button" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-sm font-medium border">Hoje</button>
-                    </div>
-                    <span id="dateErrorMsg" class="text-red-500 text-xs mt-1 hidden block">⚠️ Selecione uma data.</span>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Motivo / Cliente (Opcional)</label>
-                    <textarea id="orderNotes" rows="2" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-700 border rounded-lg text-sm outline-none resize-none"></textarea>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center mb-4 text-sm relative">
-                <span class="text-slate-600 dark:text-slate-400">Total de itens:</span>
-                <strong class="text-slate-900 dark:text-white text-lg transition-transform duration-300" id="cartTotalItems">0</strong>
-            </div>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="orders">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i> Gestão de Pedidos
+            </button>
             
-            <div class="flex justify-between items-center mb-4 text-sm border-t pt-3">
-                <span class="text-slate-600 dark:text-slate-400 font-medium">Custo Estimado:</span>
-                <div class="text-right">
-                    <strong class="text-brand-600 dark:text-brand-400 text-xl block transition-colors" id="cartTotalValue">R$ 0,00</strong>
-                    <span id="balanceWarning" class="text-red-500 text-[10px] hidden font-bold mt-1 uppercase">Saldo insuficiente!</span>
-                </div>
-            </div>
+            <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2">Estoque e Cadastros</p>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="catalog">
+                <i data-lucide="package" class="w-5 h-5"></i> Catálogo de Brindes
+            </button>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="categories">
+                <i data-lucide="tags" class="w-5 h-5"></i> Categorias
+            </button>
+            
+            <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2">Administração</p>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="users">
+                <i data-lucide="users" class="w-5 h-5"></i> Controle de Usuários
+            </button>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="audit">
+                <i data-lucide="file-clock" class="w-5 h-5"></i> Log de Auditoria
+            </button>
+        </div>
 
-            <button id="checkoutBtn" class="w-full py-3 px-4 bg-brand-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2" disabled>
-                <i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação
+        <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+            <button id="returnToStoreBtn" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold transition-colors shadow-sm text-sm">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Voltar para Loja
             </button>
         </div>
     </aside>
 
-    <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-950">
+        <!-- Top Header -->
+        <header class="h-16 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-30">
+            <div class="flex items-center gap-4">
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
+                <h1 class="text-xl font-bold text-slate-800 dark:text-white hidden sm:block" id="pageTitle">Dashboard</h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg">
+                    <span id="admSyncStatus" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Sincronizado</span>
+                </div>
+                <div class="w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold leading-tight" id="adminHeaderName">Administrador</p>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest">Acesso Root</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-slate-100 border flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content (Tabs) -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative scroll-smooth">
+            
+            <!-- TAB: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content active space-y-6">
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center border border-brand-100 dark:border-brand-800/50"><i data-lucide="circle-dollar-sign" class="w-6 h-6"></i></div>
+                        <div><p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Custo Total</p><h3 class="text-2xl font-black text-slate-800 dark:text-white" id="dashTotalSpent">R$ 0,00</h3></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-800/50"><i data-lucide="shopping-cart" class="w-6 h-6"></i></div>
+                        <div><p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Total Pedidos</p><h3 class="text-2xl font-black text-slate-800 dark:text-white" id="dashTotalOrders">0</h3></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-800/50"><i data-lucide="package-check" class="w-6 h-6"></i></div>
+                        <div><p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Itens Movidos</p><h3 class="text-2xl font-black text-slate-800 dark:text-white" id="dashTotalItems">0</h3></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-800/50"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+                        <div><p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-0.5">Estoque Crítico</p><h3 class="text-2xl font-black text-slate-800 dark:text-white" id="dashLowStockCount">0</h3></div>
+                    </div>
+                </div>
+
+                <!-- Charts & Alerts -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-500"></i> Evolução de Gastos (Últimos 6 meses)</h3>
+                        <div class="h-64 w-full relative"><canvas id="chartGastoMensal"></canvas></div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col h-[330px]">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4 text-amber-600 dark:text-amber-500"><i data-lucide="alert-circle" class="w-4 h-4"></i> Alertas de Estoque</h3>
+                        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="lowStockListContainer">
+                            <!-- Injetado dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="pie-chart" class="w-4 h-4 text-blue-500"></i> Brindes Mais Solicitados (Top 5)</h3>
+                        <div class="h-64 w-full relative"><canvas id="chartTopProdutos"></canvas></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="briefcase" class="w-4 h-4 text-emerald-500"></i> Gasto Médio por Setor</h3>
+                        <div class="h-64 w-full relative"><canvas id="chartGastoSetor"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: ORDERS -->
+            <section id="tab-orders" class="tab-content h-full flex flex-col">
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 shrink-0">
+                    <h3 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-brand-500"></i> Filtros Avançados</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Inicial</label><input type="date" id="filterDateStart" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Final</label><input type="date" id="filterDateEnd" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="filterStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="Todos">Todos</option><option value="Enviado para Separação">Pendentes</option><option value="Separação Concluída">Concluídos</option><option value="Cancelado">Cancelados</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Usuário</label><select id="filterUser" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="Todos">Todos</option></select></div>
+                        <div class="flex items-end gap-2">
+                            <button id="btnApplyFilters" class="flex-1 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold transition-colors">Filtrar</button>
+                            <button id="btnExportOrders" title="Exportar CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border rounded-lg transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex-1 flex flex-col min-h-[400px]">
+                    <div class="flex-1 overflow-auto rounded-2xl no-scrollbar">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm border-b dark:border-slate-700">
+                                <tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4 py-3">Cód. Pedido / Data</th>
+                                    <th class="p-4 py-3">Usuário Solicitante</th>
+                                    <th class="p-4 py-3 text-right">Valor Estimado</th>
+                                    <th class="p-4 py-3 text-center">Status</th>
+                                    <th class="p-4 py-3 text-center">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableOrdersBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: CATALOG -->
+            <section id="tab-catalog" class="tab-content h-full flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
+                    <div class="relative w-full sm:w-64">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="searchCatalog" placeholder="Buscar produto..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-brand-500">
+                    </div>
+                    <button id="btnNewProduct" class="w-full sm:w-auto px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Produto
+                    </button>
+                </div>
+                
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex-1 flex flex-col min-h-[400px]">
+                    <div class="flex-1 overflow-auto rounded-2xl no-scrollbar">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm border-b dark:border-slate-700">
+                                <tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4 py-3">Produto</th>
+                                    <th class="p-4 py-3">Categoria</th>
+                                    <th class="p-4 py-3 text-center">Estoque</th>
+                                    <th class="p-4 py-3 text-right">Preço</th>
+                                    <th class="p-4 py-3 text-center">Status</th>
+                                    <th class="p-4 py-3 text-right">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableCatalogBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: CATEGORIES -->
+            <section id="tab-categories" class="tab-content h-full flex flex-col">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-2xl mx-auto w-full">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="tags" class="w-5 h-5 text-brand-500"></i> Categorias de Brindes</h3>
+                        <button id="btnNewCategory" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm flex items-center gap-1.5 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Nova</button>
+                    </div>
+                    <ul id="listCategories" class="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden">
+                        <!-- Categorias dinâmicas -->
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TAB: USERS -->
+            <section id="tab-users" class="tab-content h-full flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
+                    <div class="relative w-full sm:w-64">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="searchUsers" placeholder="Buscar usuário..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button id="btnBatchRecharge" class="flex-1 sm:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
+                            <i data-lucide="coins" class="w-4 h-4"></i> Recarga em Lote
+                        </button>
+                        <button id="btnNewUser" class="flex-1 sm:flex-none px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Usuário
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex-1 flex flex-col min-h-[400px]">
+                    <div class="flex-1 overflow-auto rounded-2xl no-scrollbar">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm border-b dark:border-slate-700">
+                                <tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-4 py-3">Usuário / Setor</th>
+                                    <th class="p-4 py-3 text-right">Saldo Restante</th>
+                                    <th class="p-4 py-3 text-right">Gasto Total</th>
+                                    <th class="p-4 py-3 text-center">Acesso</th>
+                                    <th class="p-4 py-3 text-right">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableUsersBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: AUDIT -->
+            <section id="tab-audit" class="tab-content h-full flex flex-col">
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-xl mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300 shrink-0">
+                    <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600"></i>
+                    <p>O Log de Auditoria rastreia ações críticas feitas por administradores (criação de produtos, alteração de saldos, cancelamentos). <em>Nota: Requer a tabela `logs_auditoria` no Supabase para persistência histórica.</em></p>
+                </div>
+                
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex-1 flex flex-col min-h-[400px]">
+                    <div class="flex-1 overflow-auto rounded-2xl no-scrollbar p-4">
+                        <div class="relative border-l border-slate-200 dark:border-slate-700 ml-4 space-y-6 pb-4" id="auditTimeline">
+                            <!-- Timeline injetada dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAIS DE OPERAÇÃO -->
+
+    <!-- Modal Novo/Editar Produto -->
+    <div id="modalProduct" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalProduct')"></div>
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold flex items-center gap-2" id="modalProductTitle"><i data-lucide="box" class="w-5 h-5 text-brand-600"></i> Produto</h3>
+                <button onclick="closeModal('modalProduct')" class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="formProduct" class="space-y-4">
+                <input type="hidden" id="prodId">
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome</label><input type="text" id="prodName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Categoria</label><select id="prodCategory" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></select></div>
+                <div class="flex gap-4">
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Estoque</label><input type="number" id="prodStock" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Preço (R$)</label><input type="number" step="0.01" id="prodPrice" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                </div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ícone (URL da imagem ou icone lucide)</label><input type="text" id="prodIcon" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none" placeholder="Ex: box ou https://i.imgur.com/img.png"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="prodStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="true">Ativo</option><option value="false">Pausado</option></select></div>
+                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveProd">Salvar Produto</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Novo Usuário -->
+    <div id="modalUser" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalUser')"></div>
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i> Novo Usuário (Acesso)</h3>
+                <button onclick="closeModal('modalUser')" class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="bg-amber-50 text-amber-800 text-xs p-3 rounded-lg border border-amber-200 mb-4">Atenção: A criação real de contas com e-mail e senha exige uma Edge Function de Auth ou API Admin. Este formulário insere o perfil na tabela para uso do catálogo provisório.</div>
+            <form id="formUser" class="space-y-4">
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome Completo</label><input type="text" id="newUserName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">E-mail Corporativo</label><input type="email" id="newUserEmail" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cargo / Setor</label><input type="text" id="newUserRole" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Saldo Inicial (R$)</label><input type="number" step="0.01" id="newUserBalance" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                <label class="flex items-center gap-2 text-sm font-medium mt-2 cursor-pointer"><input type="checkbox" id="newUserAdmin" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"> Conceder acesso Administrador</label>
+                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveUser">Cadastrar Perfil</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Recarga em Lote -->
+    <div id="modalBatchRecharge" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalBatchRecharge')"></div>
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border"><i data-lucide="coins" class="w-8 h-8 text-brand-600"></i></div>
+            <h3 class="text-xl font-bold mb-2">Recarga em Lote</h3>
+            <p class="text-sm text-slate-500 mb-6">Adicione um valor fixo de crédito para <b>todos</b> os usuários comerciais ativos da plataforma.</p>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1 text-left">Valor a adicionar (R$)</label><input type="number" step="0.01" id="batchAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-xl text-lg font-bold text-center outline-none"></div>
+            <div class="flex gap-3 mt-6"><button onclick="closeModal('modalBatchRecharge')" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors">Cancelar</button><button id="confirmBatchBtn" class="flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold transition-colors shadow-sm">Aplicar Saldo</button></div>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes do Pedido (Reutilizado do anterior, mas isolado no script) -->
+    <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" onclick="closeModal('adminSingleOrderModal')"></div>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transition-all">
+            <div class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-brand-600"></i> Detalhes do Pedido</h3>
+                <button onclick="closeModal('adminSingleOrderModal')" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody"></div>
+        </div>
+    </div>
 
     <!-- Modal de Ação Global -->
     <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="actionConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer">
-                <i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i>
-            </div>
-            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2" id="actionConfirmTitle">Atenção</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm" id="actionConfirmText">Tem certeza?</p>
-            <div class="flex gap-3">
-                <button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl transition-colors">Voltar</button>
-                <button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white font-semibold rounded-xl transition-colors shadow-sm">Confirmar</button>
-            </div>
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" id="actionConfirmModalBg"></div>
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform transition-all text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer"><i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i></div>
+            <h3 class="text-xl font-bold mb-2" id="actionConfirmTitle">Atenção</h3>
+            <p class="text-slate-500 text-sm mb-6" id="actionConfirmText">Tem certeza?</p>
+            <div class="flex gap-3"><button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-semibold">Voltar</button><button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-semibold shadow-sm">Confirmar</button></div>
         </div>
-    </div>
-
-    <!-- Modal de Sucesso -->
-    <div id="successModal" class="fixed inset-0 z-[1200] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="successModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 text-center" id="successModalContent">
-            <button id="closeModalBtn" class="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
-            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-emerald-50 border border-emerald-100 mb-6 mt-2">
-                <i data-lucide="check-circle-2" class="h-10 w-10 text-emerald-500"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Enviado!</h3>
-            <p class="text-slate-500 mb-2 text-sm leading-relaxed">Sua requisição foi registrada na base e enviada para separação.</p>
-        </div>
-    </div>
-
-    <!-- Modal de Logout -->
-    <div id="logoutConfirmModal" class="fixed inset-0 z-[1200] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="logoutConfirmModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="logoutConfirmModalContent">
-            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4"><i data-lucide="log-out" class="h-8 w-8 text-red-500"></i></div>
-            <h3 class="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Sair do sistema?</h3>
-            <p class="text-center text-slate-500 mb-6 text-sm">Tem certeza que deseja desconectar sua conta?</p>
-            <div class="flex gap-3">
-                <button id="logoutCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-xl">Cancelar</button>
-                <button id="logoutConfirmBtn" class="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-xl">Sim, sair</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Histórico de Pedidos -->
-    <div id="ordersModal" class="fixed inset-0 z-[1100] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="ordersModalBg"></div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300" id="ordersModalContent">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                <div>
-                    <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="history" class="w-6 h-6 text-brand-600"></i> Histórico de Solicitações</h3>
-                    <p class="text-xs text-slate-500 mt-1">Gerencie seus pedidos enviados para a base.</p>
-                </div>
-                <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="flex-1 overflow-y-auto pr-2 space-y-5" id="ordersListContainer"></div>
-        </div>
-    </div>
-
-    <!-- Menu de Contexto (Botão Direito) -->
-    <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border shadow-xl rounded-xl py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
-        <button class="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextReload">
-            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
-        </button>
-        <button class="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextTheme">
-            <i data-lucide="palette" class="w-4 h-4 text-slate-400"></i> Alternar Tema
-        </button>
-        <div class="h-px bg-slate-100 dark:bg-slate-700/50 my-1"></div>
-        <button class="w-full text-left px-4 py-2.5 text-brand-600 hover:bg-brand-50 flex items-center gap-3 font-bold hidden" id="contextAdminMode">
-            <i data-lucide="shield-check" class="w-4 h-4"></i> Acesso ADM
-        </button>
     </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // === CONEXÃO SUPABASE ===
         const supabaseUrl = 'https://ykcqnzrcxrroahrqqnej.supabase.co';
         const supabaseKey = 'sb_publishable_yotTpJ3t7rWd78u1MOHVSQ_YyPf4if4';
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-        const State = {
-            userId: null, userName: "", userRole: "", isAdmin: false,
-            products: [], cart: {}, searchQuery: "", selectedCategory: "Todos",
-            categories: ["Todos"], sortBy: "relevancia", ordersHistory: [], userBalance: 0
+        const AdminState = {
+            me: null,
+            users: [],
+            orders: [],
+            products: [],
+            categories: [],
+            auditLogs: [],
+            charts: {}
         };
 
-        let lastProductsHash = "";
-        let lastOrdersHash = "";
-        let inactivityTimeout;
-        const INACTIVITY_LIMIT = 15 * 60 * 1000; 
+        const formatMoney = (v) => v === null ? "R$ 0,00" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+        const formatDate = (iso) => { const d = new Date(iso); return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; };
 
-        // Função de Navegação Segura (Evita quebra no Sandbox e iFrames)
-        function safeNavigate(url) {
-            try {
-                window.location.href = url;
-            } catch (e) {
-                console.warn("Redirecionamento bloqueado pelo ambiente de visualização:", e);
-                document.body.innerHTML = `
-                    <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
-                        <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
-                            <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento Protegido</h2>
-                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação automática para proteger contra scripts maliciosos. <br><br>Você seria redirecionado para:<br><strong class="text-brand-600">${url}</strong></p>
-                            <p class="text-sm text-slate-400">Em produção (servidor real), você será redirecionado normalmente.</p>
-                        </div>
-                    </div>
-                `;
-                if(typeof lucide !== 'undefined') lucide.createIcons();
+        // Wrapper seguro para navegação e fechamento de modais
+        window.safeNavigate = function(url) {
+            try { window.location.href = url; } 
+            catch (e) {
+                document.body.innerHTML = `<div class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[9999] p-4 text-center"><div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl"><h2 class="text-2xl font-bold mb-2 text-slate-800">Redirecionamento Protegido</h2><p class="text-slate-600 mb-4">O Sandbox bloqueou a navegação para: <strong>${url}</strong></p><button onclick="location.reload()" class="w-full py-3 bg-brand-600 text-white rounded-xl">Recarregar</button></div></div>`;
             }
-        }
-
-        const els = {
-            productsGrid: document.getElementById('productsGrid'), categoryFilters: document.getElementById('categoryFilters'),
-            searchInput: document.getElementById('searchInput'), sortSelect: document.getElementById('sortSelect'),
-            itemsCountLabel: document.getElementById('itemsCountLabel'), cartItemsContainer: document.getElementById('cartItemsContainer'),
-            emptyCartState: document.getElementById('emptyCartState'), cartTotalItems: document.getElementById('cartTotalItems'),
-            cartTotalValue: document.getElementById('cartTotalValue'), balanceWarning: document.getElementById('balanceWarning'),
-            checkoutBtn: document.getElementById('checkoutBtn'), checkoutForm: document.getElementById('checkoutForm'),
-            separationDate: document.getElementById('separationDate'), dateErrorMsg: document.getElementById('dateErrorMsg'),
-            btnToday: document.getElementById('btnToday'), orderNotes: document.getElementById('orderNotes'),
-            statUnits: document.getElementById('stat-units'), statItems: document.getElementById('stat-items'),
-            statBalance: document.getElementById('stat-balance'), headerBalanceDisplay: document.getElementById('headerBalanceDisplay'),
-            cartSidebar: document.getElementById('cartSidebar'), cartOverlay: document.getElementById('cartOverlay'),
-            mobileCartBtn: document.getElementById('mobileCartBtn'), mobileCartBadge: document.getElementById('mobileCartBadge'),
-            closeCartBtn: document.getElementById('closeCartBtn'), successModal: document.getElementById('successModal'),
-            successModalContent: document.getElementById('successModalContent'), closeModalBtn: document.getElementById('closeModalBtn'),
-            myOrdersBtn: document.getElementById('myOrdersBtn'), ordersModal: document.getElementById('ordersModal'),
-            ordersModalBg: document.getElementById('ordersModalBg'), ordersModalContent: document.getElementById('ordersModalContent'),
-            closeOrdersBtn: document.getElementById('closeOrdersBtn'), ordersListContainer: document.getElementById('ordersListContainer'),
-            loginScreen: document.getElementById('loginScreen'), loginForm: document.getElementById('loginForm'),
-            loginEmail: document.getElementById('loginEmail'), loginPassword: document.getElementById('loginPassword'),
-            loginErrorMsg: document.getElementById('loginErrorMsg'), loginSubmitBtn: document.getElementById('loginSubmitBtn'),
-            userNameDisplay: document.getElementById('userNameDisplay'), userRoleDisplay: document.getElementById('userRoleDisplay'),
-            logoutBtn: document.getElementById('logoutBtn'), logoutConfirmModal: document.getElementById('logoutConfirmModal'),
-            logoutConfirmModalContent: document.getElementById('logoutConfirmModalContent'), logoutConfirmBtn: document.getElementById('logoutConfirmBtn'),
-            logoutCancelBtn: document.getElementById('logoutCancelBtn'), actionConfirmModal: document.getElementById('actionConfirmModal'),
-            actionConfirmModalContent: document.getElementById('actionConfirmModalContent'), actionConfirmIconContainer: document.getElementById('actionConfirmIconContainer'),
-            actionConfirmIcon: document.getElementById('actionConfirmIcon'), actionConfirmTitle: document.getElementById('actionConfirmTitle'),
-            actionConfirmText: document.getElementById('actionConfirmText'), actionCancelBtn: document.getElementById('actionCancelBtn'),
-            actionConfirmBtn: document.getElementById('actionConfirmBtn'), customContextMenu: document.getElementById('customContextMenu'),
-            themeToggleBtn: document.getElementById('themeToggleBtn'), contextAdminMode: document.getElementById('contextAdminMode'),
-            userSyncIcon: document.getElementById('userSyncIcon')
         };
 
-        function resetInactivityTimer() {
-            clearTimeout(inactivityTimeout);
-            if (State.userId) {
-                inactivityTimeout = setTimeout(async () => {
-                    await supabaseClient.auth.signOut();
-                    els.loginEmail.value = ''; els.loginPassword.value = '';
-                    State.userId = null; State.isAdmin = false;
-                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada por inatividade. Faça login novamente.</span>';
-                    els.loginErrorMsg.className = 'bg-amber-50 text-amber-700 border border-amber-200 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
-                    els.loginScreen.classList.remove('hidden');
-                    setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
-                    lucide.createIcons();
-                }, INACTIVITY_LIMIT);
-            }
-        }
-        
-        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
+        window.closeModal = function(id) {
+            const el = document.getElementById(id);
+            if(el) { el.classList.add('hidden'); }
+        };
 
-        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
-        const eyeIcon = document.getElementById('eyeIcon');
-        togglePasswordBtn?.addEventListener('click', () => {
-            const type = els.loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-            els.loginPassword.setAttribute('type', type);
-            eyeIcon.setAttribute('data-lucide', type === 'text' ? 'eye-off' : 'eye');
-            lucide.createIcons();
+        // Lógica de abas (Sidebar)
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active', 'bg-slate-100', 'dark:bg-slate-800'); b.classList.add('text-slate-600', 'dark:text-slate-400'); });
+                const target = e.currentTarget.getAttribute('data-target');
+                e.currentTarget.classList.add('active', 'bg-slate-100', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-brand-400');
+                e.currentTarget.classList.remove('text-slate-600', 'dark:text-slate-400');
+                
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.getElementById(`tab-${target}`).classList.add('active');
+                document.getElementById('pageTitle').textContent = e.currentTarget.innerText;
+                
+                if(target === 'dashboard') updateDashboardCharts();
+            });
         });
 
-        const toggleTheme = () => {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark'); localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
-            }
-        };
-        els.themeToggleBtn?.addEventListener('click', toggleTheme);
-        document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
+        document.getElementById('returnToStoreBtn').addEventListener('click', () => safeNavigate('index.html'));
 
-        async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                State.userId = session.user.id;
-                let userEmail = session.user.email;
-                let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-                
-                const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo, admin').eq('id', State.userId).single();
-                if (userData) {
-                    State.userBalance = parseFloat(userData.saldo || 0);
-                    State.userName = userData.nome || formattedName;
-                    State.userRole = userData.cargo || 'Comercial';
-                    State.isAdmin = userData.admin === true; 
-                }
-
-                els.userNameDisplay.textContent = State.userName;
-                if(els.userRoleDisplay) els.userRoleDisplay.textContent = State.userRole;
-
-                els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
-                
-                resetInactivityTimer(); 
-                await initialLoad();
-            } else {
-                State.userId = null; State.isAdmin = false;
-                clearTimeout(inactivityTimeout);
-                els.loginScreen.classList.remove('hidden');
-                setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
-            }
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('session_expired')) {
-            els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada. Faça login novamente.</span>';
-            els.loginErrorMsg.className = 'bg-amber-50 text-amber-700 border border-amber-200 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
-            els.loginErrorMsg.classList.remove('hidden');
-            try { window.history.replaceState({}, document.title, window.location.pathname || '/'); } catch(e) {}
-        }
-
-        els.loginForm?.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Central de Confirmações (Action Modal)
+        let pendingAction = null;
+        window.confirmAction = function(title, text, type, confirmText, callback) {
+            document.getElementById('actionConfirmTitle').textContent = title;
+            document.getElementById('actionConfirmText').textContent = text;
+            const btn = document.getElementById('actionConfirmBtn');
+            btn.textContent = confirmText;
+            const iconContainer = document.getElementById('actionConfirmIconContainer');
             
-            const hcaptchaResponse = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : null;
-            if (!hcaptchaResponse) {
-                els.loginErrorMsg.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 text-red-600 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                document.getElementById('loginErrorText').innerHTML = 'Resolva o Captcha antes de acessar.';
-                els.loginErrorMsg.classList.remove('hidden');
-                lucide.createIcons(); return;
-            }
-
-            els.loginErrorMsg.classList.add('hidden');
-            els.loginSubmitBtn.disabled = true;
-            els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Validando Segurança...</span>';
-            lucide.createIcons();
-            
-            try {
-                // Invoca a Edge Function
-                const { data: verifyData, error: verifyError } = await supabaseClient.functions.invoke('verify-hcaptcha', {
-                    body: { response: hcaptchaResponse }
-                });
-
-                if (verifyError || (verifyData && verifyData.success === false)) {
-                    console.error("Falha na Edge Function ou Captcha inválido:", verifyError || verifyData);
-                    throw new Error("Erro de Captcha no Auth: O servidor rejeitou a sua validação. Recarregue a página e tente novamente.");
-                }
-
-                els.loginSubmitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> <span>Acessando...</span>';
-
-                const { error: signInError } = await supabaseClient.auth.signInWithPassword({
-                    email: els.loginEmail.value, password: els.loginPassword.value
-                });
-                
-                if (signInError) throw new Error(signInError.message === "Invalid login credentials" ? "E-mail ou senha incorretos." : signInError.message);
-                
-                els.loginSubmitBtn.innerHTML = '<span>Entrando...</span> <i data-lucide="check" class="w-4 h-4"></i>';
-                lucide.createIcons();
-                checkAuth();
-
-            } catch (err) {
-                if (typeof hcaptcha !== 'undefined') hcaptcha.reset(); 
-                els.loginErrorMsg.className = "bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-lg flex items-center gap-2 mt-4";
-                document.getElementById('loginErrorText').innerHTML = err.message;
-                els.loginErrorMsg.classList.remove('hidden');
-                els.loginSubmitBtn.disabled = false;
-                els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
-                lucide.createIcons();
-            }
-        });
-
-        els.logoutBtn?.addEventListener('click', () => {
-            els.logoutConfirmModal.classList.remove('hidden');
-            setTimeout(() => { els.logoutConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.logoutConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-        });
-        els.logoutCancelBtn?.addEventListener('click', () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
-        });
-        els.logoutConfirmBtn?.addEventListener('click', async () => {
-            els.logoutConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.logoutConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => els.logoutConfirmModal.classList.add('hidden'), 300);
-            await supabaseClient.auth.signOut();
-            els.loginEmail.value = ''; els.loginPassword.value = '';
-            if (typeof hcaptcha !== 'undefined') hcaptcha.reset();
-            els.loginSubmitBtn.disabled = false; els.loginSubmitBtn.innerHTML = '<span>Acessar Portal</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>';
-            checkAuth(); 
-        });
-
-        let pendingActionCallback = null;
-        function showActionConfirm(title, text, type, confirmBtnText, callback) {
-            els.actionConfirmTitle.textContent = title; els.actionConfirmText.textContent = text; els.actionConfirmBtn.textContent = confirmBtnText;
             if (type === 'danger') {
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4 text-red-500";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'ban');
-                els.actionConfirmBtn.className = "flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors";
-            } else { 
-                els.actionConfirmIconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-50 border border-amber-100 mb-4 text-amber-500";
-                els.actionConfirmIcon.setAttribute('data-lucide', 'alert-triangle');
-                els.actionConfirmBtn.className = "flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors";
+                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4 text-red-500";
+                document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'ban');
+                btn.className = "flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl";
+            } else {
+                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-brand-50 border border-brand-100 mb-4 text-brand-600";
+                document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'check-circle');
+                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl";
             }
-            lucide.createIcons(); pendingActionCallback = callback;
-            els.actionConfirmModal.classList.remove('hidden');
-            setTimeout(() => { els.actionConfirmModalContent.classList.remove('scale-95', 'opacity-0'); els.actionConfirmModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-        }
-
-        els.actionCancelBtn?.addEventListener('click', () => {
-            els.actionConfirmModalContent.classList.remove('scale-100', 'opacity-100'); els.actionConfirmModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { els.actionConfirmModal.classList.add('hidden'); pendingActionCallback = null; }, 300);
-        });
-        els.actionConfirmBtn?.addEventListener('click', () => { if (pendingActionCallback) pendingActionCallback(); els.actionCancelBtn.click(); });
-
-        const overrideImages = {
-            "Bloco de Anotações": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/BLOCO.webp",
-            "Caneca — Branca": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-BRANCA.webp",
-            "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA-PRETA.webp",
-            "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca%20de%20Churrasco.webp",
-            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
-            "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
-            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp"
+            lucide.createIcons();
+            pendingAction = callback;
+            document.getElementById('actionConfirmModal').classList.remove('hidden');
         };
 
-        async function fetchBaseData() {
-            const { data: cats } = await supabaseClient.from('categorias').select('*');
-            let catMap = {};
-            if(cats) { cats.forEach(c => catMap[c.id] = c.nome); State.categories = ["Todos", ...cats.map(c => c.nome)]; }
+        document.getElementById('actionCancelBtn').addEventListener('click', () => closeModal('actionConfirmModal'));
+        document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
+            if (pendingAction) await pendingAction();
+            closeModal('actionConfirmModal');
+        });
 
-            const { data: prods } = await supabaseClient.from('produtos').select('*');
-            if (prods) {
-                State.products = prods.map(p => {
-                    let finalIcon = p.icone || 'box';
-                    if (overrideImages[p.nome]) finalIcon = overrideImages[p.nome];
-                    return { id: p.id, category: catMap[p.categoria_id] || 'Outros', name: p.nome, stock: p.estoque, price: p.preco, icon: finalIcon, ativo: p.ativo !== false };
+        // Wrapper de Auditoria (Simula/Grava logs)
+        async function logAudit(action, details) {
+            const logEntry = { admin_nome: AdminState.me?.nome || 'Admin Desconhecido', acao: action, detalhes: details, data: new Date().toISOString() };
+            AdminState.auditLogs.unshift(logEntry); // Atualiza UI imediato
+            renderAuditLog();
+            try { await supabaseClient.from('logs_auditoria').insert([logEntry]); } catch (e) { /* Ignora se tabela não existir */ }
+        }
+
+        function renderAuditLog() {
+            const container = document.getElementById('auditTimeline');
+            container.innerHTML = '';
+            if(AdminState.auditLogs.length === 0) { container.innerHTML = '<p class="text-slate-400 text-sm italic">Nenhum registro encontrado.</p>'; return; }
+            
+            AdminState.auditLogs.slice(0, 50).forEach(log => {
+                container.innerHTML += `
+                    <div class="relative pl-6">
+                        <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[6.5px] top-1.5 border-2 border-white dark:border-slate-900"></div>
+                        <p class="text-[10px] text-slate-400 font-bold mb-1">${formatDate(log.data)} &bull; ${log.admin_nome}</p>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-white">${log.acao}</p>
+                        <p class="text-xs text-slate-500 mt-1">${log.detalhes}</p>
+                    </div>
+                `;
+            });
+        }
+
+        async function bootAdmin() {
+            try {
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                if (!session) throw new Error("Usuário não autenticado. Faça login no portal comercial.");
+
+                const { data: userData, error: userError } = await supabaseClient.from('usuarios').select('*').eq('id', session.user.id).single();
+                if (userError || !userData || userData.admin !== true) throw new Error("Acesso negado. Sua conta não possui privilégios de administrador.");
+
+                AdminState.me = userData;
+                document.getElementById('adminHeaderName').textContent = userData.nome || 'Admin';
+
+                // Buscar todos os dados paralelamente
+                const [reqUsers, reqOrders, reqProds, reqCats, reqLogs] = await Promise.all([
+                    supabaseClient.from('usuarios').select('*'),
+                    supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
+                    supabaseClient.from('produtos').select('*').order('nome'),
+                    supabaseClient.from('categorias').select('*').order('nome'),
+                    supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50).catch(() => ({ data: [] })) // Fallback se não existir tabela
+                ]);
+
+                AdminState.users = reqUsers.data || [];
+                AdminState.orders = reqOrders.data || [];
+                AdminState.products = reqProds.data || [];
+                AdminState.categories = reqCats.data || [];
+                AdminState.auditLogs = (reqLogs && reqLogs.data) ? reqLogs.data : [];
+
+                buildDashboard();
+                renderOrdersTable();
+                renderCatalogTable();
+                renderCategoriesTable();
+                renderUsersTable();
+                renderAuditLog();
+
+                // Setup Filtros de Pedidos
+                const today = new Date();
+                const tzOffset = today.getTimezoneOffset() * 60000;
+                const localDate = (new Date(today - tzOffset)).toISOString().split('T')[0];
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                
+                document.getElementById('filterDateStart').value = firstDay;
+                document.getElementById('filterDateEnd').value = localDate;
+                
+                const filterUserSelect = document.getElementById('filterUser');
+                AdminState.users.forEach(u => { filterUserSelect.innerHTML += `<option value="${u.id}">${u.nome || u.email}</option>`; });
+
+                document.getElementById('loaderScreen').classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => document.getElementById('loaderScreen').classList.add('hidden'), 300);
+                lucide.createIcons();
+                
+            } catch (err) {
+                const errDiv = document.getElementById('loaderError');
+                document.getElementById('loaderIcon').classList.add('hidden');
+                document.getElementById('loaderTitle').classList.add('hidden');
+                document.getElementById('loaderText').classList.add('hidden');
+                errDiv.innerHTML = `<div class="mx-auto flex h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4 items-center justify-center text-red-500"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Bloqueio de Segurança</h3><p class="text-slate-600 dark:text-slate-400 text-sm mb-6">${err.message}</p><button onclick="safeNavigate('index.html')" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors">Voltar para Loja</button>`;
+                errDiv.classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        function buildDashboard() {
+            let totalSpent = 0; let totalItems = 0;
+            const validOrders = AdminState.orders.filter(o => o.status !== 'Cancelado');
+            validOrders.forEach(o => {
+                totalSpent += parseFloat(o.valor_total || 0);
+                if (o.pedido_itens) o.pedido_itens.forEach(item => totalItems += item.quantidade);
+            });
+
+            document.getElementById('dashTotalSpent').textContent = formatMoney(totalSpent);
+            document.getElementById('dashTotalOrders').textContent = validOrders.length;
+            document.getElementById('dashTotalItems').textContent = totalItems;
+
+            const lowStockProducts = AdminState.products.filter(p => p.ativo !== false && p.estoque < 10);
+            document.getElementById('dashLowStockCount').textContent = lowStockProducts.length;
+            
+            const lsContainer = document.getElementById('lowStockListContainer');
+            lsContainer.innerHTML = '';
+            if(lowStockProducts.length === 0) {
+                lsContainer.innerHTML = '<p class="text-slate-400 text-sm text-center mt-8">Todos os estoques estão saudáveis.</p>';
+            } else {
+                lowStockProducts.forEach(p => {
+                    lsContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-2.5 rounded-lg"><span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate pr-2">${p.nome}</span><span class="text-xs font-bold text-red-600 px-2 py-0.5 bg-white dark:bg-slate-800 rounded shadow-sm border border-red-100 dark:border-red-800/50">${p.estoque} un.</span></div>`;
                 });
             }
+
+            updateDashboardCharts();
         }
 
-        async function initialLoad() {
-            await fetchBaseData();
-            if (State.userId) {
-                const { data: pedidosData } = await supabaseClient.from('pedidos')
-                    .select(`id, data_pedido, data_separacao, observacoes, status, valor_total, pedido_itens ( produto_id, quantidade, preco_unitario )`)
-                    .eq('usuario_id', State.userId).order('data_pedido', { ascending: false });
-
-                if (pedidosData) {
-                    State.ordersHistory = pedidosData.map(p => {
-                        const items = {};
-                        if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
-                        return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items };
-                    });
-                }
+        function updateDashboardCharts() {
+            // Preparar dados Gráfico 1: Gasto Mensal
+            const monthsMap = {};
+            const last6Months = [];
+            const d = new Date();
+            for(let i=5; i>=0; i--) {
+                const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+                const key = `${m.getFullYear()}-${(m.getMonth()+1).toString().padStart(2,'0')}`;
+                const label = m.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
+                monthsMap[key] = { label: label, total: 0 };
+                last6Months.push(key);
             }
-            lastProductsHash = JSON.stringify(State.products); lastOrdersHash = JSON.stringify(State.ordersHistory);
-            setupDateInput(); initDashboard(); renderCategories(); renderProducts(); updateCartUI(); lucide.createIcons();
-        }
-
-        async function backgroundRefresh() {
-            if (!State.userId) return;
-            try {
-                els.userSyncIcon.classList.add('animate-spin', 'text-brand-500'); els.userSyncIcon.classList.remove('text-slate-300');
-                await fetchBaseData(); 
-
-                const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo, admin').eq('id', State.userId).single();
-                if (userData) {
-                    State.userBalance = parseFloat(userData.saldo || 0); State.userName = userData.nome || State.userName;
-                    State.userRole = userData.cargo || State.userRole; State.isAdmin = userData.admin === true;
-                    els.userNameDisplay.textContent = State.userName;
-                    if(els.userRoleDisplay) els.userRoleDisplay.textContent = State.userRole;
-                }
-
-                const { data: pedidosData } = await supabaseClient.from('pedidos').select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade )`).eq('usuario_id', State.userId).order('data_pedido', { ascending: false });
-                if (pedidosData) {
-                    State.ordersHistory = pedidosData.map(p => {
-                        const items = {};
-                        if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
-                        return { id: p.id, date: p.data_pedido, separationDate: p.data_separacao, notes: p.observacoes, status: p.status, items: items };
-                    });
-                }
-
-                const newProductsHash = JSON.stringify(State.products);
-                if(newProductsHash !== lastProductsHash) { renderProducts(); lastProductsHash = newProductsHash; }
-                const newOrdersHash = JSON.stringify(State.ordersHistory);
-                if(newOrdersHash !== lastOrdersHash) { if (!els.ordersModal.classList.contains('hidden')) renderOrdersHistory(); lastOrdersHash = newOrdersHash; }
-                initDashboard(); 
-
-                setTimeout(() => { els.userSyncIcon.classList.remove('animate-spin', 'text-brand-500'); els.userSyncIcon.classList.add('text-slate-300'); }, 1000);
-            } catch (err) { console.warn("Sync falhou", err); }
-        }
-        setInterval(backgroundRefresh, 5000);
-
-        // Menu de Contexto ADM
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                els.customContextMenu.classList.remove('hidden');
-                if(!els.loginScreen.classList.contains('hidden')) els.contextAdminMode.classList.add('hidden');
-                else if(State.isAdmin) els.contextAdminMode.classList.remove('hidden');
-                else els.contextAdminMode.classList.add('hidden');
-
-                const rect = els.customContextMenu.getBoundingClientRect();
-                let x = e.clientX; let y = e.clientY;
-                if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
-                if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 5;
-                els.customContextMenu.style.left = `${x}px`; els.customContextMenu.style.top = `${y}px`;
-            }
-        });
-        document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
-        document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
-        
-        // Redireciona para o arquivo de Admin
-        els.contextAdminMode.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            safeNavigate('admin.html');
-        });
-
-        const formatMoney = (value) => value === null ? "R$ --" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-
-        function initDashboard() {
-            const activeProducts = State.products.filter(p => p.ativo);
-            const totalUnits = activeProducts.reduce((acc, curr) => acc + curr.stock, 0);
-            els.statUnits.textContent = totalUnits; els.statItems.textContent = activeProducts.length;
-            if(els.statBalance) els.statBalance.textContent = formatMoney(State.userBalance);
-            if(els.headerBalanceDisplay) els.headerBalanceDisplay.textContent = formatMoney(State.userBalance);
-        }
-
-        function renderCategories() {
-            els.categoryFilters.innerHTML = '';
-            State.categories.forEach(cat => {
-                const isActive = State.selectedCategory === cat;
-                const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${isActive ? 'bg-slate-900 dark:bg-brand-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 text-slate-600 hover:bg-slate-50'}`;
-                btn.textContent = cat;
-                btn.onclick = () => { State.selectedCategory = cat; renderCategories(); renderProducts(); };
-                els.categoryFilters.appendChild(btn);
-            });
-        }
-        
-        const getProductOrderCount = (productId) => {
-            let count = 0;
-            State.ordersHistory.forEach(order => { if(order.items && order.items[productId]) count += order.items[productId]; });
-            return count;
-        };
-
-        function renderProducts() {
-            els.productsGrid.innerHTML = '';
-            let filtered = State.products.filter(p => {
-                if (!p.ativo) return false; 
-                return (State.selectedCategory === 'Todos' || p.category === State.selectedCategory) && (p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase()));
-            });
             
-            filtered.sort((a, b) => {
-                if (State.sortBy === 'menor_preco') return a.price - b.price;
-                if (State.sortBy === 'maior_preco') return b.price - a.price;
-                if (State.sortBy === 'mais_pedidos') return getProductOrderCount(b.id) - getProductOrderCount(a.id);
-                return a.name.localeCompare(b.name); 
+            AdminState.orders.filter(o => o.status !== 'Cancelado').forEach(o => {
+                const mKey = o.data_pedido.substring(0, 7);
+                if (monthsMap[mKey]) monthsMap[mKey].total += parseFloat(o.valor_total || 0);
             });
-            els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
-            if (filtered.length === 0) {
-                els.productsGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p>Nenhum brinde encontrado.</p></div>`;
-                lucide.createIcons(); return;
-            }
+            const labelsMeses = last6Months.map(k => monthsMap[k].label);
+            const dataMeses = last6Months.map(k => monthsMap[k].total);
 
-            filtered.forEach(product => {
-                const stockRemaining = product.stock - (State.cart[product.id] || 0);
-                const isOutOfStock = stockRemaining <= 0;
+            if(AdminState.charts.gastoMensal) AdminState.charts.gastoMensal.destroy();
+            const ctx1 = document.getElementById('chartGastoMensal').getContext('2d');
+            AdminState.charts.gastoMensal = new Chart(ctx1, {
+                type: 'line',
+                data: { labels: labelsMeses, datasets: [{ label: 'Gasto R$', data: dataMeses, borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.1)', tension: 0.4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
 
-                let imgHtml = product.icon.startsWith('http') 
-                    ? `<div class="absolute inset-0 w-full h-full bg-white flex items-center justify-center p-0"><img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>`
-                    : `<div class="product-visual w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-slate-800 z-10 transition-transform duration-500 group-hover:scale-110"><i data-lucide="${product.icon}" class="w-8 h-8 stroke-[1.5]"></i></div>`;
+            // Gráfico 2: Top Produtos
+            const prodCounts = {};
+            AdminState.orders.filter(o => o.status !== 'Cancelado').forEach(o => {
+                if(o.pedido_itens) o.pedido_itens.forEach(item => { prodCounts[item.produto_id] = (prodCounts[item.produto_id] || 0) + item.quantidade; });
+            });
+            const topProdSorted = Object.keys(prodCounts).sort((a,b) => prodCounts[b] - prodCounts[a]).slice(0, 5);
+            const topProdLabels = topProdSorted.map(id => { const p = AdminState.products.find(x => x.id === id); return p ? p.nome : id; });
+            const topProdData = topProdSorted.map(id => prodCounts[id]);
 
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group relative";
-                card.innerHTML = `
-                    <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 flex flex-col items-center justify-center relative aspect-square w-full overflow-hidden">
-                        ${imgHtml}
-                        <div class="absolute top-3 left-3 flex gap-2 z-20"><span class="bg-slate-200/80 text-[10px] font-bold px-2 py-1 rounded shadow-sm border">${product.id}</span></div>
-                        <div class="absolute top-3 right-3 z-20"><span class="bg-[#f0e6d2]/80 text-[#8c734b] text-[10px] font-bold px-2 py-1 rounded shadow-sm">Estoque: ${product.stock} un.</span></div>
-                    </div>
-                    <div class="p-4 flex-1 flex flex-col relative z-20 bg-white dark:bg-slate-800">
-                        <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">${product.category}</span>
-                        <h3 class="font-semibold text-sm leading-tight mb-2 line-clamp-2">${product.name}</h3>
-                        <div class="mt-auto pt-3 flex items-end justify-between">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-slate-500 mb-0.5">Disponível: <b class="${stockRemaining < 10 ? 'text-red-500' : ''}">${stockRemaining} un.</b></span>
-                                <strong class="text-brand-700 font-semibold text-sm">${formatMoney(product.price)}</strong>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-900/30 border-t flex flex-col gap-2 z-30">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center bg-white border rounded-lg h-9 w-24 overflow-hidden shadow-sm ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}">
-                                <button onclick="changeCardQty('${product.id}', -1)" class="w-8 h-full flex items-center justify-center hover:bg-slate-100">-</button>
-                                <input type="number" id="card-qty-${product.id}" value="1" class="w-full text-center text-sm font-semibold h-full focus:outline-none bg-transparent">
-                                <button onclick="changeCardQty('${product.id}', 1)" class="w-8 h-full flex items-center justify-center hover:bg-slate-100">+</button>
-                            </div>
-                            <button onclick="addMultipleToCart('${product.id}', event)" class="flex-1 h-9 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold rounded-lg shadow-sm ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}" ${isOutOfStock ? 'disabled' : ''}>
-                                <i data-lucide="${isOutOfStock ? 'slash' : 'plus'}" class="w-3.5 h-3.5 inline"></i> ${isOutOfStock ? 'ESGOTADO' : 'ADC'}
-                            </button>
-                        </div>
-                    </div>
+            if(AdminState.charts.topProdutos) AdminState.charts.topProdutos.destroy();
+            const ctx2 = document.getElementById('chartTopProdutos').getContext('2d');
+            AdminState.charts.topProdutos = new Chart(ctx2, {
+                type: 'doughnut',
+                data: { labels: topProdLabels, datasets: [{ data: topProdData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            });
+
+            // Gráfico 3: Saldo Médio Setor
+            const setorStats = {};
+            AdminState.users.forEach(u => {
+                const setor = u.cargo || 'Geral';
+                if(!setorStats[setor]) setorStats[setor] = { total: 0, count: 0 };
+                setorStats[setor].total += parseFloat(u.saldo || 0);
+                setorStats[setor].count++;
+            });
+            const setorLabels = Object.keys(setorStats);
+            const setorData = setorLabels.map(s => setorStats[s].total / setorStats[s].count);
+
+            if(AdminState.charts.gastoSetor) AdminState.charts.gastoSetor.destroy();
+            const ctx3 = document.getElementById('chartGastoSetor').getContext('2d');
+            AdminState.charts.gastoSetor = new Chart(ctx3, {
+                type: 'bar',
+                data: { labels: setorLabels, datasets: [{ label: 'Saldo Médio R$', data: setorData, backgroundColor: '#10b981', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('tableOrdersBody');
+            tbody.innerHTML = '';
+            
+            const fStart = document.getElementById('filterDateStart').value;
+            const fEnd = document.getElementById('filterDateEnd').value;
+            const fStatus = document.getElementById('filterStatus').value;
+            const fUser = document.getElementById('filterUser').value;
+
+            let filtered = AdminState.orders.filter(o => {
+                let pass = true;
+                const oDate = o.data_pedido.split('T')[0];
+                if (fStart && oDate < fStart) pass = false;
+                if (fEnd && oDate > fEnd) pass = false;
+                if (fStatus !== 'Todos' && o.status !== fStatus) pass = false;
+                if (fUser !== 'Todos' && o.usuario_id !== fUser) pass = false;
+                return pass;
+            });
+
+            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center p-6 text-slate-400 text-sm">Nenhum pedido encontrado nestes filtros.</td></tr>'; return; }
+
+            filtered.forEach(o => {
+                const u = AdminState.users.find(x => x.id === o.usuario_id);
+                const uName = u ? u.nome : o.usuario_id;
+                const dateStr = formatDate(o.data_pedido);
+                const stColors = { 'Cancelado': 'text-red-700 bg-red-100', 'Separação Concluída': 'text-emerald-700 bg-emerald-100', 'Enviado para Separação': 'text-brand-700 bg-brand-100' }[o.status] || 'text-slate-700 bg-slate-100';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onclick="openOrderDetails('${o.id}')">
+                        <td class="p-4 py-3"><strong class="text-xs uppercase text-brand-600">${o.id}</strong><br><span class="text-[10px] text-slate-400">${dateStr}</span></td>
+                        <td class="p-4 py-3 font-medium">${uName}</td>
+                        <td class="p-4 py-3 text-right font-bold">${formatMoney(o.valor_total)}</td>
+                        <td class="p-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[10px] font-bold ${stColors}">${o.status}</span></td>
+                        <td class="p-4 py-3 text-center"><button class="text-slate-400 hover:text-brand-600"><i data-lucide="eye" class="w-4 h-4"></i></button></td>
+                    </tr>
                 `;
-                els.productsGrid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        document.getElementById('btnApplyFilters').addEventListener('click', renderOrdersTable);
+        
+        document.getElementById('btnExportOrders').addEventListener('click', () => {
+            let csv = "ID Pedido,Data Solicitacao,Data Separacao,Usuario,Status,Valor Total,Itens\n";
+            AdminState.orders.forEach(o => {
+                const u = AdminState.users.find(x => x.id === o.usuario_id);
+                const uName = u ? u.nome : o.usuario_id;
+                const itemsStr = (o.pedido_itens || []).map(i => { const p = AdminState.products.find(x => x.id === i.produto_id); return `${i.quantidade}x ${p ? p.nome : i.produto_id}`; }).join(' | ');
+                csv += `"${o.id}","${o.data_pedido}","${o.data_separacao}","${uName}","${o.status}","${parseFloat(o.valor_total).toFixed(2)}","${itemsStr}"\n`;
+            });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv)); link.setAttribute("download", `pedidos_export_${new Date().toISOString().split('T')[0]}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            logAudit('Exportação Gerada', 'Admin exportou relatório CSV de pedidos.');
+        });
+
+        function renderCatalogTable() {
+            const tbody = document.getElementById('tableCatalogBody');
+            tbody.innerHTML = '';
+            const q = document.getElementById('searchCatalog').value.toLowerCase();
+            
+            const filtered = AdminState.products.filter(p => p.nome.toLowerCase().includes(q) || p.id.toLowerCase().includes(q));
+            
+            filtered.forEach(p => {
+                const cat = AdminState.categories.find(c => c.id === p.categoria_id);
+                const catName = cat ? cat.nome : 'Outros';
+                const isLow = p.estoque < 10;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 py-3 flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center border"><i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${p.nome}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${p.id}</p></div></td>
+                        <td class="p-4 py-3 text-xs font-semibold text-slate-500">${catName}</td>
+                        <td class="p-4 py-3 text-center font-bold ${isLow ? 'text-red-600' : ''}">${p.estoque} un.</td>
+                        <td class="p-4 py-3 text-right font-semibold text-brand-600">${formatMoney(p.preco)}</td>
+                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.ativo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${p.ativo ? 'Ativo' : 'Pausado'}</span></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm flex items-center gap-1.5 ml-auto"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
+                    </tr>
+                `;
             });
             lucide.createIcons();
         }
         
-        els.sortSelect?.addEventListener('change', (e) => { State.sortBy = e.target.value; renderProducts(); });
-        els.searchInput.addEventListener('input', (e) => { State.searchQuery = e.target.value; renderProducts(); });
+        document.getElementById('searchCatalog').addEventListener('input', renderCatalogTable);
 
-        window.changeCardQty = function(productId, delta) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            if(!input) return;
-            const product = State.products.find(p => p.id === productId);
-            const stockRemaining = product.stock - (State.cart[productId] || 0);
-            let newVal = parseInt(input.value) + delta;
-            if (newVal < 1) newVal = 1;
-            if (newVal > stockRemaining) newVal = stockRemaining;
-            input.value = newVal;
-        };
-
-        window.addMultipleToCart = function(productId, event) {
-            const input = document.getElementById(`card-qty-${productId}`);
-            let qtyToAdd = input ? parseInt(input.value) : 1;
-            const product = State.products.find(p => p.id === productId);
-            const stockRemaining = product.stock - (State.cart[productId] || 0);
-            
-            if (isNaN(qtyToAdd) || qtyToAdd < 1) qtyToAdd = 1;
-            if (qtyToAdd > stockRemaining) qtyToAdd = stockRemaining;
-            
-            if (qtyToAdd > 0) {
-                if (event) {
-                    let visualEl = event.currentTarget.closest('.group')?.querySelector('.product-visual');
-                    if (visualEl) animateFlyToCart(visualEl);
-                }
-                State.cart[productId] = (State.cart[productId] || 0) + qtyToAdd;
-                updateCartUI(); renderProducts(); 
-            }
-        };
-
-        function animateFlyToCart(sourceEl) {
-            const isDesktop = window.innerWidth >= 1024;
-            const targetEl = isDesktop ? document.getElementById('cartTotalItems') : document.getElementById('mobileCartBtn');
-            if (!targetEl) return;
-            const clone = sourceEl.cloneNode(true);
-            const sR = sourceEl.getBoundingClientRect(); const tR = targetEl.getBoundingClientRect();
-            clone.style = `position:fixed; top:${sR.top}px; left:${sR.left}px; width:${sR.width}px; height:${sR.height}px; z-index:99999; transition:all 0.6s cubic-bezier(0.25, 1, 0.5, 1); pointer-events:none; margin:0; opacity:0.2`;
-            document.body.appendChild(clone);
-            setTimeout(() => { clone.style.transform = `translate(${tR.left - sR.left}px, ${tR.top - sR.top}px) scale(0.1) rotate(15deg)`; }, 10);
-            setTimeout(() => { clone.remove(); targetEl.classList.add(isDesktop?'scale-[2]':'scale-110'); setTimeout(()=>targetEl.classList.remove(isDesktop?'scale-[2]':'scale-110'), 250); }, 600);
-        }
-
-        window.updateQuantity = function(productId, delta) {
-            let newQty = (State.cart[productId] || 0) + delta;
-            if (newQty <= 0) delete State.cart[productId];
-            else if (newQty <= State.products.find(p => p.id === productId).stock) State.cart[productId] = newQty;
-            updateCartUI(); renderProducts();
-        };
-
-        window.removeFromCart = function(productId) { delete State.cart[productId]; updateCartUI(); renderProducts(); };
-
-        function updateCartUI() {
-            els.cartItemsContainer.innerHTML = '';
-            let totalItems = 0; let totalValue = 0;
-            const cartKeys = Object.keys(State.cart);
-
-            if (cartKeys.length === 0) {
-                els.cartItemsContainer.appendChild(els.emptyCartState); els.emptyCartState.classList.remove('hidden');
-                els.checkoutBtn.disabled = true; els.checkoutForm.classList.add('hidden'); 
-                els.cartTotalItems.textContent = "0"; if (els.cartTotalValue) els.cartTotalValue.textContent = "R$ 0,00";
-                if (els.balanceWarning) els.balanceWarning.classList.add('hidden');
-                els.mobileCartBadge.textContent = "0"; els.mobileCartBadge.classList.add('hidden');
-                return;
-            }
-
-            els.emptyCartState.classList.add('hidden'); els.checkoutForm.classList.remove('hidden'); 
-
-            cartKeys.forEach(id => {
-                const product = State.products.find(p => p.id === id); const qty = State.cart[id];
-                totalItems += qty; if (product.price) totalValue += (product.price * qty);
-
-                const itemEl = document.createElement('div');
-                itemEl.className = "flex gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border shadow-sm relative group";
-                itemEl.innerHTML = `
-                    <div class="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center border flex-shrink-0 overflow-hidden">
-                        ${product.icon.startsWith('http') ? `<img src="${product.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${product.icon}" class="w-5 h-5 text-slate-500"></i>`}
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center min-w-0">
-                        <h4 class="text-sm font-semibold truncate pr-6">${product.name}</h4><span class="text-[10px] text-slate-400">${product.id}</span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-slate-50 border rounded-lg p-1">
-                        <button onclick="updateQuantity('${id}', -1)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-200 rounded"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                        <span class="text-sm font-medium w-4 text-center">${qty}</span>
-                        <button onclick="updateQuantity('${id}', 1)" class="w-6 h-6 flex items-center justify-center hover:bg-slate-200 rounded"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                    </div>
-                    <button onclick="removeFromCart('${id}')" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="x" class="w-3 h-3"></i></button>
-                `;
-                els.cartItemsContainer.appendChild(itemEl);
-            });
-
-            if (totalItems >= 4) {
-                const sacola = State.products.find(p => p.name.toLowerCase().includes('sacola') && p.ativo && p.stock > 0);
-                if (sacola && !State.cart[sacola.id]) {
-                    const sacolaEl = document.createElement('div');
-                    sacolaEl.className = "bg-brand-50 border border-brand-200 rounded-xl p-3 mt-2 mb-2 flex items-center justify-between gap-3 shadow-sm transform transition-all animate-pulse duration-1000";
-                    sacolaEl.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden p-1">
-                                ${sacola.icon.startsWith('http') ? `<img src="${sacola.icon}" class="w-full h-full object-cover">` : `<i data-lucide="${sacola.icon}" class="w-5 h-5 text-brand-600"></i>`}
-                            </div>
-                            <div><h4 class="text-xs font-bold text-brand-900 mb-0.5">Levar numa ${sacola.name}?</h4><p class="text-[10px] text-brand-700">Sugerido para ${totalItems} itens.</p></div>
-                        </div>
-                        <button onclick="updateQuantity('${sacola.id}', 1)" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-sm">+ Incluir</button>
-                    `;
-                    els.cartItemsContainer.appendChild(sacolaEl);
-                }
-            }
-
-            els.cartTotalItems.textContent = totalItems;
-            if (els.cartTotalValue) {
-                els.cartTotalValue.textContent = formatMoney(totalValue);
-                if (totalValue > State.userBalance) {
-                    els.cartTotalValue.className = 'text-red-600 text-xl block transition-colors'; els.balanceWarning.classList.remove('hidden');
-                    els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Saldo Insuficiente`;
-                } else {
-                    els.cartTotalValue.className = 'text-brand-600 text-xl block transition-colors'; els.balanceWarning.classList.add('hidden');
-                    els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação`;
-                }
-            }
-            els.mobileCartBadge.textContent = totalItems; if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
+        document.getElementById('btnNewProduct').addEventListener('click', () => {
+            document.getElementById('formProduct').reset();
+            document.getElementById('prodId').value = '';
+            const catSelect = document.getElementById('prodCategory');
+            catSelect.innerHTML = AdminState.categories.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+            document.getElementById('modalProductTitle').innerHTML = '<i data-lucide="plus-circle" class="w-5 h-5 text-brand-600"></i> Novo Produto';
+            document.getElementById('modalProduct').classList.remove('hidden');
             lucide.createIcons();
-        }
+        });
 
-        const toggleSidebar = () => {
-            if (els.cartSidebar.classList.contains('translate-x-full')) {
-                els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden'); setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
-            } else {
-                els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.remove('opacity-100'); setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
-            }
-        };
-        els.mobileCartBtn.addEventListener('click', toggleSidebar); els.closeCartBtn.addEventListener('click', toggleSidebar); els.cartOverlay.addEventListener('click', toggleSidebar);
-
-        const setupDateInput = () => {
-            const today = new Date(); const localISOTime = (new Date(today - today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            els.separationDate.min = localISOTime; els.separationDate.value = ""; 
-            els.btnToday.addEventListener('click', () => { els.separationDate.value = localISOTime; els.separationDate.classList.remove('border-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); });
-            els.separationDate.addEventListener('change', () => { if (els.separationDate.value) { els.separationDate.classList.remove('border-red-500'); if (els.dateErrorMsg) els.dateErrorMsg.classList.add('hidden'); } });
-        };
-
-        els.checkoutBtn.addEventListener('click', async () => {
-            if (!els.separationDate.value) { els.separationDate.classList.add('border-red-500'); els.dateErrorMsg.classList.remove('hidden'); els.separationDate.focus(); setTimeout(() => { els.separationDate.classList.remove('border-red-500'); els.dateErrorMsg.classList.add('hidden'); }, 3500); return; }
-
-            let orderTotalValue = 0;
-            Object.keys(State.cart).forEach(id => { const prod = State.products.find(p => p.id === id); if (prod && prod.price) orderTotalValue += (prod.price * State.cart[id]); });
-
-            const orderId = 'REQ-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            els.checkoutBtn.disabled = true; els.checkoutBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando...'; lucide.createIcons();
-
-            if (State.userId) {
-                try {
-                    await supabaseClient.from('pedidos').insert({ id: orderId, usuario_id: State.userId, data_pedido: new Date().toISOString(), data_separacao: els.separationDate.value, observacoes: els.orderNotes.value, status: 'Enviado para Separação', valor_total: orderTotalValue });
-                    
-                    const orderItems = Object.keys(State.cart).map(prodId => {
-                        const prod = State.products.find(p => p.id === prodId);
-                        return { pedido_id: orderId, produto_id: prodId, quantidade: State.cart[prodId], preco_unitario: prod && prod.price ? prod.price : 0 };
-                    });
-                    await supabaseClient.from('pedido_itens').insert(orderItems);
-                    
-                    State.userBalance -= orderTotalValue;
-                    await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-
-                    await Promise.all(Object.keys(State.cart).map(async prodId => {
-                        const prod = State.products.find(p => p.id === prodId);
-                        if (prod) { prod.stock -= State.cart[prodId]; return supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); }
-                    }));
-
-                    // Webhook Google (Assíncrono)
-                    try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
-                        fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-                            body: JSON.stringify({ orderId: orderId, userName: State.userName, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação', items: orderItems.map(item => { const prod = State.products.find(p => p.id === item.produto_id); return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; })}) 
-                        }).catch(e => console.log('Google acionado silenciosamente.'));
-                    } catch(e) {}
-
-                } catch (error) { 
-                    showActionConfirm('Erro no Pedido', error.message, 'danger', 'Entendi', () => {});
-                    els.checkoutBtn.disabled = false; els.checkoutBtn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i> Enviar Solicitação'; lucide.createIcons(); return;
-                }
-            }
-
-            State.ordersHistory.unshift({ id: orderId, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, items: { ...State.cart }, status: 'Enviado para Separação' });
-            State.cart = {}; els.orderNotes.value = ""; setupDateInput(); updateCartUI(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
+        window.editProduct = function(id) {
+            const p = AdminState.products.find(x => x.id === id);
+            if(!p) return;
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('prodName').value = p.nome;
+            document.getElementById('prodStock').value = p.estoque;
+            document.getElementById('prodPrice').value = p.preco;
+            document.getElementById('prodIcon').value = p.icone;
+            document.getElementById('prodStatus').value = p.ativo.toString();
             
-            els.successModal.classList.remove('hidden');
-            setTimeout(() => { els.successModalContent.classList.remove('scale-95', 'opacity-0'); els.successModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-            if(!els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
-        });
-
-        els.closeModalBtn.addEventListener('click', () => {
-            els.successModalContent.classList.remove('scale-100', 'opacity-100'); els.successModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { els.successModal.classList.add('hidden'); }, 300);
-        });
-
-        const renderOrdersHistory = () => {
-            els.ordersListContainer.innerHTML = '';
-            if (State.ordersHistory.length === 0) {
-                els.ordersListContainer.innerHTML = `<div class="py-12 flex flex-col items-center text-slate-400"><i data-lucide="package-search" class="w-12 h-12 mb-3 opacity-50"></i><p>Nenhuma solicitação realizada.</p></div>`; lucide.createIcons(); return;
-            }
-            State.ordersHistory.forEach(order => {
-                const orderDate = new Date(order.date).toLocaleDateString('pt-BR', { hour: '2-digit', minute:'2-digit' });
-                const sepDateParts = order.separationDate.split('-'); const sepDate = `${sepDateParts[2]}/${sepDateParts[1]}/${sepDateParts[0]}`; 
-                const isCancelled = order.status === 'Cancelado'; const isCompleted = order.status === 'Separação Concluída';
-                
-                let itemsListHtml = Object.keys(order.items).map(id => {
-                    const productInfo = State.products.find(p => p.id === id); const name = productInfo ? productInfo.name : id;
-                    return `<li class="flex justify-between items-center py-1.5 border-b last:border-0 last:pb-0"><span class="text-sm text-slate-600 truncate pr-4">${name}</span><strong class="text-sm text-slate-800 bg-white px-2 py-0.5 rounded border">${order.items[id]} un.</strong></li>`;
-                }).join('');
-
-                const stColor = { 'Cancelado': 'text-red-700 bg-red-100 border-red-200', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 border-emerald-200', 'Enviado para Separação': 'text-brand-700 bg-brand-100 border-brand-200' }[order.status] || 'text-slate-700 bg-slate-100 border-slate-200';
-
-                const card = document.createElement('div');
-                card.className = `border rounded-xl p-4 relative transition-colors ${isCancelled ? 'bg-slate-100 opacity-70 grayscale-[30%]' : 'bg-slate-50 hover:border-slate-300'}`;
-                card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-1 rounded tracking-wider">${order.id}</span><span class="text-[10px] font-medium ${stColor} px-2 py-1 rounded border">${order.status}</span></div>
-                            <div class="text-sm font-semibold">Para Separar: <span class="text-brand-600">${sepDate}</span></div>
-                        </div>
-                        <span class="text-[11px] text-slate-500 bg-white px-2 py-1 rounded-md border">Em: ${orderDate}</span>
-                    </div>
-                    ${order.notes ? `<div class="mb-4 bg-white p-3 rounded-lg border border-amber-100 bg-amber-50/30 flex gap-2"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-slate-600 italic">"${order.notes}"</p></div>` : ''}
-                    <div class="bg-white rounded-lg border overflow-hidden"><div class="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500 uppercase border-b">Itens Solicitados</div><ul class="px-3 py-1">${itemsListHtml}</ul></div>
-                    ${!isCancelled && !isCompleted ? `<div class="mt-4 pt-3 border-t flex justify-end gap-2"><button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium bg-white border rounded-lg hover:bg-slate-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border-red-200 rounded-lg hover:bg-red-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button></div>` : ''}
-                `;
-                els.ordersListContainer.appendChild(card);
-            });
+            const catSelect = document.getElementById('prodCategory');
+            catSelect.innerHTML = AdminState.categories.map(c => `<option value="${c.id}" ${c.id === p.categoria_id ? 'selected' : ''}>${c.nome}</option>`).join('');
+            
+            document.getElementById('modalProductTitle').innerHTML = '<i data-lucide="edit" class="w-5 h-5 text-brand-600"></i> Editar Produto';
+            document.getElementById('modalProduct').classList.remove('hidden');
             lucide.createIcons();
         };
 
-        const toggleOrdersModal = () => {
-            if (els.ordersModal.classList.contains('hidden')) { renderOrdersHistory(); els.ordersModal.classList.remove('hidden'); setTimeout(() => { els.ordersModalContent.classList.remove('scale-95', 'opacity-0'); els.ordersModalContent.classList.add('scale-100', 'opacity-100'); }, 10); } 
-            else { els.ordersModalContent.classList.remove('scale-100', 'opacity-100'); els.ordersModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.ordersModal.classList.add('hidden'), 300); }
-        };
-
-        window.cancelOrder = function(orderId) {
-            showActionConfirm('Cancelar Solicitação', 'A solicitação será cancelada. O saldo e o estoque serão restaurados.', 'danger', 'Sim, Cancelar', async () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId); if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex]; let orderCost = 0;
-                Object.keys(order.items).forEach(itemId => { const p = State.products.find(p => p.id === itemId); if (p) { p.stock += order.items[itemId]; if (p.price) orderCost += (p.price * order.items[itemId]); }});
-                State.userBalance += orderCost; order.status = 'Cancelado';
-                if (State.userId) {
-                    try {
-                        await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                        for (let itemId of Object.keys(order.items)) { const p = State.products.find(p => p.id === itemId); if (p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', itemId); }
-                        try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }); } catch (e) { }
-                    } catch(err) { console.error('Erro banco', err); }
-                }
-                backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
-            });
-        };
-
-        window.editOrder = function(orderId) {
-            const proceedWithEdit = async () => {
-                const orderIndex = State.ordersHistory.findIndex(o => o.id === orderId); if(orderIndex === -1) return;
-                const order = State.ordersHistory[orderIndex]; let orderCost = 0;
-                Object.keys(order.items).forEach(itemId => { const p = State.products.find(p => p.id === itemId); if (p) { p.stock += order.items[itemId]; if (p.price) orderCost += (p.price * order.items[itemId]); }});
-                State.userBalance += orderCost;
-                
-                if (State.userId) {
-                    try {
-                        await supabaseClient.from('pedidos').delete().eq('id', orderId); 
-                        await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
-                        for (let itemId of Object.keys(order.items)) { const p = State.products.find(p => p.id === itemId); if (p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', itemId); }
-                    } catch (err) { console.error('Erro banco', err); }
-                }
-                
-                State.cart = { ...order.items }; els.separationDate.value = order.separationDate; els.orderNotes.value = order.notes || ''; State.ordersHistory.splice(orderIndex, 1);
-                backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); updateCartUI(); lastOrdersHash = JSON.stringify(State.ordersHistory);
-                toggleOrdersModal(); if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
+        document.getElementById('formProduct').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveProd'); btn.disabled = true; btn.innerHTML = 'Salvando...';
+            const pId = document.getElementById('prodId').value;
+            
+            const payload = {
+                nome: document.getElementById('prodName').value,
+                categoria_id: parseInt(document.getElementById('prodCategory').value),
+                estoque: parseInt(document.getElementById('prodStock').value),
+                preco: parseFloat(document.getElementById('prodPrice').value),
+                icone: document.getElementById('prodIcon').value || 'box',
+                ativo: document.getElementById('prodStatus').value === 'true'
             };
-            if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho', 'Você já possui itens no carrinho. Deseja continuar e substituir?', 'warning', 'Sim, Substituir', proceedWithEdit);
-            else proceedWithEdit(); 
+
+            try {
+                if (pId) { await supabaseClient.from('produtos').update(payload).eq('id', pId); logAudit('Produto Editado', `Produto ${payload.nome} (ID: ${pId}) modificado.`); } 
+                else { 
+                    payload.id = 'PRD-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                    await supabaseClient.from('produtos').insert([payload]); 
+                    logAudit('Produto Criado', `Novo produto ${payload.nome} cadastrado.`);
+                }
+                const { data } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = data;
+                renderCatalogTable(); buildDashboard(); closeModal('modalProduct');
+            } catch(err) { alert('Erro: ' + err.message); }
+            btn.disabled = false; btn.innerHTML = 'Salvar Produto';
+        });
+
+        function renderCategoriesTable() {
+            const list = document.getElementById('listCategories');
+            list.innerHTML = '';
+            AdminState.categories.forEach(c => {
+                const count = AdminState.products.filter(p => p.categoria_id === c.id).length;
+                list.innerHTML += `
+                    <li class="p-4 flex justify-between items-center bg-white dark:bg-slate-900">
+                        <div><p class="font-bold text-sm">${c.nome}</p><p class="text-xs text-slate-500">${count} produtos atrelados</p></div>
+                        <button onclick="deleteCategory(${c.id}, '${c.nome}', ${count})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir Categoria"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </li>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        document.getElementById('btnNewCategory').addEventListener('click', () => {
+            const nome = prompt("Digite o nome da nova Categoria:");
+            if(nome && nome.trim().length > 0) {
+                supabaseClient.from('categorias').insert([{ nome: nome.trim() }]).then(async () => {
+                    const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
+                    renderCategoriesTable(); logAudit('Categoria Criada', `Categoria ${nome} adicionada.`);
+                });
+            }
+        });
+
+        window.deleteCategory = function(id, nome, count) {
+            if(count > 0) { confirmAction('Bloqueado', `A categoria "${nome}" possui ${count} produtos atrelados. Mude a categoria deles antes de excluir.`, 'danger', 'Entendi', null); return; }
+            confirmAction('Excluir Categoria', `Tem certeza que deseja excluir "${nome}"?`, 'danger', 'Sim, Excluir', async () => {
+                await supabaseClient.from('categorias').delete().eq('id', id);
+                const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
+                renderCategoriesTable(); logAudit('Categoria Excluída', `Categoria ${nome} removida.`);
+            });
         };
 
-        els.myOrdersBtn?.addEventListener('click', toggleOrdersModal); els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal); els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
-        
-        // Inicialização Final
-        window.addEventListener('DOMContentLoaded', () => { checkAuth(); lucide.createIcons(); });
+        function renderUsersTable() {
+            const tbody = document.getElementById('tableUsersBody');
+            tbody.innerHTML = '';
+            const q = document.getElementById('searchUsers').value.toLowerCase();
+            
+            const filtered = AdminState.users.filter(u => (u.nome || u.email).toLowerCase().includes(q));
+            
+            filtered.forEach(u => {
+                // Calc gasto total localmente p/ exibição
+                let spent = 0;
+                AdminState.orders.filter(o => o.usuario_id === u.id && o.status !== 'Cancelado').forEach(o => spent += parseFloat(o.valor_total || 0));
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${u.nome || u.email}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${u.cargo || 'Comercial'}</p></div></div></td>
+                        <td class="p-4 py-3 text-right font-bold text-emerald-600">${formatMoney(parseFloat(u.saldo || 0))}</td>
+                        <td class="p-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">${formatMoney(spent)}</td>
+                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.admin ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-slate-200 text-slate-600 border border-slate-300'}">${u.admin ? 'Admin' : 'Padrão'}</span></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editUser('${u.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5 inline"></i></button></td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        document.getElementById('searchUsers').addEventListener('input', renderUsersTable);
+
+        // Ação de Novo Usuário abre Modal
+        document.getElementById('btnNewUser').addEventListener('click', () => {
+            document.getElementById('formUser').reset();
+            document.getElementById('formUser').removeAttribute('data-edit-id');
+            document.getElementById('modalUser').classList.remove('hidden');
+        });
+
+        window.editUser = function(id) {
+            const u = AdminState.users.find(x => x.id === id);
+            if(!u) return;
+            document.getElementById('newUserName').value = u.nome;
+            document.getElementById('newUserEmail').value = u.email || '';
+            document.getElementById('newUserRole').value = u.cargo || '';
+            document.getElementById('newUserBalance').value = parseFloat(u.saldo || 0);
+            document.getElementById('newUserAdmin').checked = u.admin === true;
+            document.getElementById('formUser').setAttribute('data-edit-id', u.id);
+            document.getElementById('modalUser').classList.remove('hidden');
+        };
+
+        document.getElementById('formUser').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveUser'); btn.disabled = true; btn.innerHTML = 'Processando...';
+            const editId = document.getElementById('formUser').getAttribute('data-edit-id');
+            
+            const payload = {
+                nome: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                cargo: document.getElementById('newUserRole').value,
+                saldo: parseFloat(document.getElementById('newUserBalance').value),
+                admin: document.getElementById('newUserAdmin').checked
+            };
+
+            try {
+                if (editId) { 
+                    await supabaseClient.from('usuarios').update(payload).eq('id', editId); 
+                    logAudit('Usuário Editado', `Perfil de ${payload.nome} atualizado. Saldo final: ${formatMoney(payload.saldo)}`); 
+                } else { 
+                    payload.id = crypto.randomUUID(); // Mock ID for demo, usually Auth creates the UUID.
+                    await supabaseClient.from('usuarios').insert([payload]); 
+                    logAudit('Usuário Criado', `Perfil para ${payload.nome} adicionado.`);
+                }
+                const { data } = await supabaseClient.from('usuarios').select('*'); AdminState.users = data;
+                renderUsersTable(); buildDashboard(); closeModal('modalUser');
+            } catch(err) { alert('Erro ao salvar usuário: ' + err.message); }
+            btn.disabled = false; btn.innerHTML = 'Cadastrar Perfil';
+        });
+
+        // Recarga em Lote
+        document.getElementById('btnBatchRecharge').addEventListener('click', () => {
+            document.getElementById('batchAmount').value = '';
+            document.getElementById('modalBatchRecharge').classList.remove('hidden');
+        });
+
+        document.getElementById('confirmBatchBtn').addEventListener('click', () => {
+            const amt = parseFloat(document.getElementById('batchAmount').value);
+            if(isNaN(amt) || amt <= 0) return;
+            closeModal('modalBatchRecharge');
+            
+            confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base? Esta ação não pode ser desfeita.`, 'warning', `Sim, Aplicar ${formatMoney(amt)}`, async () => {
+                const btn = document.getElementById('actionConfirmBtn'); btn.innerHTML = 'Processando...';
+                
+                // Processar em batch
+                const updates = AdminState.users.map(u => {
+                    const newBal = parseFloat(u.saldo || 0) + amt;
+                    return supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id);
+                });
+                
+                await Promise.all(updates);
+                logAudit('Recarga em Lote', `Adicionado ${formatMoney(amt)} ao saldo de ${AdminState.users.length} usuários simultaneamente.`);
+                
+                const { data } = await supabaseClient.from('usuarios').select('*'); AdminState.users = data;
+                renderUsersTable(); buildDashboard();
+            });
+        });
+
+        window.openOrderDetails = function(orderId) {
+            const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
+            const u = AdminState.users.find(x => x.id === order.usuario_id);
+            const uName = u ? u.nome : order.usuario_id;
+            
+            let itemsHtml = order.pedido_itens.map(item => {
+                const p = AdminState.products.find(x => x.id === item.produto_id);
+                return `<li class="flex justify-between items-center py-2 border-b last:border-0"><span class="text-sm font-medium">${p ? p.nome : item.produto_id}</span><strong class="text-sm bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`;
+            }).join('');
+
+            const stColors = { 'Cancelado': 'text-red-700 bg-red-100', 'Separação Concluída': 'text-emerald-700 bg-emerald-100', 'Enviado para Separação': 'text-brand-700 bg-brand-100' }[order.status] || 'text-slate-700 bg-slate-100';
+
+            document.getElementById('adminSingleOrderBody').innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white border px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColors} px-2.5 py-1 rounded-md border">${order.status}</span></div>
+                        <p class="text-sm mb-1">Solicitado por: <strong>${uName}</strong></p>
+                        <div class="text-sm text-slate-500">Separar até: <strong class="text-slate-800">${formatDate(order.data_separacao).split(' ')[0]}</strong></div>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <strong class="text-2xl font-black">${formatMoney(order.valor_total)}</strong>
+                        <div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${formatDate(order.data_pedido)}</div>
+                    </div>
+                </div>
+                ${order.observacoes ? `<div class="mb-5 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}
+                
+                <div class="bg-white rounded-xl border overflow-hidden mb-5 shadow-sm">
+                    <div class="bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b">Itens Solicitados</div>
+                    <ul class="px-4 py-1">${itemsHtml}</ul>
+                </div>
+
+                <div class="flex flex-wrap justify-end gap-3 pt-4 border-t">
+                    ${order.status === 'Enviado para Separação' ? `
+                        <button onclick="changeOrderStatus('${order.id}', 'Separação Concluída')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
+                    ` : ''}
+                    ${order.status !== 'Cancelado' ? `
+                        <button onclick="changeOrderStatus('${order.id}', 'Cancelado')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="ban" class="w-4 h-4"></i> Cancelar Pedido (Estornar)</button>
+                    ` : ''}
+                </div>
+            `;
+            lucide.createIcons();
+            document.getElementById('adminSingleOrderModal').classList.remove('hidden');
+        };
+
+        window.changeOrderStatus = function(orderId, newStatus) {
+            confirmAction('Alterar Status do Pedido', `Você está alterando o pedido ${orderId} para "${newStatus}". Confirma a ação?`, newStatus === 'Cancelado' ? 'danger' : 'warning', 'Sim, Confirmar', async () => {
+                const order = AdminState.orders.find(o => o.id === orderId); if (!order) return;
+                
+                // Lógica de estorno se for cancelado
+                if (newStatus === 'Cancelado') {
+                    const u = AdminState.users.find(x => x.id === order.usuario_id);
+                    if(u) { const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0); await supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id); }
+                    if(order.pedido_itens) {
+                        for(let item of order.pedido_itens) {
+                            const p = AdminState.products.find(x => x.id === item.produto_id);
+                            if (p) await supabaseClient.from('produtos').update({ estoque: p.estoque + item.quantidade }).eq('id', item.produto_id);
+                        }
+                    }
+                }
+
+                await supabaseClient.from('pedidos').update({ status: newStatus }).eq('id', orderId);
+                logAudit('Status de Pedido Alterado', `Pedido ${orderId} atualizado para [${newStatus}].`);
+                
+                // Atualização silenciosa local e re-render
+                order.status = newStatus;
+                if(newStatus === 'Cancelado') {
+                    const { data: usersReq } = await supabaseClient.from('usuarios').select('*'); AdminState.users = usersReq;
+                    const { data: prodsReq } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = prodsReq;
+                }
+                
+                closeModal('adminSingleOrderModal');
+                buildDashboard(); renderOrdersTable(); renderUsersTable(); renderCatalogTable();
+            });
+        };
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            lucide.createIcons();
+            bootAdmin(); // Tenta autenticar e carregar painel imediatamente
+        });
+
     </script>
 </body>
 </html>
