@@ -165,8 +165,9 @@
                     </button>
                 </div>
 
-                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium whitespace-nowrap">
-                    <i data-lucide="list-ordered" class="w-4 h-4"></i> <span class="hidden md:inline">Histórico</span>
+                <!-- Botão Histórico agora em destaque -->
+                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium whitespace-nowrap shadow-sm border border-slate-200 dark:border-slate-600">
+                    <i data-lucide="list-ordered" class="w-4 h-4 text-brand-600 dark:text-brand-400"></i> <span class="hidden md:inline font-semibold">Histórico de Pedidos</span>
                 </button>
                 
                 <div class="relative w-full md:w-80">
@@ -203,8 +204,13 @@
             </div>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1 items-center" id="categoryFilters"></div>
                 <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
+                    <!-- Filtro Favoritos Toggle -->
+                    <button id="toggleFavoritesBtn" class="flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i data-lucide="heart" class="w-4 h-4" id="favIconFilter"></i> <span class="hidden sm:inline">Favoritos</span>
+                    </button>
+                    
                     <span class="text-sm font-medium text-slate-500 whitespace-nowrap block" id="itemsCountLabel">0 itens</span>
                     <div class="relative w-full md:w-48">
                         <select id="sortSelect" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border rounded-lg text-sm outline-none appearance-none cursor-pointer">
@@ -324,8 +330,8 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-3xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-[85vh] transform scale-95 opacity-0 transition-all duration-300" id="ordersModalContent">
             <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                 <div>
-                    <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="history" class="w-6 h-6 text-brand-600"></i> Histórico de Solicitações</h3>
-                    <p class="text-xs text-slate-500 mt-1">Gerencie seus pedidos enviados para a base.</p>
+                    <h3 class="text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white"><i data-lucide="history" class="w-6 h-6 text-brand-600"></i> Histórico de Solicitações</h3>
+                    <p class="text-xs text-slate-500 mt-1">Gerencie seus pedidos enviados e repita pedidos anteriores.</p>
                 </div>
                 <button id="closeOrdersBtn" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -358,7 +364,9 @@
         const State = {
             userId: null, userName: "", userRole: "", isAdmin: false,
             products: [], cart: {}, searchQuery: "", selectedCategory: "Todos",
-            categories: ["Todos"], sortBy: "relevancia", ordersHistory: [], userBalance: 0
+            categories: ["Todos"], sortBy: "relevancia", ordersHistory: [], userBalance: 0,
+            favorites: [], // Novo estado para favoritos
+            showOnlyFavorites: false // Estado do filtro de favoritos
         };
 
         let lastProductsHash = "";
@@ -366,7 +374,7 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
-        // Função de Navegação Segura (Evita quebra no Sandbox e iFrames)
+        // Função de Navegação Segura
         function safeNavigate(url) {
             try {
                 window.location.href = url;
@@ -416,8 +424,50 @@
             actionConfirmText: document.getElementById('actionConfirmText'), actionCancelBtn: document.getElementById('actionCancelBtn'),
             actionConfirmBtn: document.getElementById('actionConfirmBtn'), customContextMenu: document.getElementById('customContextMenu'),
             themeToggleBtn: document.getElementById('themeToggleBtn'), contextAdminMode: document.getElementById('contextAdminMode'),
-            userSyncIcon: document.getElementById('userSyncIcon')
+            userSyncIcon: document.getElementById('userSyncIcon'),
+            toggleFavoritesBtn: document.getElementById('toggleFavoritesBtn'), favIconFilter: document.getElementById('favIconFilter')
         };
+
+        // Carrega favoritos do LocalStorage
+        function loadFavorites() {
+            try {
+                const favs = localStorage.getItem(`brindes_favs_${State.userId}`);
+                if (favs) State.favorites = JSON.parse(favs);
+                else State.favorites = [];
+            } catch (e) { State.favorites = []; }
+        }
+
+        // Salva favoritos no LocalStorage
+        function saveFavorites() {
+            if (State.userId) localStorage.setItem(`brindes_favs_${State.userId}`, JSON.stringify(State.favorites));
+        }
+
+        window.toggleFavorite = function(productId) {
+            const index = State.favorites.indexOf(productId);
+            if (index === -1) State.favorites.push(productId);
+            else State.favorites.splice(index, 1);
+            saveFavorites();
+            renderProducts(); // Re-renderiza para atualizar os ícones de coração
+        };
+
+        els.toggleFavoritesBtn?.addEventListener('click', () => {
+            State.showOnlyFavorites = !State.showOnlyFavorites;
+            if (State.showOnlyFavorites) {
+                els.toggleFavoritesBtn.classList.replace('bg-white', 'bg-rose-50');
+                els.toggleFavoritesBtn.classList.replace('dark:bg-slate-800', 'dark:bg-rose-900/30');
+                els.toggleFavoritesBtn.classList.add('border-rose-200', 'text-rose-600');
+                els.favIconFilter.classList.add('fill-rose-500', 'text-rose-500');
+                els.favIconFilter.classList.remove('text-slate-600');
+            } else {
+                els.toggleFavoritesBtn.classList.replace('bg-rose-50', 'bg-white');
+                els.toggleFavoritesBtn.classList.replace('dark:bg-rose-900/30', 'dark:bg-slate-800');
+                els.toggleFavoritesBtn.classList.remove('border-rose-200', 'text-rose-600');
+                els.favIconFilter.classList.remove('fill-rose-500', 'text-rose-500');
+                els.favIconFilter.classList.add('text-slate-600');
+            }
+            renderProducts();
+        });
+
 
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
@@ -477,10 +527,11 @@
                 els.loginScreen.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => els.loginScreen.classList.add('hidden'), 300);
                 
+                loadFavorites(); // Carrega favoritos específicos do usuário
                 resetInactivityTimer(); 
                 await initialLoad();
             } else {
-                State.userId = null; State.isAdmin = false;
+                State.userId = null; State.isAdmin = false; State.favorites = [];
                 clearTimeout(inactivityTimeout);
                 els.loginScreen.classList.remove('hidden');
                 setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
@@ -512,7 +563,6 @@
             lucide.createIcons();
             
             try {
-                // Invoca a Edge Function
                 const { data: verifyData, error: verifyError } = await supabaseClient.functions.invoke('verify-hcaptcha', {
                     body: { response: hcaptchaResponse }
                 });
@@ -664,7 +714,6 @@
         }
         setInterval(backgroundRefresh, 5000);
 
-        // Menu de Contexto ADM
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
@@ -683,7 +732,6 @@
         document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
         document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
         
-        // Redireciona para o arquivo de Admin
         els.contextAdminMode.addEventListener('click', () => {
             els.customContextMenu.classList.add('hidden');
             safeNavigate('admin.html');
@@ -721,6 +769,10 @@
             els.productsGrid.innerHTML = '';
             let filtered = State.products.filter(p => {
                 if (!p.ativo) return false; 
+                
+                // Aplica filtro de favoritos se ativo
+                if (State.showOnlyFavorites && !State.favorites.includes(p.id)) return false;
+
                 return (State.selectedCategory === 'Todos' || p.category === State.selectedCategory) && (p.name.toLowerCase().includes(State.searchQuery.toLowerCase()) || p.id.toLowerCase().includes(State.searchQuery.toLowerCase()));
             });
             
@@ -730,16 +782,19 @@
                 if (State.sortBy === 'mais_pedidos') return getProductOrderCount(b.id) - getProductOrderCount(a.id);
                 return a.name.localeCompare(b.name); 
             });
+            
             els.itemsCountLabel.textContent = `${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
 
             if (filtered.length === 0) {
-                els.productsGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p>Nenhum brinde encontrado.</p></div>`;
+                let emptyMsg = State.showOnlyFavorites ? "Você ainda não tem itens favoritos." : "Nenhum brinde encontrado.";
+                els.productsGrid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400"><i data-lucide="${State.showOnlyFavorites ? 'heart-crack' : 'search-x'}" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p>${emptyMsg}</p></div>`;
                 lucide.createIcons(); return;
             }
 
             filtered.forEach(product => {
                 const stockRemaining = product.stock - (State.cart[product.id] || 0);
                 const isOutOfStock = stockRemaining <= 0;
+                const isFavorite = State.favorites.includes(product.id);
 
                 let imgHtml = product.icon.startsWith('http') 
                     ? `<div class="absolute inset-0 w-full h-full bg-white flex items-center justify-center p-0"><img src="${product.icon}" class="product-visual w-full h-full object-cover hover:scale-105 transition-transform duration-500"></div>`
@@ -751,7 +806,12 @@
                     <div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 flex flex-col items-center justify-center relative aspect-square w-full overflow-hidden">
                         ${imgHtml}
                         <div class="absolute top-3 left-3 flex gap-2 z-20"><span class="bg-slate-200/80 text-[10px] font-bold px-2 py-1 rounded shadow-sm border">${product.id}</span></div>
-                        <div class="absolute top-3 right-3 z-20"><span class="bg-[#f0e6d2]/80 text-[#8c734b] text-[10px] font-bold px-2 py-1 rounded shadow-sm">Estoque: ${product.stock} un.</span></div>
+                        
+                        <!-- Botão de Favoritar -->
+                        <button onclick="toggleFavorite('${product.id}')" class="absolute top-3 right-3 z-30 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-colors group/fav">
+                            <i data-lucide="heart" class="w-4 h-4 transition-colors ${isFavorite ? 'fill-rose-500 text-rose-500' : 'text-slate-400 group-hover/fav:text-rose-400'}"></i>
+                        </button>
+
                     </div>
                     <div class="p-4 flex-1 flex flex-col relative z-20 bg-white dark:bg-slate-800">
                         <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-1">${product.category}</span>
@@ -853,6 +913,7 @@
 
             cartKeys.forEach(id => {
                 const product = State.products.find(p => p.id === id); const qty = State.cart[id];
+                if (!product) return; // Segurança caso o produto não exista mais
                 totalItems += qty; if (product.price) totalValue += (product.price * qty);
 
                 const itemEl = document.createElement('div');
@@ -995,17 +1056,33 @@
 
                 const card = document.createElement('div');
                 card.className = `border rounded-xl p-4 relative transition-colors ${isCancelled ? 'bg-slate-100 opacity-70 grayscale-[30%]' : 'bg-slate-50 hover:border-slate-300'}`;
+                
+                // Botão de Repetir Pedido e outras ações
+                let actionButtonsHtml = '';
+                
+                // Botão Repetir (Sempre disponível)
+                actionButtonsHtml += `<button onclick="repeatOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-brand-600 bg-brand-50 border-brand-200 rounded-lg hover:bg-brand-100 flex items-center gap-1.5 shadow-sm transition-colors border"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Repetir Pedido</button>`;
+
+                if (!isCancelled && !isCompleted) {
+                    actionButtonsHtml += `<div class="flex gap-2">
+                        <button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium bg-white border rounded-lg hover:bg-slate-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button>
+                        <button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border-red-200 rounded-lg hover:bg-red-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button>
+                    </div>`;
+                }
+
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                         <div>
-                            <div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-1 rounded tracking-wider">${order.id}</span><span class="text-[10px] font-medium ${stColor} px-2 py-1 rounded border">${order.status}</span></div>
+                            <div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-700 bg-slate-200 px-2 py-1 rounded tracking-wider">${order.id}</span><span class="text-[10px] font-medium ${stColor} px-2 py-1 rounded border">${order.status}</span></div>
                             <div class="text-sm font-semibold">Para Separar: <span class="text-brand-600">${sepDate}</span></div>
                         </div>
                         <span class="text-[11px] text-slate-500 bg-white px-2 py-1 rounded-md border">Em: ${orderDate}</span>
                     </div>
                     ${order.notes ? `<div class="mb-4 bg-white p-3 rounded-lg border border-amber-100 bg-amber-50/30 flex gap-2"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-slate-600 italic">"${order.notes}"</p></div>` : ''}
                     <div class="bg-white rounded-lg border overflow-hidden"><div class="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500 uppercase border-b">Itens Solicitados</div><ul class="px-3 py-1">${itemsListHtml}</ul></div>
-                    ${!isCancelled && !isCompleted ? `<div class="mt-4 pt-3 border-t flex justify-end gap-2"><button onclick="editOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium bg-white border rounded-lg hover:bg-slate-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5"></i> Alterar</button><button onclick="cancelOrder('${order.id}')" class="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border-red-200 rounded-lg hover:bg-red-100 flex items-center gap-1.5 shadow-sm"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Cancelar</button></div>` : ''}
+                    <div class="mt-4 pt-3 border-t flex justify-between gap-2 flex-wrap sm:flex-nowrap">
+                        ${actionButtonsHtml}
+                    </div>
                 `;
                 els.ordersListContainer.appendChild(card);
             });
@@ -1056,6 +1133,51 @@
             };
             if(Object.keys(State.cart).length > 0) showActionConfirm('Substituir Carrinho', 'Você já possui itens no carrinho. Deseja continuar e substituir?', 'warning', 'Sim, Substituir', proceedWithEdit);
             else proceedWithEdit(); 
+        };
+
+        // Função para Repetir Pedido (Copia os itens para o carrinho sem deletar o pedido original)
+        window.repeatOrder = function(orderId) {
+            const proceedWithRepeat = () => {
+                const order = State.ordersHistory.find(o => o.id === orderId);
+                if (!order) return;
+
+                // Verifica estoque e produtos inativos antes de adicionar
+                let itemsToAdd = {};
+                let hasUnavailableItems = false;
+
+                Object.keys(order.items).forEach(itemId => {
+                    const product = State.products.find(p => p.id === itemId);
+                    if (product && product.ativo) {
+                        const desiredQty = order.items[itemId];
+                        const availableQty = product.stock;
+                        
+                        if (availableQty > 0) {
+                            itemsToAdd[itemId] = Math.min(desiredQty, availableQty);
+                            if (desiredQty > availableQty) hasUnavailableItems = true; // Só conseguiu adicionar parcial
+                        } else {
+                            hasUnavailableItems = true; // Estoque zerado
+                        }
+                    } else {
+                        hasUnavailableItems = true; // Produto inativo ou removido
+                    }
+                });
+
+                State.cart = itemsToAdd;
+                updateCartUI(); 
+                toggleOrdersModal(); 
+                if(els.cartSidebar.classList.contains('translate-x-full')) toggleSidebar();
+
+                if (hasUnavailableItems) {
+                    // Mostra um aviso rápido caso não tenha conseguido copiar tudo 100% igual
+                    alert("Alguns itens do pedido original não puderam ser adicionados pois estão esgotados, inativos ou com estoque insuficiente.");
+                }
+            };
+
+            if (Object.keys(State.cart).length > 0) {
+                showActionConfirm('Substituir Carrinho', 'Você já possui itens no carrinho. Deseja limpar o carrinho atual e adicionar os itens deste pedido?', 'warning', 'Sim, Substituir', proceedWithRepeat);
+            } else {
+                proceedWithRepeat();
+            }
         };
 
         els.myOrdersBtn?.addEventListener('click', toggleOrdersModal); els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal); els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
