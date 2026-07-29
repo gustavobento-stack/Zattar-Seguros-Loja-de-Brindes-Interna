@@ -14,6 +14,10 @@
     <!-- hCaptcha Script -->
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     
+    <!-- Driver.js CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -53,6 +57,35 @@
         .dark .login-glass-card {
             background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
+
+        /* Estilos Customizados para o Driver.js (Tutorial) */
+        .driver-popover {
+            font-family: 'Inter', sans-serif;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            padding: 1.25rem;
+        }
+        .driver-popover-title { font-weight: 700; font-size: 1.125rem; color: #0f172a; margin-bottom: 0.5rem; }
+        .driver-popover-description { color: #475569; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem; }
+        .driver-popover-footer button {
+            border-radius: 0.5rem; font-weight: 600; padding: 0.5rem 1rem; font-size: 0.875rem; text-shadow: none; transition: all 0.2s;
+        }
+        .driver-popover-footer .driver-popover-next-btn, 
+        .driver-popover-footer .driver-popover-prev-btn { background-color: #0d9488; color: white; border: none; }
+        .driver-popover-footer .driver-popover-next-btn:hover, 
+        .driver-popover-footer .driver-popover-prev-btn:hover { background-color: #0f766e; }
+        .driver-popover-footer .driver-popover-close-btn { color: #64748b; }
+        .driver-popover-footer .driver-popover-close-btn:hover { color: #0f172a; }
+        
+        /* Tema Escuro para o Tutorial */
+        .dark .driver-popover { background-color: #1e293b; border-color: #334155; }
+        .dark .driver-popover-title { color: #f8fafc; }
+        .dark .driver-popover-description { color: #cbd5e1; }
+        .dark .driver-popover-arrow { border-color: transparent transparent #1e293b transparent !important; }
+        .dark .driver-popover-footer .driver-popover-close-btn { color: #94a3b8; }
+        .dark .driver-popover-footer .driver-popover-close-btn:hover { color: #f8fafc; }
+        .dark .driver-popover-footer button.driver-popover-disabled-btn { opacity: 0.5; background-color: #334155; color: #94a3b8; }
     </style>
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -155,7 +188,7 @@
             </div>
             
             <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg">
+                <div id="tour-balance-container" class="hidden md:flex flex-col justify-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg">
                     <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider leading-none mb-0.5">Meu Saldo</span>
                     <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
                 </div>
@@ -178,7 +211,7 @@
                     <i data-lucide="list-ordered" class="w-4 h-4"></i> <span class="hidden md:inline">Histórico</span>
                 </button>
                 
-                <div class="relative w-full md:w-80">
+                <div id="tour-search-container" class="relative w-full md:w-80">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
                     <input type="text" id="searchInput" placeholder="Buscar brindes..." class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border border-transparent dark:border-slate-700 text-slate-900 dark:text-white rounded-lg text-sm outline-none placeholder-slate-400">
                 </div>
@@ -190,7 +223,7 @@
             </button>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col relative">
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth flex flex-col relative" id="tour-dashboard-area">
             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300">
                 <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-blue-600 dark:text-blue-400 mt-0.5"></i>
                 <p>Itens de brindes controlados pelo estoque interno. Selecione, monte sua solicitação e envie para separação.</p>
@@ -215,7 +248,7 @@
                 <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar w-full md:w-auto flex-1" id="categoryFilters"></div>
                 <div class="flex items-center justify-between gap-3 md:w-auto w-full shrink-0">
                     <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap block" id="itemsCountLabel">0 itens</span>
-                    <div class="relative w-full md:w-48">
+                    <div class="relative w-full md:w-48" id="tour-sort">
                         <select id="sortSelect" class="w-full pl-3 pr-8 py-2 bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-lg text-sm outline-none appearance-none cursor-pointer">
                             <option value="relevancia">Relevância</option>
                             <option value="mais_pedidos">Mais Pedidos</option>
@@ -284,6 +317,7 @@
 
     <div id="cartOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
+    <!-- Modal Confirmação Ação Genérica -->
     <div id="actionConfirmModal" class="fixed inset-0 z-[1600] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" id="actionConfirmModalBg"></div>
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 border border-slate-200 dark:border-slate-700" id="actionConfirmModalContent">
@@ -364,7 +398,7 @@
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         const State = {
-            userId: null, userName: "", userRole: "", isAdmin: false,
+            userId: null, userName: "", userRole: "", isAdmin: false, tutorialMode: false,
             products: [], cart: {}, searchQuery: "", selectedCategory: "Todos",
             categories: ["Todos"], sortBy: "relevancia", ordersHistory: [], userBalance: 0
         };
@@ -374,19 +408,16 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
-        // Função de Navegação Segura (Evita quebra no Sandbox e iFrames)
         function safeNavigate(url) {
-            try {
-                window.location.href = url;
-            } catch (e) {
-                console.warn("Redirecionamento bloqueado pelo ambiente de visualização:", e);
+            try { window.location.href = url; } 
+            catch (e) {
+                console.warn("Redirecionamento bloqueado:", e);
                 document.body.innerHTML = `
                     <div class="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center z-[9999] p-4 text-center">
                         <div class="bg-white p-8 rounded-3xl max-w-md w-full shadow-2xl">
                             <i data-lucide="shield-alert" class="w-16 h-16 text-brand-500 mx-auto mb-4"></i>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento Protegido</h2>
-                            <p class="text-slate-600 mb-4">O ambiente de visualização (Sandbox) bloqueou a navegação automática para proteger contra scripts maliciosos. <br><br>Você seria redirecionado para:<br><strong class="text-brand-600">${url}</strong></p>
-                            <p class="text-sm text-slate-400">Em produção (servidor real), você será redirecionado normalmente.</p>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Redirecionamento</h2>
+                            <p class="text-slate-600 mb-4">Em produção, você será redirecionado para:<br><strong class="text-brand-600">${url}</strong></p>
                         </div>
                     </div>
                 `;
@@ -434,7 +465,7 @@
                     await supabaseClient.auth.signOut();
                     els.loginEmail.value = ''; els.loginPassword.value = '';
                     State.userId = null; State.isAdmin = false;
-                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada por inatividade. Faça login novamente.</span>';
+                    els.loginErrorMsg.innerHTML = '<i data-lucide="clock" class="w-4 h-4 flex-shrink-0"></i><span id="loginErrorText">Sessão expirada por inatividade.</span>';
                     els.loginErrorMsg.className = 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 text-xs p-4 rounded-xl flex items-center gap-3 mt-4';
                     els.loginScreen.classList.remove('hidden');
                     setTimeout(() => els.loginScreen.classList.remove('opacity-0', 'pointer-events-none'), 10);
@@ -468,6 +499,85 @@
         els.themeToggleBtn?.addEventListener('click', toggleTheme);
         document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
 
+        function startInteractiveTutorial() {
+            if (!window.driver) return;
+            
+            const isDesktop = window.innerWidth >= 1024;
+            const driverObj = window.driver.js.driver({
+                showProgress: true,
+                nextBtnText: 'Próximo →',
+                prevBtnText: '← Anterior',
+                doneBtnText: 'Entendi!',
+                allowClose: true,
+                onDestroyed: async () => {
+                    // Quando finaliza ou pula, desativa o tutorial no BD
+                    try {
+                        await supabaseClient.from('usuarios').update({ tutorial: false }).eq('id', State.userId);
+                        console.log("Tutorial concluído e desativado.");
+                    } catch (e) { console.error("Erro ao desativar tutorial", e); }
+                },
+                steps: [
+                    { 
+                        popover: { 
+                            title: 'Bem-vindo(a) à Plataforma!', 
+                            description: 'Preparamos um tour rápido para você conhecer as ferramentas e saber como solicitar seus brindes.', 
+                            align: 'center' 
+                        } 
+                    },
+                    { 
+                        element: '#tour-balance-container', 
+                        popover: { 
+                            title: 'Seu Saldo', 
+                            description: 'Fique de olho no seu saldo disponível! Ele é atualizado em tempo real.', 
+                            side: "bottom", align: 'start' 
+                        } 
+                    },
+                    { 
+                        element: '#myOrdersBtn', 
+                        popover: { 
+                            title: 'Histórico de Pedidos', 
+                            description: 'Aqui você acessa suas solicitações antigas e pode até repetir pedidos anteriores com um clique.', 
+                            side: "bottom", align: 'start' 
+                        } 
+                    },
+                    { 
+                        element: '#categoryFilters', 
+                        popover: { 
+                            title: 'Filtro por Categorias', 
+                            description: 'Encontre o que precisa mais rápido navegando pelas categorias do catálogo.', 
+                            side: "bottom", align: 'start' 
+                        } 
+                    },
+                    { 
+                        element: '#tour-search-container', 
+                        popover: { 
+                            title: 'Busca Inteligente', 
+                            description: 'Pesquise pelo nome ou pesquise usando o código do brinde diretamente aqui.', 
+                            side: "bottom", align: 'start' 
+                        } 
+                    },
+                    { 
+                        element: '#productsGrid', 
+                        popover: { 
+                            title: 'Catálogo de Brindes', 
+                            description: 'Verifique o estoque, ajuste a quantidade desejada e adicione à sua solicitação.', 
+                            side: "top", align: 'center' 
+                        } 
+                    },
+                    { 
+                        element: isDesktop ? '#cartSidebar' : '#mobileCartBtn', 
+                        popover: { 
+                            title: 'Sua Solicitação (Carrinho)', 
+                            description: 'Revise os itens selecionados, defina a data que você precisa retirá-los e envie o pedido para nossa equipe separar!', 
+                            side: isDesktop ? "left" : "top", align: 'start' 
+                        } 
+                    }
+                ]
+            });
+            
+            driverObj.drive();
+        }
+
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -475,12 +585,15 @@
                 let userEmail = session.user.email;
                 let formattedName = userEmail.split('@')[0].split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
                 
-                const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo, admin').eq('id', State.userId).single();
+                // Buscando a flag 'tutorial' também
+                const { data: userData } = await supabaseClient.from('usuarios').select('saldo, nome, cargo, admin, tutorial').eq('id', State.userId).single();
+                
                 if (userData) {
                     State.userBalance = parseFloat(userData.saldo || 0);
                     State.userName = userData.nome || formattedName;
                     State.userRole = userData.cargo || 'Comercial';
                     State.isAdmin = userData.admin === true; 
+                    State.tutorialMode = userData.tutorial === true;
                 }
 
                 els.userNameDisplay.textContent = State.userName;
@@ -491,6 +604,12 @@
                 
                 resetInactivityTimer(); 
                 await initialLoad();
+
+                // Inicia o tutorial se for o primeiro acesso ou se a flag estiver true
+                if (State.tutorialMode) {
+                    setTimeout(startInteractiveTutorial, 1500); // Aguarda a tela renderizar os itens
+                }
+
             } else {
                 State.userId = null; State.isAdmin = false;
                 clearTimeout(inactivityTimeout);
@@ -524,7 +643,6 @@
             lucide.createIcons();
             
             try {
-                // Invoca a Edge Function
                 const { data: verifyData, error: verifyError } = await supabaseClient.functions.invoke('verify-hcaptcha', {
                     body: { response: hcaptchaResponse }
                 });
@@ -697,17 +815,11 @@
         document.addEventListener('click', (e) => { if (!els.customContextMenu.contains(e.target)) els.customContextMenu.classList.add('hidden'); });
         
         document.getElementById('contextReload')?.addEventListener('click', () => { try { location.reload(); } catch(e) {} });
-        
-        // CORREÇÃO: Listener do botão "Alternar Tema" do Context Menu
         document.getElementById('contextTheme')?.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            toggleTheme();
+            els.customContextMenu.classList.add('hidden'); toggleTheme();
         });
-        
-        // Redireciona para o arquivo de Admin
         els.contextAdminMode.addEventListener('click', () => {
-            els.customContextMenu.classList.add('hidden');
-            safeNavigate('admin.html');
+            els.customContextMenu.classList.add('hidden'); safeNavigate('admin.html');
         });
 
         const formatMoney = (value) => value === null ? "R$ --" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -1082,14 +1194,13 @@
             else proceedWithEdit(); 
         };
 
-        // NOVA FUNÇÃO: Repetir Pedido
         window.repeatOrder = function(orderId) {
             const order = State.ordersHistory.find(o => o.id === orderId);
             if(!order) return;
             
             const proceedWithRepeat = () => {
                 State.cart = { ...order.items };
-                els.separationDate.value = ''; // Limpa para o usuário escolher nova data
+                els.separationDate.value = ''; 
                 els.orderNotes.value = order.notes || '';
                 updateCartUI();
                 toggleOrdersModal();
