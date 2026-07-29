@@ -538,7 +538,7 @@
             lucide.createIcons();
         });
 
-        const toggleTheme = () => {
+        function toggleTheme() {
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark'); localStorage.theme = 'light';
             } else {
@@ -548,7 +548,7 @@
             if(favicon) favicon.href = document.documentElement.classList.contains('dark') 
                 ? "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Dark.svg" 
                 : "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Claro.svg";
-        };
+        }
         els.themeToggleBtn?.addEventListener('click', toggleTheme);
         document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
 
@@ -572,9 +572,9 @@
                 showProgress: true,
                 progressText: '{{current}} de {{total}}',
                 allowClose: false,
-                nextBtnText: 'Próximo',
-                prevBtnText: 'Voltar',
-                doneBtnText: 'Finalizar',
+                nextBtnText: 'Próximo →',
+                prevBtnText: '← Voltar',
+                doneBtnText: 'Finalizar ✓',
                 popoverOffset: 15, // Mais espaço global do popover até o elemento
                 onDestroyed: async () => {
                     // Remover item temporário gerado no tutorial
@@ -628,11 +628,11 @@
                         }
                     },
                     { 
-                        element: '#tour-filters-wrapper', 
+                        element: '#categoryFilters', 
                         popover: { 
                             title: 'Filtro por Categorias', 
                             description: 'Encontre o que precisa muito mais rápido navegando pelas categorias. Arraste para os lados se não couber na tela.', 
-                            side: "bottom", align: 'start' 
+                            side: "bottom", align: 'center' 
                         } 
                     },
                     { 
