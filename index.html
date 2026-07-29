@@ -62,30 +62,65 @@
         .driver-popover {
             font-family: 'Inter', sans-serif;
             border-radius: 1rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
             padding: 1.25rem;
         }
         .driver-popover-title { font-weight: 700; font-size: 1.125rem; color: #0f172a; margin-bottom: 0.5rem; }
-        .driver-popover-description { color: #475569; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem; }
-        .driver-popover-footer button {
-            border-radius: 0.5rem; font-weight: 600; padding: 0.5rem 1rem; font-size: 0.875rem; text-shadow: none; transition: all 0.2s;
+        .driver-popover-description { color: #475569; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.25rem; }
+        
+        /* Modificações do Footer (Progresso e Botões) */
+        .driver-popover-footer {
+            display: flex !important;
+            flex-direction: column !important; /* Coloca os elementos em coluna */
+            gap: 0.75rem !important;
+            align-items: stretch !important;
+            margin-top: 0.5rem !important;
         }
+        .driver-popover-navigation-btns {
+            display: flex !important;
+            width: 100% !important;
+            gap: 0.75rem !important;
+            justify-content: space-between !important;
+            order: 1 !important; /* Garante que os botões fiquem acima do texto de progresso */
+        }
+        .driver-popover-footer button {
+            flex: 1 1 0% !important; /* Faz os botões terem exatamente o mesmo tamanho sempre */
+            border-radius: 0.5rem; 
+            font-weight: 600; 
+            padding: 0.6rem 1rem; 
+            font-size: 0.875rem; 
+            text-shadow: none; 
+            transition: all 0.2s;
+            text-align: center !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+        .driver-popover-progress-text {
+            order: 2 !important; /* Move o texto para baixo dos botões */
+            text-align: center !important;
+            width: 100% !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            color: #64748b !important;
+            margin: 0 !important;
+        }
+
         .driver-popover-footer .driver-popover-next-btn, 
         .driver-popover-footer .driver-popover-prev-btn { background-color: #0d9488; color: white; border: none; }
         .driver-popover-footer .driver-popover-next-btn:hover, 
         .driver-popover-footer .driver-popover-prev-btn:hover { background-color: #0f766e; }
-        .driver-popover-footer .driver-popover-close-btn { color: #64748b; }
-        .driver-popover-footer .driver-popover-close-btn:hover { color: #0f172a; }
+        .driver-popover-footer .driver-popover-close-btn { display: none !important; } /* Oculta botão fechar se strict mode */
         
         /* Tema Escuro para o Tutorial */
         .dark .driver-popover { background-color: #1e293b; border-color: #334155; }
         .dark .driver-popover-title { color: #f8fafc; }
         .dark .driver-popover-description { color: #cbd5e1; }
         .dark .driver-popover-arrow { border-color: transparent transparent #1e293b transparent !important; }
-        .dark .driver-popover-footer .driver-popover-close-btn { color: #94a3b8; }
-        .dark .driver-popover-footer .driver-popover-close-btn:hover { color: #f8fafc; }
-        .dark .driver-popover-footer button.driver-popover-disabled-btn { opacity: 0.5; background-color: #334155; color: #94a3b8; }
+        .dark .driver-popover-progress-text { color: #94a3b8 !important; }
+        .dark .driver-popover-footer button.driver-popover-disabled-btn { opacity: 0.5; background-color: #334155; color: #94a3b8; pointer-events: none; }
     </style>
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -264,8 +299,9 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6 relative" id="productsGrid"></div>
             
-            <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 flex justify-center pb-8">
-                <button id="restartTutorialBtn" class="text-xs text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400 flex items-center gap-2 transition-colors font-medium">
+            <!-- pb-32 garante espaço enorme em baixo para o Driver.js não sobrepor o botão -->
+            <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 flex justify-center pb-32">
+                <button id="restartTutorialBtn" class="px-4 py-2 text-xs text-slate-500 hover:bg-slate-100 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-slate-800 rounded-lg dark:hover:text-brand-400 flex items-center gap-2 transition-colors font-medium">
                     <i data-lucide="help-circle" class="w-4 h-4"></i> Rever Tutorial da Plataforma
                 </button>
             </div>
@@ -466,6 +502,15 @@
             userSyncIcon: document.getElementById('userSyncIcon'), restartTutorialBtn: document.getElementById('restartTutorialBtn')
         };
 
+        const toggleSidebar = () => {
+            if (els.cartSidebar.classList.contains('translate-x-full')) {
+                els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden'); setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
+            } else {
+                els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.remove('opacity-100'); setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
+            }
+        };
+        els.mobileCartBtn.addEventListener('click', toggleSidebar); els.closeCartBtn.addEventListener('click', toggleSidebar); els.cartOverlay.addEventListener('click', toggleSidebar);
+
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             if (State.userId) {
@@ -512,7 +557,7 @@
             
             const isDesktop = window.innerWidth >= 1024;
             
-            // Adicionando item temporário ao carrinho para exibir o formulário de checkout
+            // Item temporário para o tutorial (Mock)
             let mockItemId = null;
             if (Object.keys(State.cart).length === 0 && State.products.length > 0) {
                 const prodMock = State.products.find(p => p.ativo && p.stock > 0);
@@ -526,18 +571,23 @@
             const driverObj = window.driver.js.driver({
                 showProgress: true,
                 progressText: '{{current}} de {{total}}',
-                allowClose: false, // Remove a habilidade de clicar fora e o botão de fechar para o usuário completar 100%
-                nextBtnText: 'Próximo →',
-                prevBtnText: '← Anterior',
-                doneBtnText: 'Finalizar!',
+                allowClose: false,
+                nextBtnText: 'Próximo',
+                prevBtnText: 'Voltar',
+                doneBtnText: 'Finalizar',
+                popoverOffset: 15, // Mais espaço global do popover até o elemento
                 onDestroyed: async () => {
-                    // Removendo o item temporário do carrinho
+                    // Remover item temporário gerado no tutorial
                     if (mockItemId) {
                         delete State.cart[mockItemId];
                         updateCartUI();
                     }
                     
-                    // Após finalizar o tour, se a flag estava ativa, desativamos
+                    // Fechar o menu lateral (cart) se estiver no celular e foi aberto
+                    if (!isDesktop && !els.cartSidebar.classList.contains('translate-x-full')) {
+                        toggleSidebar();
+                    }
+                    
                     if (State.userId && State.tutorialMode) {
                         try {
                             await supabaseClient.from('usuarios').update({ tutorial: false }).eq('id', State.userId);
@@ -557,7 +607,7 @@
                         element: '#tour-balance-container', 
                         popover: { 
                             title: 'Seu Saldo', 
-                            description: 'Fique de olho no seu saldo corporativo disponível! Ele é atualizado em tempo real assim que você envia as requisições.', 
+                            description: 'Fique de olho no seu saldo corporativo disponível! Ele é atualizado em tempo real.', 
                             side: "bottom", align: 'start' 
                         } 
                     },
@@ -570,20 +620,19 @@
                         } 
                     },
                     {
-                        // Fallback nulo para mobile, renderizando no centro (pois os botões ficam ocultos em telas pequenas)
                         element: isDesktop ? '#tour-user-actions' : null,
                         popover: {
                             title: 'Preferências e Saída',
-                            description: 'Alterne entre o modo claro e escuro, ou saia da sua conta com segurança através destes botões.',
+                            description: 'Alterne entre o modo claro e escuro clicando no ícone do sol/lua, ou saia da sua conta com segurança através do botão vermelho.',
                             side: 'bottom', align: 'center'
                         }
                     },
                     { 
-                        element: '#categoryFilters', 
+                        element: '#tour-filters-wrapper', 
                         popover: { 
                             title: 'Filtro por Categorias', 
-                            description: 'Encontre o que precisa muito mais rápido navegando pelas categorias. Arraste para os lados para ver mais opções.', 
-                            side: "bottom", align: 'center'
+                            description: 'Encontre o que precisa muito mais rápido navegando pelas categorias. Arraste para os lados se não couber na tela.', 
+                            side: "bottom", align: 'start' 
                         } 
                     },
                     { 
@@ -591,7 +640,7 @@
                         popover: { 
                             title: 'Busca Inteligente', 
                             description: 'Você também pode pesquisar pelo nome ou diretamente usando o código do brinde que fica na caixinha preta do item.', 
-                            side: "bottom", align: 'center' 
+                            side: "bottom", align: 'start' 
                         } 
                     },
                     { 
@@ -606,24 +655,36 @@
                         element: isDesktop ? '#cartSidebar' : '#mobileCartBtn', 
                         popover: { 
                             title: 'Sua Solicitação (Carrinho)', 
-                            description: 'Revise os itens selecionados e o custo estimado do seu pedido.', 
-                            side: isDesktop ? "left" : "top", align: isDesktop ? 'start' : 'end' 
+                            description: 'Aqui você revisa os itens selecionados e o custo estimado do seu pedido total.', 
+                            side: isDesktop ? "left" : "top", align: isDesktop ? 'start' : 'center' 
                         } 
                     },
                     {
-                        element: isDesktop ? '#checkoutForm' : null,
+                        element: '#checkoutForm',
                         popover: {
-                            title: 'Detalhes e Envio',
-                            description: 'Antes de enviar, escolha a Data de Separação (obrigatória) que o item será retirado e adicione um Motivo ou Cliente para controle da equipe.',
+                            title: 'Data de Separação e Motivo',
+                            description: 'Antes de enviar, você deve escolher a Data de Separação (obrigatória) indicando quando vai retirar o item no setor, e se quiser pode adicionar um Motivo ou Cliente para seu controle.',
                             side: isDesktop ? 'left' : 'top', align: 'center'
+                        },
+                        onHighlightStarted: () => {
+                            // Se for celular e o carrinho não estiver aberto, abrimos para ele poder enxergar a etapa
+                            if (!isDesktop && els.cartSidebar.classList.contains('translate-x-full')) {
+                                toggleSidebar();
+                            }
                         }
                     },
                     {
                         element: '#restartTutorialBtn',
                         popover: {
                             title: 'Ficou com dúvida?',
-                            description: 'Você pode rever este tutorial a qualquer momento clicando neste botão aqui no final da página.',
+                            description: 'Você pode rever este tutorial a qualquer momento clicando neste botão.',
                             side: 'top', align: 'center'
+                        },
+                        onHighlightStarted: () => {
+                            // Fechamos o carrinho no celular caso tenha ficado aberto na etapa anterior
+                            if (!isDesktop && !els.cartSidebar.classList.contains('translate-x-full')) {
+                                toggleSidebar();
+                            }
                         }
                     }
                 ]
@@ -662,10 +723,10 @@
                 
                 resetInactivityTimer(); 
                 
-                // Aguarda 100% o carregamento e renderização dos dados e da UI (para o tutorial não bugar com seletores vazios)
+                // Aguarda 100% o carregamento e renderização dos dados e da UI
                 await initialLoad();
 
-                // Dispara o tutorial instantaneamente assim que a UI estiver pronta
+                // Dispara o tutorial instantaneamente assim que a UI estiver pronta se flag for true
                 if (State.tutorialMode) {
                     setTimeout(startInteractiveTutorial, 200);
                 }
@@ -1099,15 +1160,6 @@
             els.mobileCartBadge.textContent = totalItems; if(totalItems > 0) els.mobileCartBadge.classList.remove('hidden');
             lucide.createIcons();
         }
-
-        const toggleSidebar = () => {
-            if (els.cartSidebar.classList.contains('translate-x-full')) {
-                els.cartSidebar.classList.remove('translate-x-full'); els.cartOverlay.classList.remove('hidden'); setTimeout(() => els.cartOverlay.classList.add('opacity-100'), 10); 
-            } else {
-                els.cartSidebar.classList.add('translate-x-full'); els.cartOverlay.classList.remove('opacity-100'); setTimeout(() => els.cartOverlay.classList.add('hidden'), 300);
-            }
-        };
-        els.mobileCartBtn.addEventListener('click', toggleSidebar); els.closeCartBtn.addEventListener('click', toggleSidebar); els.cartOverlay.addEventListener('click', toggleSidebar);
 
         const setupDateInput = () => {
             const today = new Date(); const localISOTime = (new Date(today - today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
