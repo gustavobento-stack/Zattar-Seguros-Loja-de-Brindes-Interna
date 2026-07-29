@@ -604,9 +604,9 @@
             "Caneca — Preta": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/CANECA%20PRETA.webp",
             "Miniatura Caminhão": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Caminhao%20(2).webp",
             "Faca de Churrasco": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Faca.webp",
-            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/GARRAFA.webp",
+            "Garrafa Térmica": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/Garrafa.webp",
             "Caderno Moleskine": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/MOLESKINE.webp",
-            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE%20.webp",
+            "Necessaire": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/NECESSAIRE.webp",
             "Sacola": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/SACOLAS.webp",
             "Pasta Corporativa": "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Imagens/PASTA%20CORPORATIVA.webp"
         };
@@ -971,13 +971,27 @@
                         if (prod) { prod.stock -= State.cart[prodId]; return supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); }
                     }));
 
-                    // Webhook Google (Assíncrono)
+                    // Webhook Google (Assíncrono) - RESTAURADO
                     try {
                         const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
-                        fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
-                            body: JSON.stringify({ orderId: orderId, userName: State.userName, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação', items: orderItems.map(item => { const prod = State.products.find(p => p.id === item.produto_id); return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; })}) 
+                        fetch(webhookUrl, { 
+                            method: 'POST', 
+                            mode: 'no-cors', 
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify({ 
+                                orderId: orderId, 
+                                userName: State.userName, 
+                                date: new Date().toISOString(), 
+                                separationDate: els.separationDate.value, 
+                                notes: els.orderNotes.value, 
+                                status: 'Enviado para Separação', 
+                                items: orderItems.map(item => { 
+                                    const prod = State.products.find(p => p.id === item.produto_id); 
+                                    return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; 
+                                })
+                            }) 
                         }).catch(e => console.log('Google acionado silenciosamente.'));
-                    } catch(e) {}
+                    } catch(e) { console.error('Erro ao acionar Google Sheets:', e); }
 
                 } catch (error) { 
                     showActionConfirm('Erro no Pedido', error.message, 'danger', 'Entendi', () => {});
@@ -1052,7 +1066,17 @@
                         await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
                         await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
                         for (let itemId of Object.keys(order.items)) { const p = State.products.find(p => p.id === itemId); if (p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', itemId); }
-                        try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }); } catch (e) { }
+                        
+                        // Webhook Google de Cancelamento - RESTAURADO
+                        try { 
+                            fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { 
+                                method: 'POST', 
+                                mode: 'no-cors', 
+                                headers: { 'Content-Type': 'text/plain' },
+                                body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) 
+                            }); 
+                        } catch (e) { console.error('Erro no webhook de cancelamento:', e); }
+
                     } catch(err) { console.error('Erro banco', err); }
                 }
                 backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
