@@ -101,7 +101,7 @@
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-lg">
                     <span id="admSyncStatus" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Sincronizado</span>
+                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400" id="admSyncText">Sincronizado</span>
                 </div>
                 <div class="w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
                 <div class="flex items-center gap-3">
@@ -613,6 +613,9 @@
                 document.getElementById('loaderScreen').classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => document.getElementById('loaderScreen').classList.add('hidden'), 300);
                 lucide.createIcons();
+                
+                // Iniciar sistema de atualização silenciosa (Polling)
+                startSilentPolling();
                 
             } catch (err) {
                 const errDiv = document.getElementById('loaderError');
@@ -1284,6 +1287,77 @@
             document.getElementById('customContextMenu').classList.add('hidden');
             if(AdminState.charts.gastoMensal) updateDashboardCharts(); // Redraw para adaptar cores
         });
+
+        // ==========================================
+        // LÓGICA DE TEMPO REAL (SUPABASE REALTIME)
+        // ==========================================
+        // LÓGICA DE ATUALIZAÇÃO EM SEGUNDO PLANO (POLLING)
+        // ==========================================
+        let pollingInterval = null;
+
+        async function fetchLatestDataSilently() {
+            const syncStatus = document.getElementById('admSyncStatus');
+            const syncText = document.getElementById('admSyncText');
+            
+            // Feedback Visual de Atualização
+            if (syncStatus && syncText) {
+                syncStatus.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+                syncText.className = "text-xs font-semibold text-amber-700 dark:text-amber-400";
+                syncText.textContent = "Sincronizando...";
+            }
+
+            try {
+                const fetchLogs = async () => {
+                    try {
+                        const { data } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
+                        return data || [];
+                    } catch (e) { return []; }
+                };
+
+                // Faz todas as chamadas simultaneamente para maior velocidade
+                const [reqUsers, reqOrders, reqProds, reqCats, logsData] = await Promise.all([
+                    supabaseClient.from('usuarios').select('*'),
+                    supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
+                    supabaseClient.from('produtos').select('*').order('nome'),
+                    supabaseClient.from('categorias').select('*').order('nome'),
+                    fetchLogs()
+                ]);
+
+                // Atualiza o cache interno
+                AdminState.users = reqUsers.data || [];
+                AdminState.orders = reqOrders.data || [];
+                AdminState.products = reqProds.data || [];
+                AdminState.categories = reqCats.data || [];
+                AdminState.auditLogs = logsData;
+
+                // Re-renderiza APENAS a tela ativa, sem causar travamentos
+                if (!document.getElementById('tab-dashboard').classList.contains('is-hidden')) buildDashboard();
+                if (!document.getElementById('tab-orders').classList.contains('is-hidden')) renderOrdersTable();
+                if (!document.getElementById('tab-reports').classList.contains('is-hidden')) generateReport();
+                if (!document.getElementById('tab-catalog').classList.contains('is-hidden')) renderCatalogTable();
+                if (!document.getElementById('tab-categories').classList.contains('is-hidden')) renderCategoriesTable();
+                if (!document.getElementById('tab-users').classList.contains('is-hidden')) renderUsersTable();
+                if (!document.getElementById('tab-audit').classList.contains('is-hidden')) renderAuditLog();
+
+            } catch (e) {
+                console.error("Falha na sincronização invisível:", e);
+            }
+            
+            // Retorna ao visual de Sincronizado
+            setTimeout(() => {
+                if (syncStatus && syncText) {
+                    syncStatus.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    syncText.className = "text-xs font-semibold text-emerald-700 dark:text-emerald-400";
+                    syncText.textContent = "Sincronizado";
+                }
+            }, 1000);
+        }
+
+        function startSilentPolling() {
+            // Executa a busca invisível a cada 15 segundos
+            if(pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(fetchLatestDataSilently, 15000);
+        }
 
         window.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons();
