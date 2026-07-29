@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Brindes Comercial</title>
     
-    <link id="dynamic-favicon" rel="icon" href="https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Claro.svg" type="image/svg+xml">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -60,13 +58,6 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            const favicon = document.getElementById('dynamic-favicon');
-            if(favicon) favicon.href = document.documentElement.classList.contains('dark') 
-                ? "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Dark.svg" 
-                : "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Claro.svg";
-        });
     </script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 relative">
@@ -82,8 +73,8 @@
                 <div class="relative z-10">
                     <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-10 mb-12 block dark:hidden">
                     <img src="https://i.imgur.com/2HfPsZz.png" alt="Zattar" class="h-10 mb-12 hidden dark:block">
-                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Zattar <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-sky-500 dark:from-sky-300 dark:to-sky-400">Store</span></h1>
-                    <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md font-light">Espaço criado e gerenciado pelo time de Marketing da corretora para que você solicite, acompanhe e controle sua cota de brindes com autonomia e segurança.</p>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white leading-tight mb-6 tracking-tight">Loja Interna<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-sky-500 dark:from-sky-300 dark:to-sky-400">da Corretora</span></h1>
+                    <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md font-light">Acesse o catálogo interno para solicitar itens e controlar sua cota de brindes de forma autônoma e segura.</p>
                 </div>
                 <div class="relative z-10">
                     <div class="inline-flex items-center gap-3 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md border border-slate-200/50 dark:border-white/10 px-4 py-2.5 rounded-2xl shadow-sm dark:shadow-lg">
@@ -460,10 +451,6 @@
             } else {
                 document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
             }
-            const favicon = document.getElementById('dynamic-favicon');
-            if(favicon) favicon.href = document.documentElement.classList.contains('dark') 
-                ? "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Dark.svg" 
-                : "https://ykcqnzrcxrroahrqqnej.supabase.co/storage/v1/object/public/Logos/Logo%20Modo%20Claro.svg";
         };
         els.themeToggleBtn?.addEventListener('click', toggleTheme);
         document.getElementById('loginThemeToggleBtn')?.addEventListener('click', toggleTheme);
@@ -971,26 +958,13 @@
                         if (prod) { prod.stock -= State.cart[prodId]; return supabaseClient.from('produtos').update({ estoque: prod.stock }).eq('id', prodId); }
                     }));
 
-                    // Webhook Google (Aguardando conclusão)
+                    // Webhook Google (Assíncrono)
                     try {
                         const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
-                        await fetch(webhookUrl, { 
-                            method: 'POST', 
-                            mode: 'no-cors',
-                            body: JSON.stringify({ 
-                                orderId: orderId, 
-                                userName: State.userName, 
-                                date: new Date().toISOString(), 
-                                separationDate: els.separationDate.value, 
-                                notes: els.orderNotes.value, 
-                                status: 'Enviado para Separação', 
-                                items: orderItems.map(item => { 
-                                    const prod = State.products.find(p => p.id === item.produto_id); 
-                                    return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; 
-                                })
-                            }) 
-                        });
-                    } catch(e) { console.error('Erro ao acionar Google Sheets:', e); }
+                        fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify({ orderId: orderId, userName: State.userName, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação', items: orderItems.map(item => { const prod = State.products.find(p => p.id === item.produto_id); return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; })}) 
+                        }).catch(e => console.log('Google acionado silenciosamente.'));
+                    } catch(e) {}
 
                 } catch (error) { 
                     showActionConfirm('Erro no Pedido', error.message, 'danger', 'Entendi', () => {});
@@ -1065,16 +1039,7 @@
                         await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
                         await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
                         for (let itemId of Object.keys(order.items)) { const p = State.products.find(p => p.id === itemId); if (p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', itemId); }
-                        
-                        // Webhook Google de Cancelamento
-                        try { 
-                            await fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { 
-                                method: 'POST', 
-                                mode: 'no-cors', 
-                                body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) 
-                            }); 
-                        } catch (e) { console.error('Erro no webhook de cancelamento:', e); }
-
+                        try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }); } catch (e) { }
                     } catch(err) { console.error('Erro banco', err); }
                 }
                 backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
