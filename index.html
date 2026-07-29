@@ -193,7 +193,7 @@
                     <strong class="text-emerald-800 dark:text-emerald-300 text-sm leading-none transition-all" id="headerBalanceDisplay">--</strong>
                 </div>
                 
-                <div class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700 ml-2">
+                <div id="tour-user-actions" class="hidden md:flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-slate-700 ml-2">
                     <div class="text-right">
                         <p id="userNameDisplay" class="text-sm font-bold text-slate-800 dark:text-slate-100 leading-none">Usuário</p>
                         <p id="userRoleDisplay" class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Comercial</p>
@@ -511,6 +511,18 @@
             if (!window.driver) return;
             
             const isDesktop = window.innerWidth >= 1024;
+            
+            // Adicionando item temporário ao carrinho para exibir o formulário de checkout
+            let mockItemId = null;
+            if (Object.keys(State.cart).length === 0 && State.products.length > 0) {
+                const prodMock = State.products.find(p => p.ativo && p.stock > 0);
+                if (prodMock) {
+                    mockItemId = prodMock.id;
+                    State.cart[mockItemId] = 1;
+                    updateCartUI();
+                }
+            }
+            
             const driverObj = window.driver.js.driver({
                 showProgress: true,
                 progressText: '{{current}} de {{total}}',
@@ -519,6 +531,12 @@
                 prevBtnText: '← Anterior',
                 doneBtnText: 'Finalizar!',
                 onDestroyed: async () => {
+                    // Removendo o item temporário do carrinho
+                    if (mockItemId) {
+                        delete State.cart[mockItemId];
+                        updateCartUI();
+                    }
+                    
                     // Após finalizar o tour, se a flag estava ativa, desativamos
                     if (State.userId && State.tutorialMode) {
                         try {
@@ -551,12 +569,21 @@
                             side: "bottom", align: 'start' 
                         } 
                     },
+                    {
+                        // Fallback nulo para mobile, renderizando no centro (pois os botões ficam ocultos em telas pequenas)
+                        element: isDesktop ? '#tour-user-actions' : null,
+                        popover: {
+                            title: 'Preferências e Saída',
+                            description: 'Alterne entre o modo claro e escuro, ou saia da sua conta com segurança através destes botões.',
+                            side: 'bottom', align: 'center'
+                        }
+                    },
                     { 
-                        element: '#categoryFilters', // CORREÇÃO AQUI: alvo modificado para apontar exatamente pros botões
+                        element: '#categoryFilters', 
                         popover: { 
                             title: 'Filtro por Categorias', 
                             description: 'Encontre o que precisa muito mais rápido navegando pelas categorias. Arraste para os lados para ver mais opções.', 
-                            side: "bottom", align: 'center' // CORREÇÃO AQUI: Center evita bug de posição no mobile
+                            side: "bottom", align: 'center'
                         } 
                     },
                     { 
@@ -579,9 +606,17 @@
                         element: isDesktop ? '#cartSidebar' : '#mobileCartBtn', 
                         popover: { 
                             title: 'Sua Solicitação (Carrinho)', 
-                            description: 'Revise os itens selecionados, defina a data EXATA que você precisa retirá-los no setor e envie o pedido para nossa equipe separar!', 
+                            description: 'Revise os itens selecionados e o custo estimado do seu pedido.', 
                             side: isDesktop ? "left" : "top", align: isDesktop ? 'start' : 'end' 
                         } 
+                    },
+                    {
+                        element: isDesktop ? '#checkoutForm' : null,
+                        popover: {
+                            title: 'Detalhes e Envio',
+                            description: 'Antes de enviar, escolha a Data de Separação (obrigatória) que o item será retirado e adicione um Motivo ou Cliente para controle da equipe.',
+                            side: isDesktop ? 'left' : 'top', align: 'center'
+                        }
                     },
                     {
                         element: '#restartTutorialBtn',
