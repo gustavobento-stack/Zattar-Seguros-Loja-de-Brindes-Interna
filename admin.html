@@ -175,7 +175,6 @@
                         <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="pie-chart" class="w-4 h-4 text-blue-500"></i> Brindes Mais Solicitados (Top 5)</h3>
                         <div class="h-64 w-full relative"><canvas id="chartTopProdutos"></canvas></div>
                     </div>
-                    <!-- ALTERAÇÃO DE GRÁFICO AQUI -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
                         <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="users" class="w-4 h-4 text-emerald-500"></i> Gasto Total por Usuário (Exclui Admins)</h3>
                         <div class="h-64 w-full relative"><canvas id="chartGastoUsuario"></canvas></div>
@@ -361,7 +360,6 @@
         </div>
     </main>
 
-
     <!-- Modal Novo/Editar Produto -->
     <div id="modalProduct" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalProduct')"></div>
@@ -435,7 +433,7 @@
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer"><i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i></div>
             <h3 class="text-xl font-bold mb-2" id="actionConfirmTitle">Atenção</h3>
             <p class="text-slate-500 text-sm mb-6" id="actionConfirmText">Tem certeza?</p>
-            <div class="flex gap-3"><button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-semibold">Voltar</button><button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-semibold shadow-sm">Confirmar</button></div>
+            <div class="flex gap-3"><button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-semibold transition-colors">Voltar</button><button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-semibold shadow-sm transition-colors">Confirmar</button></div>
         </div>
     </div>
 
@@ -471,7 +469,7 @@
             userSort: { field: 'gasto', asc: false }
         };
 
-        const formatMoney = (v) => v === null ? "R$ 0,00" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+        const formatMoney = (v) => v === null || isNaN(v) ? "R$ 0,00" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
         const formatDate = (iso) => { const d = new Date(iso); return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; };
 
         window.closeModal = function(id) {
@@ -503,27 +501,28 @@
             });
         });
 
-        // Ações Globais de Confirmação
         let pendingAction = null;
         window.confirmAction = function(title, text, type, confirmText, callback) {
             document.getElementById('actionConfirmTitle').textContent = title;
             document.getElementById('actionConfirmText').textContent = text;
             const btn = document.getElementById('actionConfirmBtn');
             btn.textContent = confirmText;
+            btn.disabled = false; // Garante que o botão tá liberado ao abrir
+            
             const iconContainer = document.getElementById('actionConfirmIconContainer');
             
             if (type === 'danger') {
                 iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800 mb-4 text-red-500";
                 document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'ban');
-                btn.className = "flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl";
+                btn.className = "flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-sm";
             } else if (type === 'warning') {
                 iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 mb-4 text-amber-500";
                 document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'alert-triangle');
-                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl";
+                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm";
             } else {
                 iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 mb-4 text-brand-600";
                 document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'check-circle');
-                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl";
+                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm";
             }
             lucide.createIcons();
             pendingAction = callback;
@@ -531,9 +530,30 @@
         };
 
         document.getElementById('actionCancelBtn').addEventListener('click', () => closeModal('actionConfirmModal'));
-        document.getElementById('actionConfirmBtn').addEventListener('click', async () => {
-            if (pendingAction) await pendingAction();
-            closeModal('actionConfirmModal');
+        
+        // Bloqueio de múltiplos cliques no confirm!
+        document.getElementById('actionConfirmBtn').addEventListener('click', async (e) => {
+            if (!pendingAction) return;
+            const btn = e.currentTarget;
+            const originalText = btn.textContent;
+            
+            // Trava o botão imediatamente
+            btn.disabled = true;
+            btn.innerHTML = 'Aguarde...';
+            
+            // Remove a ação da fila para evitar que seja chamada de novo
+            const actionToRun = pendingAction;
+            pendingAction = null; 
+
+            try {
+                await actionToRun();
+            } catch(err) {
+                console.error("Erro na ação:", err);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                closeModal('actionConfirmModal');
+            }
         });
 
         async function logAudit(action, details) {
@@ -622,13 +642,12 @@
                 document.getElementById('loaderIcon').classList.add('hidden');
                 document.getElementById('loaderTitle').classList.add('hidden');
                 document.getElementById('loaderText').classList.add('hidden');
-                errDiv.innerHTML = `<div class="mx-auto flex h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4 items-center justify-center text-red-500"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Bloqueio de Segurança</h3><p class="text-slate-600 dark:text-slate-400 text-sm mb-6">${err.message}</p><a href="index.html" class="w-full flex justify-center items-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors">Voltar para Loja</a>`;
+                errDiv.innerHTML = `<div class="mx-auto flex h-16 w-16 rounded-full bg-red-50 border border-red-100 dark:border-red-900/50 mb-4 items-center justify-center text-red-500"><i data-lucide="shield-alert" class="w-8 h-8"></i></div><h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Bloqueio de Segurança</h3><p class="text-slate-600 dark:text-slate-400 text-sm mb-6">${err.message}</p><a href="index.html" class="w-full flex justify-center items-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors">Voltar para Loja</a>`;
                 errDiv.classList.remove('hidden');
                 lucide.createIcons();
             }
         }
 
-        // Dashboard Builders
         function renderDashboardTodayOrders() {
             const tbody = document.getElementById('dashTodayOrdersBody');
             tbody.innerHTML = '';
@@ -727,7 +746,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
             });
 
-            // Chart 3: Gasto por Usuário (Não admins) - ALTERADO
+            // Chart 3: Gasto por Usuário (Não admins)
             const userSpentStats = {};
             const nonAdmins = AdminState.users.filter(u => u.admin !== true);
             nonAdmins.forEach(u => {
@@ -736,7 +755,7 @@
                 userSpentStats[u.nome || u.email] = spent;
             });
             
-            const sortedUsers = Object.keys(userSpentStats).sort((a,b) => userSpentStats[b] - userSpentStats[a]).slice(0, 7); // Pega top 7 para não esmagar o gráfico
+            const sortedUsers = Object.keys(userSpentStats).sort((a,b) => userSpentStats[b] - userSpentStats[a]).slice(0, 7); 
             
             if(AdminState.charts.gastoUsuario) AdminState.charts.gastoUsuario.destroy();
             AdminState.charts.gastoUsuario = new Chart(document.getElementById('chartGastoUsuario').getContext('2d'), {
@@ -771,15 +790,15 @@
                 const u = AdminState.users.find(x => x.id === o.usuario_id);
                 const uName = u ? u.nome : o.usuario_id;
                 const dateStr = formatDate(o.data_pedido);
-                const stColors = { 'Cancelado': 'text-red-700 bg-red-100', 'Separação Concluída': 'text-emerald-700 bg-emerald-100', 'Enviado para Separação': 'text-brand-700 bg-brand-100' }[o.status] || 'text-slate-700 bg-slate-100';
+                const stColors = { 'Cancelado': 'text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400', 'Enviado para Separação': 'text-brand-700 bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400' }[o.status] || 'text-slate-700 bg-slate-100';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onclick="openOrderDetails('${o.id}')">
-                        <td class="p-4 py-3"><strong class="text-xs uppercase text-brand-600">${o.id}</strong><br><span class="text-[10px] text-slate-400">${dateStr}</span></td>
-                        <td class="p-4 py-3 font-medium">${uName}</td>
-                        <td class="p-4 py-3 text-right font-bold">${formatMoney(o.valor_total)}</td>
+                        <td class="p-4 py-3"><strong class="text-xs uppercase text-brand-600 dark:text-brand-400 tracking-wider">${o.id}</strong><br><span class="text-[10px] text-slate-400">${dateStr}</span></td>
+                        <td class="p-4 py-3 font-medium text-slate-800 dark:text-white">${uName}</td>
+                        <td class="p-4 py-3 text-right font-bold text-slate-800 dark:text-white">${formatMoney(o.valor_total)}</td>
                         <td class="p-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[10px] font-bold ${stColors}">${o.status}</span></td>
-                        <td class="p-4 py-3 text-center"><button class="text-slate-400 hover:text-brand-600"><i data-lucide="eye" class="w-4 h-4"></i></button></td>
+                        <td class="p-4 py-3 text-center"><button class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400"><i data-lucide="eye" class="w-4 h-4"></i></button></td>
                     </tr>
                 `;
             });
@@ -795,7 +814,7 @@
             
             let itemsHtml = order.pedido_itens.map(item => {
                 const p = AdminState.products.find(x => x.id === item.produto_id);
-                return `<li class="flex justify-between items-center py-2 border-b dark:border-slate-700 last:border-0"><span class="text-sm font-medium">${p ? p.nome : item.produto_id}</span><strong class="text-sm bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md border dark:border-slate-600">${item.quantidade} un.</strong></li>`;
+                return `<li class="flex justify-between items-center py-2 border-b dark:border-slate-700 last:border-0"><span class="text-sm font-medium text-slate-800 dark:text-white">${p ? p.nome : item.produto_id}</span><strong class="text-sm bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white px-2 py-1 rounded-md border dark:border-slate-600">${item.quantidade} un.</strong></li>`;
             }).join('');
 
             const stColors = { 'Cancelado': 'text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400', 'Enviado para Separação': 'text-brand-700 bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400' }[order.status] || 'text-slate-700 bg-slate-100';
@@ -803,8 +822,8 @@
             document.getElementById('adminSingleOrderBody').innerHTML = `
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
                     <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white dark:bg-slate-900 border dark:border-slate-700 px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColors} px-2.5 py-1 rounded-md border border-transparent">${order.status}</span></div>
-                        <p class="text-sm mb-1">Solicitado por: <strong>${uName}</strong></p>
+                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white dark:bg-slate-900 text-slate-800 dark:text-white border dark:border-slate-700 px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColors} px-2.5 py-1 rounded-md border border-transparent">${order.status}</span></div>
+                        <p class="text-sm mb-1 text-slate-700 dark:text-slate-300">Solicitado por: <strong class="text-slate-900 dark:text-white">${uName}</strong></p>
                         <div class="text-sm text-slate-500">Separar até: <strong class="text-slate-800 dark:text-white">${formatDate(order.data_separacao).split(' ')[0]}</strong></div>
                     </div>
                     <div class="text-right flex flex-col items-end">
@@ -821,14 +840,13 @@
 
                 <div class="flex flex-wrap justify-end gap-3 pt-4 border-t dark:border-slate-700">
                     ${order.status === 'Enviado para Separação' ? `
-                        <button onclick="markOrderComplete('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
+                        <button onclick="markOrderComplete('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm transition-colors"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
                     ` : ''}
                     
-                    <!-- Lógica Separada para Cancelar e Apagar -->
                     ${order.status !== 'Cancelado' ? `
-                        <button onclick="handleOrderAction('${order.id}', 'Cancelar')" class="px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 border dark:border-slate-600 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="x-circle" class="w-4 h-4"></i> Cancelar Pedido (Estornar)</button>
+                        <button onclick="handleOrderAction('${order.id}', 'Cancelar')" class="px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 border dark:border-slate-600 rounded-xl flex items-center gap-2 shadow-sm transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i> Cancelar Pedido (Estornar)</button>
                     ` : ''}
-                    <button onclick="handleOrderAction('${order.id}', 'Apagar')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800/50 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Apagar Registro</button>
+                    <button onclick="handleOrderAction('${order.id}', 'Apagar')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800/50 rounded-xl flex items-center gap-2 shadow-sm transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i> Apagar Registro</button>
                 </div>
             `;
             lucide.createIcons();
@@ -839,7 +857,7 @@
             confirmAction('Concluir Pedido', `O pedido será marcado como 'Separação Concluída'.`, 'success', 'Confirmar', async () => {
                 await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
                 const order = AdminState.orders.find(o => o.id === orderId); if(order) order.status = 'Separação Concluída';
-                closeModal('adminSingleOrderModal'); buildDashboard(); renderOrdersTable();
+                buildDashboard(); renderOrdersTable();
             });
         };
 
@@ -848,40 +866,49 @@
             if (!order) return;
 
             let cTitle = actionType === 'Cancelar' ? 'Cancelar Pedido' : 'Apagar Registro Permanentemente';
-            let cText = actionType === 'Cancelar' ? `O status será alterado para Cancelado. O valor pago será devolvido ao usuário e o estoque será retornado.` : `O pedido será excluído do banco de dados. Se ele não estava cancelado antes, o estorno de saldo/estoque será feito automaticamente.`;
+            let cText = actionType === 'Cancelar' ? `O status será alterado para Cancelado. O valor pago será devolvido ao usuário e o estoque retornado.` : `O pedido será excluído do banco. Se não estava cancelado, o estorno será feito automaticamente.`;
             
             confirmAction(cTitle, cText, 'danger', `Sim, ${actionType}`, async () => {
                 
-                // LÓGICA DE ESTORNO: Executa APENAS se o status atual não for cancelado. Evita duplicidade.
-                if (order.status !== 'Cancelado') {
+                // MÁXIMA SEGURANÇA CONTRA DUPLICIDADE: 
+                // Salvamos o status antigo e já setamos para 'Cancelado' instantaneamente na memória.
+                // Assim, se por algum bug houver duplo disparo, o segundo disparo será ignorado na lógica de estorno.
+                const wasCanceled = order.status === 'Cancelado';
+                order.status = 'Cancelado'; 
+
+                // Só faz estorno financeiro e de estoque se o pedido estava ativo!
+                if (!wasCanceled) {
                     const u = AdminState.users.find(x => x.id === order.usuario_id);
                     if(u) { 
-                        const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0); 
+                        const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0);
+                        u.saldo = newBal; // Atualiza local 
                         await supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id); 
                     }
                     if(order.pedido_itens) {
                         for(let item of order.pedido_itens) {
                             const p = AdminState.products.find(x => x.id === item.produto_id);
-                            if (p) await supabaseClient.from('produtos').update({ estoque: p.estoque + item.quantidade }).eq('id', item.produto_id);
+                            if (p) {
+                                p.estoque = p.estoque + item.quantidade; // Atualiza local
+                                await supabaseClient.from('produtos').update({ estoque: p.estoque }).eq('id', item.produto_id);
+                            }
                         }
                     }
                 }
 
-                // Ação final: Altera status ou deleta registro
+                // Ação final: Altera status no banco ou deleta a linha
                 if (actionType === 'Cancelar') {
                     await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
-                    logAudit('Pedido Cancelado', `Pedido ${orderId} cancelado. Estorno realizado.`);
-                    order.status = 'Cancelado';
+                    if (!wasCanceled) { logAudit('Pedido Cancelado', `Pedido ${orderId} cancelado. Estorno realizado.`); }
                 } else if (actionType === 'Apagar') {
                     await supabaseClient.from('pedidos').delete().eq('id', orderId);
-                    logAudit('Pedido Excluído', `Registro ${orderId} excluído.`);
+                    logAudit('Pedido Excluído', `Registro ${orderId} apagado do banco de dados.`);
                     AdminState.orders = AdminState.orders.filter(o => o.id !== orderId);
                 }
                 
+                // Re-puxar do banco só por garantia
                 const { data: usersReq } = await supabaseClient.from('usuarios').select('*'); AdminState.users = usersReq;
                 const { data: prodsReq } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = prodsReq;
                 
-                closeModal('adminSingleOrderModal');
                 buildDashboard(); renderOrdersTable(); renderUsersTable(); renderCatalogTable();
             });
         };
@@ -954,9 +981,9 @@
                     const tm = stats.spent / stats.count;
                     
                     tbody.innerHTML += `
-                        <tr class="hover:bg-white dark:hover:bg-slate-900 transition-colors">
-                            <td class="p-3 font-medium">${name}</td>
-                            <td class="p-3 text-center">${stats.count}</td>
+                        <tr class="hover:bg-white dark:hover:bg-slate-900/50 transition-colors">
+                            <td class="p-3 font-medium text-slate-800 dark:text-slate-200">${name}</td>
+                            <td class="p-3 text-center text-slate-800 dark:text-slate-200">${stats.count}</td>
                             <td class="p-3 text-right font-bold text-emerald-600">${formatMoney(stats.spent)}</td>
                             <td class="p-3 text-right text-slate-500">${formatMoney(tm)}</td>
                         </tr>
@@ -987,7 +1014,7 @@
                                 <i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-3 h-3 text-slate-400"></i>
                                 <span class="text-sm text-slate-700 dark:text-slate-300">${p.nome} <span class="text-xs text-slate-400">(${p.estoque} un)</span></span>
                             </div>
-                            <button onclick="editProduct('${p.id}')" class="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/50 px-2 py-1 rounded">Editar</button>
+                            <button onclick="editProduct('${p.id}')" class="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/50 px-2 py-1 rounded transition-colors">Editar</button>
                         </div>
                     `).join('');
                 } else {
@@ -998,8 +1025,8 @@
                     <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
                         <div class="p-4 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" onclick="toggleCatProducts(${c.id})">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center transition-transform" id="icon-cat-${c.id}"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
-                                <div><p class="font-bold text-sm">${c.nome}</p><p class="text-xs text-slate-500">${count} produto(s)</p></div>
+                                <div class="w-8 h-8 rounded bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center transition-transform duration-200" id="icon-cat-${c.id}"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                <div><p class="font-bold text-sm text-slate-800 dark:text-white">${c.nome}</p><p class="text-xs text-slate-500">${count} produto(s)</p></div>
                             </div>
                             <button onclick="event.stopPropagation(); deleteCategory(${c.id}, '${c.nome}', ${count})" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Excluir Categoria"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
@@ -1057,12 +1084,12 @@
                 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="p-4 py-3 flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border dark:border-slate-700"><i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${p.nome}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${p.id}</p></div></td>
+                        <td class="p-4 py-3 flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border dark:border-slate-700"><i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight text-slate-800 dark:text-white">${p.nome}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${p.id}</p></div></td>
                         <td class="p-4 py-3 text-xs font-semibold text-slate-500">${catName}</td>
-                        <td class="p-4 py-3 text-center font-bold ${isLow ? 'text-red-600' : ''}">${p.estoque} un.</td>
+                        <td class="p-4 py-3 text-center font-bold ${isLow ? 'text-red-600' : 'text-slate-800 dark:text-slate-200'}">${p.estoque} un.</td>
                         <td class="p-4 py-3 text-right font-semibold text-brand-600 dark:text-brand-400">${formatMoney(p.preco)}</td>
-                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.ativo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${p.ativo ? 'Ativo' : 'Pausado'}</span></td>
-                        <td class="p-4 py-3 text-right"><button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-1.5 ml-auto"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
+                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.ativo ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}">${p.ativo ? 'Ativo' : 'Pausado'}</span></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-1.5 ml-auto transition-colors"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
                     </tr>
                 `;
             });
@@ -1178,7 +1205,7 @@
                         <td class="p-4 py-3 text-right font-bold text-emerald-600">${formatMoney(parseFloat(u.saldo || 0))}</td>
                         <td class="p-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">${formatMoney(u.spent)}</td>
                         <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.admin ? 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800/50' : 'bg-slate-200 text-slate-600 border border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}">${u.admin ? 'Admin' : 'Padrão'}</span></td>
-                        <td class="p-4 py-3 text-right"><button onclick="editUser('${u.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5 inline"></i></button></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editUser('${u.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition-colors"><i data-lucide="edit" class="w-3.5 h-3.5 inline"></i></button></td>
                     </tr>
                 `;
             });
@@ -1243,7 +1270,7 @@
             if(isNaN(amt) || amt <= 0) return;
             closeModal('modalBatchRecharge');
             
-            confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base?`, 'warning', `Sim, Aplicar ${formatMoney(amt)}`, async () => {
+            confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base?`, 'warning', `Sim, Aplicar`, async () => {
                 const updates = AdminState.users.map(u => {
                     const newBal = parseFloat(u.saldo || 0) + amt;
                     return supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id);
@@ -1257,7 +1284,64 @@
             });
         });
 
-        // Eventos e UI Geral
+        let pollingInterval = null;
+
+        async function fetchLatestDataSilently() {
+            const syncStatus = document.getElementById('admSyncStatus');
+            const syncText = document.getElementById('admSyncText');
+            
+            if (syncStatus && syncText) {
+                syncStatus.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+                syncText.className = "text-xs font-semibold text-amber-700 dark:text-amber-400";
+                syncText.textContent = "Atualizando...";
+            }
+
+            try {
+                const fetchLogs = async () => {
+                    try {
+                        const { data } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
+                        return data || [];
+                    } catch (e) { return []; }
+                };
+
+                const [reqUsers, reqOrders, reqProds, reqCats, logsData] = await Promise.all([
+                    supabaseClient.from('usuarios').select('*'),
+                    supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
+                    supabaseClient.from('produtos').select('*').order('nome'),
+                    supabaseClient.from('categorias').select('*').order('nome'),
+                    fetchLogs()
+                ]);
+
+                AdminState.users = reqUsers.data || [];
+                AdminState.orders = reqOrders.data || [];
+                AdminState.products = reqProds.data || [];
+                AdminState.categories = reqCats.data || [];
+                AdminState.auditLogs = logsData;
+
+                if (!document.getElementById('tab-dashboard').classList.contains('is-hidden')) buildDashboard();
+                if (!document.getElementById('tab-orders').classList.contains('is-hidden')) renderOrdersTable();
+                if (!document.getElementById('tab-reports').classList.contains('is-hidden')) generateReport();
+                if (!document.getElementById('tab-catalog').classList.contains('is-hidden')) renderCatalogTable();
+                if (!document.getElementById('tab-categories').classList.contains('is-hidden')) renderCategoriesTable();
+                if (!document.getElementById('tab-users').classList.contains('is-hidden')) renderUsersTable();
+                if (!document.getElementById('tab-audit').classList.contains('is-hidden')) renderAuditLog();
+
+            } catch (e) { console.error("Falha na sincronização silenciosa:", e); }
+            
+            setTimeout(() => {
+                if (syncStatus && syncText) {
+                    syncStatus.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    syncText.className = "text-xs font-semibold text-emerald-700 dark:text-emerald-400";
+                    syncText.textContent = "Sincronizado";
+                }
+            }, 1000);
+        }
+
+        function startSilentPolling() {
+            if(pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(fetchLatestDataSilently, 15000);
+        }
+
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
                 e.preventDefault();
@@ -1285,79 +1369,8 @@
                 document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
             }
             document.getElementById('customContextMenu').classList.add('hidden');
-            if(AdminState.charts.gastoMensal) updateDashboardCharts(); // Redraw para adaptar cores
+            if(AdminState.charts.gastoMensal) updateDashboardCharts();
         });
-
-        // ==========================================
-        // LÓGICA DE TEMPO REAL (SUPABASE REALTIME)
-        // ==========================================
-        // LÓGICA DE ATUALIZAÇÃO EM SEGUNDO PLANO (POLLING)
-        // ==========================================
-        let pollingInterval = null;
-
-        async function fetchLatestDataSilently() {
-            const syncStatus = document.getElementById('admSyncStatus');
-            const syncText = document.getElementById('admSyncText');
-            
-            // Feedback Visual de Atualização
-            if (syncStatus && syncText) {
-                syncStatus.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-                syncText.className = "text-xs font-semibold text-amber-700 dark:text-amber-400";
-                syncText.textContent = "Sincronizando...";
-            }
-
-            try {
-                const fetchLogs = async () => {
-                    try {
-                        const { data } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
-                        return data || [];
-                    } catch (e) { return []; }
-                };
-
-                // Faz todas as chamadas simultaneamente para maior velocidade
-                const [reqUsers, reqOrders, reqProds, reqCats, logsData] = await Promise.all([
-                    supabaseClient.from('usuarios').select('*'),
-                    supabaseClient.from('pedidos').select('*, pedido_itens(produto_id, quantidade, preco_unitario)').order('data_pedido', { ascending: false }),
-                    supabaseClient.from('produtos').select('*').order('nome'),
-                    supabaseClient.from('categorias').select('*').order('nome'),
-                    fetchLogs()
-                ]);
-
-                // Atualiza o cache interno
-                AdminState.users = reqUsers.data || [];
-                AdminState.orders = reqOrders.data || [];
-                AdminState.products = reqProds.data || [];
-                AdminState.categories = reqCats.data || [];
-                AdminState.auditLogs = logsData;
-
-                // Re-renderiza APENAS a tela ativa, sem causar travamentos
-                if (!document.getElementById('tab-dashboard').classList.contains('is-hidden')) buildDashboard();
-                if (!document.getElementById('tab-orders').classList.contains('is-hidden')) renderOrdersTable();
-                if (!document.getElementById('tab-reports').classList.contains('is-hidden')) generateReport();
-                if (!document.getElementById('tab-catalog').classList.contains('is-hidden')) renderCatalogTable();
-                if (!document.getElementById('tab-categories').classList.contains('is-hidden')) renderCategoriesTable();
-                if (!document.getElementById('tab-users').classList.contains('is-hidden')) renderUsersTable();
-                if (!document.getElementById('tab-audit').classList.contains('is-hidden')) renderAuditLog();
-
-            } catch (e) {
-                console.error("Falha na sincronização invisível:", e);
-            }
-            
-            // Retorna ao visual de Sincronizado
-            setTimeout(() => {
-                if (syncStatus && syncText) {
-                    syncStatus.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                    syncText.className = "text-xs font-semibold text-emerald-700 dark:text-emerald-400";
-                    syncText.textContent = "Sincronizado";
-                }
-            }, 1000);
-        }
-
-        function startSilentPolling() {
-            // Executa a busca invisível a cada 15 segundos
-            if(pollingInterval) clearInterval(pollingInterval);
-            pollingInterval = setInterval(fetchLatestDataSilently, 15000);
-        }
 
         window.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons();
