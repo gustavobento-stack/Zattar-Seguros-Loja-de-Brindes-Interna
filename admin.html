@@ -30,7 +30,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Transição de abas e visibilidade corrigida */
         .tab-content { animation: fadeIn 0.3s ease-in-out; }
         .is-hidden { display: none !important; }
         
@@ -43,7 +42,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 selection:bg-brand-500 selection:text-white">
 
-    <!-- Tela de Loading -->
     <div id="loaderScreen" class="fixed inset-0 z-[999] bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-300 px-4">
         <i data-lucide="loader-2" class="w-10 h-10 text-brand-600 dark:text-brand-400 animate-spin mb-4" id="loaderIcon"></i>
         <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-2" id="loaderTitle">Iniciando Dashboard</h2>
@@ -51,7 +49,6 @@
         <div id="loaderError" class="hidden mt-6 p-6 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 rounded-2xl text-center max-w-md w-full shadow-2xl"></div>
     </div>
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-colors z-40 hidden md:flex shrink-0">
         <div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
             <img src="https://i.imgur.com/DeN7M4G.png" alt="Zattar" class="h-8 w-auto object-contain block dark:hidden">
@@ -65,6 +62,9 @@
             </button>
             <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="orders">
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i> Gestão de Pedidos
+            </button>
+            <button class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50 transition-colors" data-target="reports">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i> Relatórios Avançados
             </button>
             
             <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2">Estoque e Cadastros</p>
@@ -85,19 +85,16 @@
         </div>
 
         <div class="p-4 border-t border-slate-200 dark:border-slate-800">
-            <!-- Trocado para âncora direta para não bloquear no sandbox -->
             <a href="index.html" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold transition-colors shadow-sm text-sm">
                 <i data-lucide="log-out" class="w-4 h-4"></i> Voltar para Loja
             </a>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-950">
-        <!-- Top Header -->
         <header class="h-16 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-30">
             <div class="flex items-center gap-4">
-                <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i data-lucide="menu"></i></button>
                 <h1 class="text-xl font-bold text-slate-800 dark:text-white hidden sm:block" id="pageTitle">Dashboard</h1>
             </div>
             
@@ -109,18 +106,16 @@
                 <div class="w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
                 <div class="flex items-center gap-3">
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold leading-tight" id="adminHeaderName">Administrador</p>
+                        <p class="text-sm font-bold leading-tight dark:text-white" id="adminHeaderName">Administrador</p>
                         <p class="text-[10px] text-slate-500 uppercase tracking-widest">Acesso Root</p>
                     </div>
-                    <div class="w-9 h-9 rounded-full bg-slate-100 border flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div>
+                    <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border dark:border-slate-700 flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-slate-500 dark:text-slate-400"></i></div>
                 </div>
             </div>
         </header>
 
-        <!-- Dynamic Content (Tabs) -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 relative scroll-smooth">
             
-            <!-- TAB: DASHBOARD -->
             <section id="tab-dashboard" class="tab-content block space-y-6">
                 <!-- KPIs -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -151,13 +146,10 @@
                     
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col h-[330px]">
                         <h3 class="text-sm font-bold flex items-center gap-2 mb-4 text-amber-600 dark:text-amber-500"><i data-lucide="alert-circle" class="w-4 h-4"></i> Alertas de Estoque</h3>
-                        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="lowStockListContainer">
-                            <!-- Injetado dinamicamente -->
-                        </div>
+                        <div class="flex-1 overflow-y-auto pr-2 space-y-3" id="lowStockListContainer"></div>
                     </div>
                 </div>
 
-                <!-- Pedidos de Hoje Adicionados ao Dash -->
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex flex-col h-[350px]">
                     <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/30 rounded-t-2xl">
                         <h3 class="text-sm font-bold flex items-center gap-2 text-slate-800 dark:text-white"><i data-lucide="clock" class="w-4 h-4 text-brand-500"></i> Pedidos Solicitados Hoje</h3>
@@ -183,25 +175,25 @@
                         <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="pie-chart" class="w-4 h-4 text-blue-500"></i> Brindes Mais Solicitados (Top 5)</h3>
                         <div class="h-64 w-full relative"><canvas id="chartTopProdutos"></canvas></div>
                     </div>
+                    <!-- ALTERAÇÃO DE GRÁFICO AQUI -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="briefcase" class="w-4 h-4 text-emerald-500"></i> Gasto Médio por Setor</h3>
-                        <div class="h-64 w-full relative"><canvas id="chartGastoSetor"></canvas></div>
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4"><i data-lucide="users" class="w-4 h-4 text-emerald-500"></i> Gasto Total por Usuário (Exclui Admins)</h3>
+                        <div class="h-64 w-full relative"><canvas id="chartGastoUsuario"></canvas></div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB: ORDERS -->
             <section id="tab-orders" class="tab-content is-hidden h-full flex-col">
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 shrink-0">
                     <h3 class="text-sm font-bold mb-4 flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-brand-500"></i> Filtros Avançados</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Inicial</label><input type="date" id="filterDateStart" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Final</label><input type="date" id="filterDateEnd" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="filterStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="Todos">Todos</option><option value="Enviado para Separação">Pendentes</option><option value="Separação Concluída">Concluídos</option><option value="Cancelado">Cancelados</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Usuário</label><select id="filterUser" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="Todos">Todos</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Inicial</label><input type="date" id="filterDateStart" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Data Final</label><input type="date" id="filterDateEnd" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="filterStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"><option value="Todos">Todos</option><option value="Enviado para Separação">Pendentes</option><option value="Separação Concluída">Concluídos</option><option value="Cancelado">Cancelados</option></select></div>
+                        <div><label class="block text-xs font-semibold text-slate-500 mb-1">Usuário</label><select id="filterUser" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"><option value="Todos">Todos</option></select></div>
                         <div class="flex items-end gap-2">
                             <button id="btnApplyFilters" class="flex-1 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold transition-colors">Filtrar</button>
-                            <button id="btnExportOrders" title="Exportar CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border rounded-lg transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
+                            <button id="btnExportOrders" title="Exportar CSV" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border dark:border-slate-700 rounded-lg transition-colors"><i data-lucide="download" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 </div>
@@ -224,12 +216,56 @@
                 </div>
             </section>
 
-            <!-- TAB: CATALOG -->
+            <section id="tab-reports" class="tab-content is-hidden h-full flex-col space-y-6">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-6 h-6 text-brand-600"></i> Relatório Financeiro e Movimentação</h2>
+                    <p class="text-sm text-slate-500 mb-6">Analise os gastos por usuário, ticket médio e fluxo de pedidos em períodos customizados.</p>
+                    
+                    <div class="flex flex-wrap items-end gap-4 mb-8">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Data Inicial</label>
+                            <input type="date" id="repDateStart" class="w-40 px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Data Final</label>
+                            <input type="date" id="repDateEnd" class="w-40 px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none">
+                        </div>
+                        <button id="btnGenerateReport" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Processar Dados
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="reportSummaryCards">
+                        <!-- Preenchido via JS -->
+                    </div>
+
+                    <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                        <div class="bg-slate-50 dark:bg-slate-800 px-4 py-3 flex justify-between items-center border-b dark:border-slate-700">
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">Detalhamento por Usuário</h3>
+                            <button id="btnExportReport" class="text-xs flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700"><i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar CSV</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[400px]">
+                            <table class="w-full text-left whitespace-nowrap">
+                                <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 text-[10px] font-bold text-slate-500 uppercase">
+                                    <tr>
+                                        <th class="p-3">Usuário</th>
+                                        <th class="p-3 text-center">Pedidos Concluídos</th>
+                                        <th class="p-3 text-right">Valor Gasto</th>
+                                        <th class="p-3 text-right">Ticket Médio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="tab-catalog" class="tab-content is-hidden h-full flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                        <input type="text" id="searchCatalog" placeholder="Buscar produto..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-brand-500">
+                        <input type="text" id="searchCatalog" placeholder="Buscar produto..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-brand-500">
                     </div>
                     <button id="btnNewProduct" class="w-full sm:w-auto px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors">
                         <i data-lucide="plus" class="w-4 h-4"></i> Novo Produto
@@ -255,25 +291,22 @@
                 </div>
             </section>
 
-            <!-- TAB: CATEGORIES -->
             <section id="tab-categories" class="tab-content is-hidden h-full flex-col">
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-2xl mx-auto w-full">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm max-w-3xl mx-auto w-full">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="tags" class="w-5 h-5 text-brand-500"></i> Categorias de Brindes</h3>
+                        <h3 class="text-lg font-bold flex items-center gap-2"><i data-lucide="tags" class="w-5 h-5 text-brand-500"></i> Gestão de Categorias e Produtos Atrelados</h3>
                         <button id="btnNewCategory" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm flex items-center gap-1.5 transition-colors"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Nova</button>
                     </div>
-                    <ul id="listCategories" class="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden">
-                        <!-- Categorias dinâmicas -->
-                    </ul>
+                    <!-- Lista de Categorias Expandível -->
+                    <div id="listCategories" class="space-y-3"></div>
                 </div>
             </section>
 
-            <!-- TAB: USERS -->
             <section id="tab-users" class="tab-content is-hidden h-full flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                        <input type="text" id="searchUsers" placeholder="Buscar usuário..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm outline-none focus:border-brand-500">
+                        <input type="text" id="searchUsers" placeholder="Buscar usuário..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:border-brand-500">
                     </div>
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <button id="btnBatchRecharge" class="flex-1 sm:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
@@ -311,17 +344,15 @@
                 </div>
             </section>
 
-            <!-- TAB: AUDIT -->
             <section id="tab-audit" class="tab-content is-hidden h-full flex-col">
                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-4 rounded-xl mb-6 flex gap-3 text-sm text-blue-800 dark:text-blue-300 shrink-0">
                     <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600"></i>
-                    <p>O Log de Auditoria rastreia ações críticas feitas por administradores (criação de produtos, alteração de saldos, cancelamentos). <em>Nota: Requer a tabela `logs_auditoria` no Supabase para persistência histórica.</em></p>
+                    <p>O Log de Auditoria rastreia ações críticas feitas por administradores. <em>Nota: Requer a tabela `logs_auditoria` no Supabase para persistência histórica.</em></p>
                 </div>
                 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex-1 flex flex-col min-h-[400px]">
                     <div class="flex-1 overflow-auto rounded-2xl no-scrollbar p-4">
                         <div class="relative border-l border-slate-200 dark:border-slate-700 ml-4 space-y-6 pb-4" id="auditTimeline">
-                            <!-- Timeline injetada dinamicamente -->
                         </div>
                     </div>
                 </div>
@@ -330,7 +361,6 @@
         </div>
     </main>
 
-    <!-- MODAIS DE OPERAÇÃO -->
 
     <!-- Modal Novo/Editar Produto -->
     <div id="modalProduct" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
@@ -338,19 +368,19 @@
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl">
             <div class="flex justify-between items-center mb-5">
                 <h3 class="text-xl font-bold flex items-center gap-2" id="modalProductTitle"><i data-lucide="box" class="w-5 h-5 text-brand-600"></i> Produto</h3>
-                <button onclick="closeModal('modalProduct')" class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeModal('modalProduct')" class="p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <form id="formProduct" class="space-y-4">
                 <input type="hidden" id="prodId">
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome</label><input type="text" id="prodName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Categoria</label><select id="prodCategory" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></select></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome</label><input type="text" id="prodName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Categoria</label><select id="prodCategory" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></select></div>
                 <div class="flex gap-4">
-                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Estoque</label><input type="number" id="prodStock" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Preço (R$)</label><input type="number" step="0.01" id="prodPrice" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Estoque</label><input type="number" id="prodStock" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                    <div class="flex-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Preço (R$)</label><input type="number" step="0.01" id="prodPrice" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
                 </div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ícone (URL da imagem ou icone lucide)</label><input type="text" id="prodIcon" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none" placeholder="Ex: box ou https://i.imgur.com/img.png"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="prodStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"><option value="true">Ativo</option><option value="false">Pausado</option></select></div>
-                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveProd">Salvar Produto</button></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ícone (URL da imagem ou icone lucide)</label><input type="text" id="prodIcon" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none" placeholder="Ex: box ou https://i.imgur.com/img.png"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Status</label><select id="prodStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"><option value="true">Ativo</option><option value="false">Pausado</option></select></div>
+                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveProd">Salvar Produto</button></div>
             </form>
         </div>
     </div>
@@ -360,17 +390,16 @@
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalUser')"></div>
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full mx-4 relative z-10 shadow-2xl">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i> Novo Usuário (Acesso)</h3>
-                <button onclick="closeModal('modalUser')" class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-brand-600"></i> Perfil de Usuário</h3>
+                <button onclick="closeModal('modalUser')" class="p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="bg-amber-50 text-amber-800 text-xs p-3 rounded-lg border border-amber-200 mb-4">Atenção: A criação real de contas com e-mail e senha exige uma Edge Function de Auth ou API Admin. Este formulário insere o perfil na tabela para uso do catálogo provisório.</div>
             <form id="formUser" class="space-y-4">
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome Completo</label><input type="text" id="newUserName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">E-mail Corporativo</label><input type="email" id="newUserEmail" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cargo / Setor</label><input type="text" id="newUserRole" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Saldo Inicial (R$)</label><input type="number" step="0.01" id="newUserBalance" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg text-sm outline-none"></div>
-                <label class="flex items-center gap-2 text-sm font-medium mt-2 cursor-pointer"><input type="checkbox" id="newUserAdmin" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"> Conceder acesso Administrador</label>
-                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveUser">Cadastrar Perfil</button></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Nome Completo</label><input type="text" id="newUserName" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">E-mail Corporativo</label><input type="email" id="newUserEmail" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cargo / Setor</label><input type="text" id="newUserRole" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Saldo Inicial (R$)</label><input type="number" step="0.01" id="newUserBalance" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-lg text-sm outline-none"></div>
+                <label class="flex items-center gap-2 text-sm font-medium mt-2 cursor-pointer dark:text-slate-300"><input type="checkbox" id="newUserAdmin" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"> Conceder acesso Administrador</label>
+                <div class="pt-4"><button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold flex justify-center gap-2 shadow-sm" id="btnSaveUser">Salvar Perfil</button></div>
             </form>
         </div>
     </div>
@@ -379,21 +408,21 @@
     <div id="modalBatchRecharge" class="fixed inset-0 z-[1500] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeModal('modalBatchRecharge')"></div>
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-sm w-full mx-4 relative z-10 shadow-2xl text-center">
-            <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border"><i data-lucide="coins" class="w-8 h-8 text-brand-600"></i></div>
+            <div class="w-16 h-16 bg-brand-50 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border dark:border-brand-800"><i data-lucide="coins" class="w-8 h-8 text-brand-600"></i></div>
             <h3 class="text-xl font-bold mb-2">Recarga em Lote</h3>
             <p class="text-sm text-slate-500 mb-6">Adicione um valor fixo de crédito para <b>todos</b> os usuários comerciais ativos da plataforma.</p>
-            <div><label class="block text-xs font-semibold text-slate-500 mb-1 text-left">Valor a adicionar (R$)</label><input type="number" step="0.01" id="batchAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-xl text-lg font-bold text-center outline-none"></div>
-            <div class="flex gap-3 mt-6"><button onclick="closeModal('modalBatchRecharge')" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors">Cancelar</button><button id="confirmBatchBtn" class="flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold transition-colors shadow-sm">Aplicar Saldo</button></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1 text-left">Valor a adicionar (R$)</label><input type="number" step="0.01" id="batchAmount" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:text-white border dark:border-slate-700 rounded-xl text-lg font-bold text-center outline-none"></div>
+            <div class="flex gap-3 mt-6"><button onclick="closeModal('modalBatchRecharge')" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold transition-colors">Cancelar</button><button id="confirmBatchBtn" class="flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold transition-colors shadow-sm">Aplicar Saldo</button></div>
         </div>
     </div>
 
-    <!-- Modal Detalhes do Pedido -->
+    <!-- Modal Detalhes do Pedido e Ações (Cancel/Delete) -->
     <div id="adminSingleOrderModal" class="fixed inset-0 z-[1400] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm rounded-lg" onclick="closeModal('adminSingleOrderModal')"></div>
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 max-w-2xl w-full mx-4 relative z-10 shadow-2xl flex flex-col h-auto max-h-[90vh] transition-all">
             <div class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4">
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-brand-600"></i> Detalhes do Pedido</h3>
-                <button onclick="closeModal('adminSingleOrderModal')" class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeModal('adminSingleOrderModal')" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto no-scrollbar rounded-xl" id="adminSingleOrderBody"></div>
         </div>
@@ -406,11 +435,11 @@
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 border" id="actionConfirmIconContainer"><i data-lucide="alert-triangle" class="h-8 w-8" id="actionConfirmIcon"></i></div>
             <h3 class="text-xl font-bold mb-2" id="actionConfirmTitle">Atenção</h3>
             <p class="text-slate-500 text-sm mb-6" id="actionConfirmText">Tem certeza?</p>
-            <div class="flex gap-3"><button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-semibold">Voltar</button><button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-semibold shadow-sm">Confirmar</button></div>
+            <div class="flex gap-3"><button id="actionCancelBtn" class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-semibold">Voltar</button><button id="actionConfirmBtn" class="flex-1 px-4 py-3 text-white rounded-xl font-semibold shadow-sm">Confirmar</button></div>
         </div>
     </div>
 
-    <!-- Menu de Contexto (Botão Direito) -->
+    <!-- Menu de Contexto -->
     <div id="customContextMenu" class="fixed z-[9999] hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl py-1.5 min-w-[180px] text-sm overflow-hidden transition-opacity">
         <button class="w-full text-left px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 font-medium" id="contextReload">
             <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-400"></i> Recarregar
@@ -439,7 +468,7 @@
             categories: [],
             auditLogs: [],
             charts: {},
-            userSort: { field: 'gasto', asc: false } // Estado para controlar ordenação na tabela de usuários
+            userSort: { field: 'gasto', asc: false }
         };
 
         const formatMoney = (v) => v === null ? "R$ 0,00" : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
@@ -450,7 +479,7 @@
             if(el) { el.classList.add('hidden'); }
         };
 
-        // Lógica de abas (Sidebar)
+        // Lógica de Abas
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.nav-btn').forEach(b => { 
@@ -461,24 +490,20 @@
                 e.currentTarget.classList.add('active', 'bg-slate-100', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-brand-400');
                 e.currentTarget.classList.remove('text-slate-600', 'dark:text-slate-400');
                 
-                // Oculta todas as abas injetando is-hidden
                 document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('is-hidden'));
                 
-                // Revela a aba selecionada removendo is-hidden
                 const targetTab = document.getElementById(`tab-${target}`);
                 targetTab.classList.remove('is-hidden');
-                
-                targetTab.style.animation = 'none';
-                void targetTab.offsetWidth;
-                targetTab.style.animation = null;
+                targetTab.style.animation = 'none'; void targetTab.offsetWidth; targetTab.style.animation = null;
 
                 document.getElementById('pageTitle').textContent = e.currentTarget.innerText;
                 
                 if(target === 'dashboard') updateDashboardCharts();
+                if(target === 'reports') initializeReports();
             });
         });
 
-        // Central de Confirmações
+        // Ações Globais de Confirmação
         let pendingAction = null;
         window.confirmAction = function(title, text, type, confirmText, callback) {
             document.getElementById('actionConfirmTitle').textContent = title;
@@ -488,11 +513,15 @@
             const iconContainer = document.getElementById('actionConfirmIconContainer');
             
             if (type === 'danger') {
-                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 border border-red-100 mb-4 text-red-500";
+                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800 mb-4 text-red-500";
                 document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'ban');
                 btn.className = "flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl";
+            } else if (type === 'warning') {
+                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 mb-4 text-amber-500";
+                document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'alert-triangle');
+                btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl";
             } else {
-                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-brand-50 border border-brand-100 mb-4 text-brand-600";
+                iconContainer.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 mb-4 text-brand-600";
                 document.getElementById('actionConfirmIcon').setAttribute('data-lucide', 'check-circle');
                 btn.className = "flex-1 px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl";
             }
@@ -507,12 +536,11 @@
             closeModal('actionConfirmModal');
         });
 
-        // Wrapper de Auditoria
         async function logAudit(action, details) {
             const logEntry = { admin_nome: AdminState.me?.nome || 'Admin Desconhecido', acao: action, detalhes: details, data: new Date().toISOString() };
             AdminState.auditLogs.unshift(logEntry);
             renderAuditLog();
-            try { await supabaseClient.from('logs_auditoria').insert([logEntry]); } catch (e) { /* Ignora se tabela não existir */ }
+            try { await supabaseClient.from('logs_auditoria').insert([logEntry]); } catch (e) {}
         }
 
         function renderAuditLog() {
@@ -543,11 +571,9 @@
                 AdminState.me = userData;
                 document.getElementById('adminHeaderName').textContent = userData.nome || 'Admin';
 
-                // Tratamento isolado para auditoria
                 const fetchLogs = async () => {
                     try {
-                        const { data, error } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
-                        if (error) return [];
+                        const { data } = await supabaseClient.from('logs_auditoria').select('*').order('data', { ascending: false }).limit(50);
                         return data || [];
                     } catch (e) { return []; }
                 };
@@ -599,7 +625,7 @@
             }
         }
 
-        // Tabela de Pedidos Recentes do Dashboard
+        // Dashboard Builders
         function renderDashboardTodayOrders() {
             const tbody = document.getElementById('dashTodayOrdersBody');
             tbody.innerHTML = '';
@@ -655,7 +681,7 @@
                 lsContainer.innerHTML = '<p class="text-slate-400 text-sm text-center mt-8">Todos os estoques estão saudáveis.</p>';
             } else {
                 lowStockProducts.forEach(p => {
-                    lsContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-2.5 rounded-lg"><span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate pr-2">${p.nome}</span><span class="text-xs font-bold text-red-600 px-2 py-0.5 bg-white dark:bg-slate-800 rounded shadow-sm border border-red-100 dark:border-red-800/50">${p.estoque} un.</span></div>`;
+                    lsContainer.innerHTML += `<div class="flex justify-between items-center bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-2.5 rounded-lg mb-2"><span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate pr-2">${p.nome}</span><span class="text-xs font-bold text-red-600 px-2 py-0.5 bg-white dark:bg-slate-800 rounded shadow-sm border border-red-100 dark:border-red-800/50">${p.estoque} un.</span></div>`;
                 });
             }
 
@@ -664,64 +690,55 @@
         }
 
         function updateDashboardCharts() {
+            // Chart 1: Evolução
             const monthsMap = {};
             const last6Months = [];
             const d = new Date();
             for(let i=5; i>=0; i--) {
                 const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
                 const key = `${m.getFullYear()}-${(m.getMonth()+1).toString().padStart(2,'0')}`;
-                const label = m.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
-                monthsMap[key] = { label: label, total: 0 };
+                monthsMap[key] = { label: m.toLocaleString('pt-BR', { month: 'short' }).toUpperCase(), total: 0 };
                 last6Months.push(key);
             }
-            
             AdminState.orders.filter(o => o.status !== 'Cancelado').forEach(o => {
                 const mKey = o.data_pedido.substring(0, 7);
                 if (monthsMap[mKey]) monthsMap[mKey].total += parseFloat(o.valor_total || 0);
             });
-
-            const labelsMeses = last6Months.map(k => monthsMap[k].label);
-            const dataMeses = last6Months.map(k => monthsMap[k].total);
-
             if(AdminState.charts.gastoMensal) AdminState.charts.gastoMensal.destroy();
-            const ctx1 = document.getElementById('chartGastoMensal').getContext('2d');
-            AdminState.charts.gastoMensal = new Chart(ctx1, {
+            AdminState.charts.gastoMensal = new Chart(document.getElementById('chartGastoMensal').getContext('2d'), {
                 type: 'line',
-                data: { labels: labelsMeses, datasets: [{ label: 'Gasto R$', data: dataMeses, borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.1)', tension: 0.4, fill: true }] },
+                data: { labels: last6Months.map(k => monthsMap[k].label), datasets: [{ label: 'Gasto R$', data: last6Months.map(k => monthsMap[k].total), borderColor: '#0d9488', backgroundColor: 'rgba(13, 148, 136, 0.1)', tension: 0.4, fill: true }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
+            // Chart 2: Produtos (Top 5)
             const prodCounts = {};
             AdminState.orders.filter(o => o.status !== 'Cancelado').forEach(o => {
                 if(o.pedido_itens) o.pedido_itens.forEach(item => { prodCounts[item.produto_id] = (prodCounts[item.produto_id] || 0) + item.quantidade; });
             });
             const topProdSorted = Object.keys(prodCounts).sort((a,b) => prodCounts[b] - prodCounts[a]).slice(0, 5);
-            const topProdLabels = topProdSorted.map(id => { const p = AdminState.products.find(x => x.id === id); return p ? p.nome : id; });
-            const topProdData = topProdSorted.map(id => prodCounts[id]);
-
             if(AdminState.charts.topProdutos) AdminState.charts.topProdutos.destroy();
-            const ctx2 = document.getElementById('chartTopProdutos').getContext('2d');
-            AdminState.charts.topProdutos = new Chart(ctx2, {
+            AdminState.charts.topProdutos = new Chart(document.getElementById('chartTopProdutos').getContext('2d'), {
                 type: 'doughnut',
-                data: { labels: topProdLabels, datasets: [{ data: topProdData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'] }] },
+                data: { labels: topProdSorted.map(id => { const p = AdminState.products.find(x => x.id === id); return p ? p.nome : id; }), datasets: [{ data: topProdSorted.map(id => prodCounts[id]), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'] }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
             });
 
-            const setorStats = {};
-            AdminState.users.forEach(u => {
-                const setor = u.cargo || 'Geral';
-                if(!setorStats[setor]) setorStats[setor] = { total: 0, count: 0 };
-                setorStats[setor].total += parseFloat(u.saldo || 0);
-                setorStats[setor].count++;
+            // Chart 3: Gasto por Usuário (Não admins) - ALTERADO
+            const userSpentStats = {};
+            const nonAdmins = AdminState.users.filter(u => u.admin !== true);
+            nonAdmins.forEach(u => {
+                let spent = 0;
+                AdminState.orders.filter(o => o.usuario_id === u.id && o.status !== 'Cancelado').forEach(o => spent += parseFloat(o.valor_total || 0));
+                userSpentStats[u.nome || u.email] = spent;
             });
-            const setorLabels = Object.keys(setorStats);
-            const setorData = setorLabels.map(s => setorStats[s].total / setorStats[s].count);
-
-            if(AdminState.charts.gastoSetor) AdminState.charts.gastoSetor.destroy();
-            const ctx3 = document.getElementById('chartGastoSetor').getContext('2d');
-            AdminState.charts.gastoSetor = new Chart(ctx3, {
+            
+            const sortedUsers = Object.keys(userSpentStats).sort((a,b) => userSpentStats[b] - userSpentStats[a]).slice(0, 7); // Pega top 7 para não esmagar o gráfico
+            
+            if(AdminState.charts.gastoUsuario) AdminState.charts.gastoUsuario.destroy();
+            AdminState.charts.gastoUsuario = new Chart(document.getElementById('chartGastoUsuario').getContext('2d'), {
                 type: 'bar',
-                data: { labels: setorLabels, datasets: [{ label: 'Saldo Médio R$', data: setorData, backgroundColor: '#10b981', borderRadius: 4 }] },
+                data: { labels: sortedUsers, datasets: [{ label: 'Gasto Total R$', data: sortedUsers.map(name => userSpentStats[name]), backgroundColor: '#10b981', borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
@@ -768,17 +785,260 @@
 
         document.getElementById('btnApplyFilters').addEventListener('click', renderOrdersTable);
         
-        document.getElementById('btnExportOrders').addEventListener('click', () => {
-            let csv = "ID Pedido,Data Solicitacao,Data Separacao,Usuario,Status,Valor Total,Itens\n";
-            AdminState.orders.forEach(o => {
-                const u = AdminState.users.find(x => x.id === o.usuario_id);
-                const uName = u ? u.nome : o.usuario_id;
-                const itemsStr = (o.pedido_itens || []).map(i => { const p = AdminState.products.find(x => x.id === i.produto_id); return `${i.quantidade}x ${p ? p.nome : i.produto_id}`; }).join(' | ');
-                csv += `"${o.id}","${o.data_pedido}","${o.data_separacao}","${uName}","${o.status}","${parseFloat(o.valor_total).toFixed(2)}","${itemsStr}"\n`;
+        window.openOrderDetails = function(orderId) {
+            const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
+            const u = AdminState.users.find(x => x.id === order.usuario_id);
+            const uName = u ? u.nome : order.usuario_id;
+            
+            let itemsHtml = order.pedido_itens.map(item => {
+                const p = AdminState.products.find(x => x.id === item.produto_id);
+                return `<li class="flex justify-between items-center py-2 border-b dark:border-slate-700 last:border-0"><span class="text-sm font-medium">${p ? p.nome : item.produto_id}</span><strong class="text-sm bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md border dark:border-slate-600">${item.quantidade} un.</strong></li>`;
+            }).join('');
+
+            const stColors = { 'Cancelado': 'text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400', 'Separação Concluída': 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400', 'Enviado para Separação': 'text-brand-700 bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400' }[order.status] || 'text-slate-700 bg-slate-100';
+
+            document.getElementById('adminSingleOrderBody').innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white dark:bg-slate-900 border dark:border-slate-700 px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColors} px-2.5 py-1 rounded-md border border-transparent">${order.status}</span></div>
+                        <p class="text-sm mb-1">Solicitado por: <strong>${uName}</strong></p>
+                        <div class="text-sm text-slate-500">Separar até: <strong class="text-slate-800 dark:text-white">${formatDate(order.data_separacao).split(' ')[0]}</strong></div>
+                    </div>
+                    <div class="text-right flex flex-col items-end">
+                        <strong class="text-2xl font-black text-brand-600 dark:text-brand-400">${formatMoney(order.valor_total)}</strong>
+                        <div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded border dark:border-slate-600"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${formatDate(order.data_pedido)}</div>
+                    </div>
+                </div>
+                ${order.observacoes ? `<div class="mb-5 bg-amber-50/50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 dark:text-amber-200 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}
+                
+                <div class="bg-white dark:bg-slate-900 rounded-xl border dark:border-slate-700 overflow-hidden mb-5 shadow-sm">
+                    <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b dark:border-slate-700">Itens Solicitados</div>
+                    <ul class="px-4 py-1">${itemsHtml}</ul>
+                </div>
+
+                <div class="flex flex-wrap justify-end gap-3 pt-4 border-t dark:border-slate-700">
+                    ${order.status === 'Enviado para Separação' ? `
+                        <button onclick="markOrderComplete('${order.id}')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
+                    ` : ''}
+                    
+                    <!-- Lógica Separada para Cancelar e Apagar -->
+                    ${order.status !== 'Cancelado' ? `
+                        <button onclick="handleOrderAction('${order.id}', 'Cancelar')" class="px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 border dark:border-slate-600 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="x-circle" class="w-4 h-4"></i> Cancelar Pedido (Estornar)</button>
+                    ` : ''}
+                    <button onclick="handleOrderAction('${order.id}', 'Apagar')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800/50 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i> Apagar Registro</button>
+                </div>
+            `;
+            lucide.createIcons();
+            document.getElementById('adminSingleOrderModal').classList.remove('hidden');
+        };
+
+        window.markOrderComplete = function(orderId) {
+            confirmAction('Concluir Pedido', `O pedido será marcado como 'Separação Concluída'.`, 'success', 'Confirmar', async () => {
+                await supabaseClient.from('pedidos').update({ status: 'Separação Concluída' }).eq('id', orderId);
+                const order = AdminState.orders.find(o => o.id === orderId); if(order) order.status = 'Separação Concluída';
+                closeModal('adminSingleOrderModal'); buildDashboard(); renderOrdersTable();
             });
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv)); link.setAttribute("download", `pedidos_export_${new Date().toISOString().split('T')[0]}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            logAudit('Exportação Gerada', 'Admin exportou relatório CSV de pedidos.');
+        };
+
+        window.handleOrderAction = function(orderId, actionType) {
+            const order = AdminState.orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            let cTitle = actionType === 'Cancelar' ? 'Cancelar Pedido' : 'Apagar Registro Permanentemente';
+            let cText = actionType === 'Cancelar' ? `O status será alterado para Cancelado. O valor pago será devolvido ao usuário e o estoque será retornado.` : `O pedido será excluído do banco de dados. Se ele não estava cancelado antes, o estorno de saldo/estoque será feito automaticamente.`;
+            
+            confirmAction(cTitle, cText, 'danger', `Sim, ${actionType}`, async () => {
+                
+                // LÓGICA DE ESTORNO: Executa APENAS se o status atual não for cancelado. Evita duplicidade.
+                if (order.status !== 'Cancelado') {
+                    const u = AdminState.users.find(x => x.id === order.usuario_id);
+                    if(u) { 
+                        const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0); 
+                        await supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id); 
+                    }
+                    if(order.pedido_itens) {
+                        for(let item of order.pedido_itens) {
+                            const p = AdminState.products.find(x => x.id === item.produto_id);
+                            if (p) await supabaseClient.from('produtos').update({ estoque: p.estoque + item.quantidade }).eq('id', item.produto_id);
+                        }
+                    }
+                }
+
+                // Ação final: Altera status ou deleta registro
+                if (actionType === 'Cancelar') {
+                    await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
+                    logAudit('Pedido Cancelado', `Pedido ${orderId} cancelado. Estorno realizado.`);
+                    order.status = 'Cancelado';
+                } else if (actionType === 'Apagar') {
+                    await supabaseClient.from('pedidos').delete().eq('id', orderId);
+                    logAudit('Pedido Excluído', `Registro ${orderId} excluído.`);
+                    AdminState.orders = AdminState.orders.filter(o => o.id !== orderId);
+                }
+                
+                const { data: usersReq } = await supabaseClient.from('usuarios').select('*'); AdminState.users = usersReq;
+                const { data: prodsReq } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = prodsReq;
+                
+                closeModal('adminSingleOrderModal');
+                buildDashboard(); renderOrdersTable(); renderUsersTable(); renderCatalogTable();
+            });
+        };
+
+        function initializeReports() {
+            const today = new Date();
+            const tzOffset = today.getTimezoneOffset() * 60000;
+            const localDate = (new Date(today - tzOffset)).toISOString().split('T')[0];
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+            
+            document.getElementById('repDateStart').value = firstDay;
+            document.getElementById('repDateEnd').value = localDate;
+            
+            generateReport();
+        }
+
+        function generateReport() {
+            const dStart = document.getElementById('repDateStart').value;
+            const dEnd = document.getElementById('repDateEnd').value;
+            
+            let filteredOrders = AdminState.orders.filter(o => {
+                const oDate = o.data_pedido.split('T')[0];
+                return oDate >= dStart && oDate <= dEnd;
+            });
+
+            const validOrders = filteredOrders.filter(o => o.status !== 'Cancelado');
+            const canceledOrders = filteredOrders.filter(o => o.status === 'Cancelado');
+
+            let totalGasto = 0;
+            validOrders.forEach(o => totalGasto += parseFloat(o.valor_total || 0));
+            
+            let totalEstornado = 0;
+            canceledOrders.forEach(o => totalEstornado += parseFloat(o.valor_total || 0));
+
+            const cardsContainer = document.getElementById('reportSummaryCards');
+            cardsContainer.innerHTML = `
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border dark:border-slate-700">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Pedidos Válidos</p>
+                    <h4 class="text-xl font-black text-brand-600 dark:text-brand-400">${validOrders.length}</h4>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border dark:border-slate-700">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Movimentado (Líquido)</p>
+                    <h4 class="text-xl font-black text-slate-800 dark:text-white">${formatMoney(totalGasto)}</h4>
+                </div>
+                <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
+                    <p class="text-xs text-red-500 font-bold uppercase tracking-wider mb-1">Total Cancelado/Estornado</p>
+                    <h4 class="text-xl font-black text-red-600 dark:text-red-400">${formatMoney(totalEstornado)} (${canceledOrders.length} ped.)</h4>
+                </div>
+            `;
+
+            const userStats = {};
+            validOrders.forEach(o => {
+                if(!userStats[o.usuario_id]) userStats[o.usuario_id] = { spent: 0, count: 0 };
+                userStats[o.usuario_id].spent += parseFloat(o.valor_total);
+                userStats[o.usuario_id].count++;
+            });
+
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+            
+            const sortedUserIds = Object.keys(userStats).sort((a,b) => userStats[b].spent - userStats[a].spent);
+            
+            if(sortedUserIds.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-400 text-sm">Nenhum dado financeiro para o período.</td></tr>';
+            } else {
+                sortedUserIds.forEach(uid => {
+                    const stats = userStats[uid];
+                    const u = AdminState.users.find(x => x.id === uid);
+                    const name = u ? (u.nome || u.email) : uid;
+                    const tm = stats.spent / stats.count;
+                    
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white dark:hover:bg-slate-900 transition-colors">
+                            <td class="p-3 font-medium">${name}</td>
+                            <td class="p-3 text-center">${stats.count}</td>
+                            <td class="p-3 text-right font-bold text-emerald-600">${formatMoney(stats.spent)}</td>
+                            <td class="p-3 text-right text-slate-500">${formatMoney(tm)}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+        document.getElementById('btnGenerateReport').addEventListener('click', generateReport);
+
+        function renderCategoriesTable() {
+            const list = document.getElementById('listCategories');
+            list.innerHTML = '';
+            
+            if (AdminState.categories.length === 0) {
+                list.innerHTML = '<p class="text-slate-400 text-sm italic p-4 text-center">Nenhuma categoria cadastrada.</p>';
+                return;
+            }
+
+            AdminState.categories.forEach(c => {
+                const categoryProducts = AdminState.products.filter(p => p.categoria_id === c.id);
+                const count = categoryProducts.length;
+                
+                let productsHtml = '';
+                if(count > 0) {
+                    productsHtml = categoryProducts.map(p => `
+                        <div class="flex items-center justify-between py-2 border-b dark:border-slate-700/50 last:border-0 pl-2">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-3 h-3 text-slate-400"></i>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">${p.nome} <span class="text-xs text-slate-400">(${p.estoque} un)</span></span>
+                            </div>
+                            <button onclick="editProduct('${p.id}')" class="text-xs font-semibold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/50 px-2 py-1 rounded">Editar</button>
+                        </div>
+                    `).join('');
+                } else {
+                    productsHtml = '<p class="text-xs text-slate-400 italic py-2 pl-2">Nenhum produto atrelado.</p>';
+                }
+
+                list.innerHTML += `
+                    <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                        <div class="p-4 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" onclick="toggleCatProducts(${c.id})">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-brand-50 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center transition-transform" id="icon-cat-${c.id}"><i data-lucide="chevron-down" class="w-4 h-4"></i></div>
+                                <div><p class="font-bold text-sm">${c.nome}</p><p class="text-xs text-slate-500">${count} produto(s)</p></div>
+                            </div>
+                            <button onclick="event.stopPropagation(); deleteCategory(${c.id}, '${c.nome}', ${count})" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Excluir Categoria"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                        <div id="cat-prods-${c.id}" class="hidden px-4 pb-2 pt-1 border-t dark:border-slate-700 bg-white dark:bg-slate-900">
+                            ${productsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        window.toggleCatProducts = function(id) {
+            const div = document.getElementById(`cat-prods-${id}`);
+            const icon = document.getElementById(`icon-cat-${id}`);
+            if(div.classList.contains('hidden')) {
+                div.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                div.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        document.getElementById('btnNewCategory').addEventListener('click', () => {
+            const nome = prompt("Digite o nome da nova Categoria:");
+            if(nome && nome.trim().length > 0) {
+                supabaseClient.from('categorias').insert([{ nome: nome.trim() }]).then(async () => {
+                    const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
+                    renderCategoriesTable(); logAudit('Categoria Criada', `Categoria ${nome} adicionada.`);
+                });
+            }
         });
+
+        window.deleteCategory = function(id, nome, count) {
+            if(count > 0) { confirmAction('Bloqueado', `A categoria "${nome}" possui ${count} produtos atrelados. Mude a categoria deles antes de excluir.`, 'danger', 'Entendi', null); return; }
+            confirmAction('Excluir Categoria', `Tem certeza que deseja excluir "${nome}"?`, 'danger', 'Sim, Excluir', async () => {
+                await supabaseClient.from('categorias').delete().eq('id', id);
+                const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
+                renderCategoriesTable(); logAudit('Categoria Excluída', `Categoria ${nome} removida.`);
+            });
+        };
 
         function renderCatalogTable() {
             const tbody = document.getElementById('tableCatalogBody');
@@ -794,12 +1054,12 @@
                 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="p-4 py-3 flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center border"><i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${p.nome}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${p.id}</p></div></td>
+                        <td class="p-4 py-3 flex items-center gap-3"><div class="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center border dark:border-slate-700"><i data-lucide="${p.icone && !p.icone.startsWith('http') ? p.icone : 'box'}" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${p.nome}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${p.id}</p></div></td>
                         <td class="p-4 py-3 text-xs font-semibold text-slate-500">${catName}</td>
                         <td class="p-4 py-3 text-center font-bold ${isLow ? 'text-red-600' : ''}">${p.estoque} un.</td>
-                        <td class="p-4 py-3 text-right font-semibold text-brand-600">${formatMoney(p.preco)}</td>
+                        <td class="p-4 py-3 text-right font-semibold text-brand-600 dark:text-brand-400">${formatMoney(p.preco)}</td>
                         <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.ativo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${p.ativo ? 'Ativo' : 'Pausado'}</span></td>
-                        <td class="p-4 py-3 text-right"><button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm flex items-center gap-1.5 ml-auto"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editProduct('${p.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm flex items-center gap-1.5 ml-auto"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button></td>
                     </tr>
                 `;
             });
@@ -851,60 +1111,21 @@
             };
 
             try {
-                if (pId) { await supabaseClient.from('produtos').update(payload).eq('id', pId); logAudit('Produto Editado', `Produto ${payload.nome} (ID: ${pId}) modificado.`); } 
+                if (pId) { await supabaseClient.from('produtos').update(payload).eq('id', pId); logAudit('Produto Editado', `Produto ${payload.nome} modificado.`); } 
                 else { 
                     payload.id = 'PRD-' + Math.random().toString(36).substr(2, 5).toUpperCase();
                     await supabaseClient.from('produtos').insert([payload]); 
                     logAudit('Produto Criado', `Novo produto ${payload.nome} cadastrado.`);
                 }
                 const { data } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = data;
-                renderCatalogTable(); buildDashboard(); closeModal('modalProduct');
+                renderCatalogTable(); renderCategoriesTable(); buildDashboard(); closeModal('modalProduct');
             } catch(err) { alert('Erro: ' + err.message); }
             btn.disabled = false; btn.innerHTML = 'Salvar Produto';
         });
 
-        function renderCategoriesTable() {
-            const list = document.getElementById('listCategories');
-            list.innerHTML = '';
-            AdminState.categories.forEach(c => {
-                const count = AdminState.products.filter(p => p.categoria_id === c.id).length;
-                list.innerHTML += `
-                    <li class="p-4 flex justify-between items-center bg-white dark:bg-slate-900">
-                        <div><p class="font-bold text-sm">${c.nome}</p><p class="text-xs text-slate-500">${count} produtos atrelados</p></div>
-                        <button onclick="deleteCategory(${c.id}, '${c.nome}', ${count})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir Categoria"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </li>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        document.getElementById('btnNewCategory').addEventListener('click', () => {
-            const nome = prompt("Digite o nome da nova Categoria:");
-            if(nome && nome.trim().length > 0) {
-                supabaseClient.from('categorias').insert([{ nome: nome.trim() }]).then(async () => {
-                    const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
-                    renderCategoriesTable(); logAudit('Categoria Criada', `Categoria ${nome} adicionada.`);
-                });
-            }
-        });
-
-        window.deleteCategory = function(id, nome, count) {
-            if(count > 0) { confirmAction('Bloqueado', `A categoria "${nome}" possui ${count} produtos atrelados. Mude a categoria deles antes de excluir.`, 'danger', 'Entendi', null); return; }
-            confirmAction('Excluir Categoria', `Tem certeza que deseja excluir "${nome}"?`, 'danger', 'Sim, Excluir', async () => {
-                await supabaseClient.from('categorias').delete().eq('id', id);
-                const { data } = await supabaseClient.from('categorias').select('*').order('nome'); AdminState.categories = data;
-                renderCategoriesTable(); logAudit('Categoria Excluída', `Categoria ${nome} removida.`);
-            });
-        };
-
-        // Função global de Ordenação de Usuários
         window.sortUsersTable = function(field) {
-            if (AdminState.userSort.field === field) {
-                AdminState.userSort.asc = !AdminState.userSort.asc;
-            } else {
-                AdminState.userSort.field = field;
-                AdminState.userSort.asc = (field === 'nome'); // Padrão: Nome ascendente, resto decrescente
-            }
+            if (AdminState.userSort.field === field) { AdminState.userSort.asc = !AdminState.userSort.asc; } 
+            else { AdminState.userSort.field = field; AdminState.userSort.asc = (field === 'nome'); }
             renderUsersTable();
         };
 
@@ -912,18 +1133,15 @@
             const tbody = document.getElementById('tableUsersBody');
             tbody.innerHTML = '';
             
-            // 1. Pré-calcula os dados (Gasto) para todos os usuários
             let usersData = AdminState.users.map(u => {
                 let spent = 0;
                 AdminState.orders.filter(o => o.usuario_id === u.id && o.status !== 'Cancelado').forEach(o => spent += parseFloat(o.valor_total || 0));
                 return { ...u, spent: spent };
             });
 
-            // 2. Filtra pelo termo de busca
             const q = document.getElementById('searchUsers').value.toLowerCase();
             let filtered = usersData.filter(u => (u.nome || u.email).toLowerCase().includes(q) || (u.cargo || '').toLowerCase().includes(q));
             
-            // 3. Ordena os usuários baseado no clique da tabela
             filtered.sort((a, b) => {
                 let valA, valB;
                 switch(AdminState.userSort.field) {
@@ -937,7 +1155,6 @@
                 return 0;
             });
 
-            // 4. Atualiza os Ícones da Tabela de acordo com a ordenação atual
             ['nome', 'saldo', 'gasto', 'admin'].forEach(f => {
                const el = document.getElementById(`sortIcon-${f}`);
                if(el) {
@@ -951,15 +1168,14 @@
                }
             });
 
-            // 5. Renderiza
             filtered.forEach(u => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="p-4 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight">${u.nome || u.email}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${u.cargo || 'Comercial'}</p></div></div></td>
+                        <td class="p-4 py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border dark:border-slate-700"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i></div> <div><p class="font-bold text-sm leading-tight text-slate-800 dark:text-white">${u.nome || u.email}</p><p class="text-[10px] text-slate-400 uppercase tracking-widest">${u.cargo || 'Comercial'}</p></div></div></td>
                         <td class="p-4 py-3 text-right font-bold text-emerald-600">${formatMoney(parseFloat(u.saldo || 0))}</td>
                         <td class="p-4 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">${formatMoney(u.spent)}</td>
-                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.admin ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-slate-200 text-slate-600 border border-slate-300'}">${u.admin ? 'Admin' : 'Padrão'}</span></td>
-                        <td class="p-4 py-3 text-right"><button onclick="editUser('${u.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5 inline"></i></button></td>
+                        <td class="p-4 py-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.admin ? 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800/50' : 'bg-slate-200 text-slate-600 border border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'}">${u.admin ? 'Admin' : 'Padrão'}</span></td>
+                        <td class="p-4 py-3 text-right"><button onclick="editUser('${u.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-sm"><i data-lucide="edit" class="w-3.5 h-3.5 inline"></i></button></td>
                     </tr>
                 `;
             });
@@ -1011,7 +1227,7 @@
                 const { data } = await supabaseClient.from('usuarios').select('*'); AdminState.users = data;
                 renderUsersTable(); buildDashboard(); closeModal('modalUser');
             } catch(err) { alert('Erro ao salvar usuário: ' + err.message); }
-            btn.disabled = false; btn.innerHTML = 'Cadastrar Perfil';
+            btn.disabled = false; btn.innerHTML = 'Salvar Perfil';
         });
 
         document.getElementById('btnBatchRecharge').addEventListener('click', () => {
@@ -1024,9 +1240,7 @@
             if(isNaN(amt) || amt <= 0) return;
             closeModal('modalBatchRecharge');
             
-            confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base? Esta ação não pode ser desfeita.`, 'warning', `Sim, Aplicar ${formatMoney(amt)}`, async () => {
-                const btn = document.getElementById('actionConfirmBtn'); btn.innerHTML = 'Processando...';
-                
+            confirmAction('Confirmar Recarga em Lote', `Deseja somar ${formatMoney(amt)} no saldo de TODOS os ${AdminState.users.length} usuários da base?`, 'warning', `Sim, Aplicar ${formatMoney(amt)}`, async () => {
                 const updates = AdminState.users.map(u => {
                     const newBal = parseFloat(u.saldo || 0) + amt;
                     return supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id);
@@ -1040,86 +1254,12 @@
             });
         });
 
-        window.openOrderDetails = function(orderId) {
-            const order = AdminState.orders.find(o => o.id === orderId); if(!order) return;
-            const u = AdminState.users.find(x => x.id === order.usuario_id);
-            const uName = u ? u.nome : order.usuario_id;
-            
-            let itemsHtml = order.pedido_itens.map(item => {
-                const p = AdminState.products.find(x => x.id === item.produto_id);
-                return `<li class="flex justify-between items-center py-2 border-b last:border-0"><span class="text-sm font-medium">${p ? p.nome : item.produto_id}</span><strong class="text-sm bg-slate-100 px-2 py-1 rounded-md border">${item.quantidade} un.</strong></li>`;
-            }).join('');
-
-            const stColors = { 'Cancelado': 'text-red-700 bg-red-100', 'Separação Concluída': 'text-emerald-700 bg-emerald-100', 'Enviado para Separação': 'text-brand-700 bg-brand-100' }[order.status] || 'text-slate-700 bg-slate-100';
-
-            document.getElementById('adminSingleOrderBody').innerHTML = `
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2"><span class="text-sm font-black bg-white border px-2.5 py-1 rounded-md tracking-widest uppercase">${order.id}</span><span class="text-[11px] font-bold ${stColors} px-2.5 py-1 rounded-md border">${order.status}</span></div>
-                        <p class="text-sm mb-1">Solicitado por: <strong>${uName}</strong></p>
-                        <div class="text-sm text-slate-500">Separar até: <strong class="text-slate-800">${formatDate(order.data_separacao).split(' ')[0]}</strong></div>
-                    </div>
-                    <div class="text-right flex flex-col items-end">
-                        <strong class="text-2xl font-black">${formatMoney(order.valor_total)}</strong>
-                        <div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${formatDate(order.data_pedido)}</div>
-                    </div>
-                </div>
-                ${order.observacoes ? `<div class="mb-5 bg-amber-50/50 border border-amber-100 p-3 rounded-xl flex gap-3 items-start"><i data-lucide="message-square" class="w-4 h-4 text-amber-500 mt-0.5 shrink-0"></i><p class="text-xs text-amber-900 italic leading-relaxed">"${order.observacoes}"</p></div>` : ''}
-                
-                <div class="bg-white rounded-xl border overflow-hidden mb-5 shadow-sm">
-                    <div class="bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider border-b">Itens Solicitados</div>
-                    <ul class="px-4 py-1">${itemsHtml}</ul>
-                </div>
-
-                <div class="flex flex-wrap justify-end gap-3 pt-4 border-t">
-                    ${order.status === 'Enviado para Separação' ? `
-                        <button onclick="changeOrderStatus('${order.id}', 'Separação Concluída')" class="px-4 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4"></i> Concluir Separação</button>
-                    ` : ''}
-                    ${order.status !== 'Cancelado' ? `
-                        <button onclick="changeOrderStatus('${order.id}', 'Cancelado')" class="px-4 py-2.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl flex items-center gap-2 shadow-sm"><i data-lucide="ban" class="w-4 h-4"></i> Cancelar Pedido (Estornar)</button>
-                    ` : ''}
-                </div>
-            `;
-            lucide.createIcons();
-            document.getElementById('adminSingleOrderModal').classList.remove('hidden');
-        };
-
-        window.changeOrderStatus = function(orderId, newStatus) {
-            confirmAction('Alterar Status do Pedido', `Você está alterando o pedido ${orderId} para "${newStatus}". Confirma a ação?`, newStatus === 'Cancelado' ? 'danger' : 'warning', 'Sim, Confirmar', async () => {
-                const order = AdminState.orders.find(o => o.id === orderId); if (!order) return;
-                
-                if (newStatus === 'Cancelado') {
-                    const u = AdminState.users.find(x => x.id === order.usuario_id);
-                    if(u) { const newBal = parseFloat(u.saldo || 0) + parseFloat(order.valor_total || 0); await supabaseClient.from('usuarios').update({ saldo: newBal }).eq('id', u.id); }
-                    if(order.pedido_itens) {
-                        for(let item of order.pedido_itens) {
-                            const p = AdminState.products.find(x => x.id === item.produto_id);
-                            if (p) await supabaseClient.from('produtos').update({ estoque: p.estoque + item.quantidade }).eq('id', item.produto_id);
-                        }
-                    }
-                }
-
-                await supabaseClient.from('pedidos').update({ status: newStatus }).eq('id', orderId);
-                logAudit('Status de Pedido Alterado', `Pedido ${orderId} atualizado para [${newStatus}].`);
-                
-                order.status = newStatus;
-                if(newStatus === 'Cancelado') {
-                    const { data: usersReq } = await supabaseClient.from('usuarios').select('*'); AdminState.users = usersReq;
-                    const { data: prodsReq } = await supabaseClient.from('produtos').select('*').order('nome'); AdminState.products = prodsReq;
-                }
-                
-                closeModal('adminSingleOrderModal');
-                buildDashboard(); renderOrdersTable(); renderUsersTable(); renderCatalogTable();
-            });
-        };
-
-        // Lógica do Menu de Contexto (Botão Direito)
-        const customContextMenu = document.getElementById('customContextMenu');
+        // Eventos e UI Geral
         document.addEventListener('contextmenu', (e) => {
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
                 e.preventDefault();
+                const customContextMenu = document.getElementById('customContextMenu');
                 customContextMenu.classList.remove('hidden');
-                
                 const rect = customContextMenu.getBoundingClientRect();
                 let x = e.clientX; let y = e.clientY;
                 if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 5;
@@ -1129,6 +1269,7 @@
         });
 
         document.addEventListener('click', (e) => { 
+            const customContextMenu = document.getElementById('customContextMenu');
             if (customContextMenu && !customContextMenu.contains(e.target)) customContextMenu.classList.add('hidden'); 
         });
 
@@ -1140,12 +1281,13 @@
             } else {
                 document.documentElement.classList.add('dark'); localStorage.theme = 'dark';
             }
-            customContextMenu.classList.add('hidden');
+            document.getElementById('customContextMenu').classList.add('hidden');
+            if(AdminState.charts.gastoMensal) updateDashboardCharts(); // Redraw para adaptar cores
         });
 
         window.addEventListener('DOMContentLoaded', () => { 
             lucide.createIcons();
-            bootAdmin(); // Tenta autenticar e carregar painel imediatamente
+            bootAdmin();
         });
 
     </script>
