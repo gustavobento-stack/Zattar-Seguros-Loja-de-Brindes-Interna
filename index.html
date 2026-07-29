@@ -242,8 +242,9 @@
                     </button>
                 </div>
 
-                <button id="myOrdersBtn" class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium whitespace-nowrap border border-transparent dark:border-slate-600">
+                <button id="myOrdersBtn" class="relative flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-medium whitespace-nowrap border border-transparent dark:border-slate-600">
                     <i data-lucide="list-ordered" class="w-4 h-4"></i> <span class="hidden md:inline">Histórico</span>
+                    <span id="historyBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center hidden shadow-sm border border-white dark:border-slate-800 transition-all scale-100">0</span>
                 </button>
                 
                 <div id="tour-search-container" class="relative w-full md:w-80">
@@ -452,6 +453,10 @@
         let inactivityTimeout;
         const INACTIVITY_LIMIT = 15 * 60 * 1000; 
 
+        // Variáveis de Notificação do Histórico
+        let unreadHistoryCount = 0;
+        const originalTitle = document.title;
+
         function safeNavigate(url) {
             try { window.location.href = url; } 
             catch (e) {
@@ -484,7 +489,8 @@
             mobileCartBtn: document.getElementById('mobileCartBtn'), mobileCartBadge: document.getElementById('mobileCartBadge'),
             closeCartBtn: document.getElementById('closeCartBtn'), successModal: document.getElementById('successModal'),
             successModalContent: document.getElementById('successModalContent'), closeModalBtn: document.getElementById('closeModalBtn'),
-            myOrdersBtn: document.getElementById('myOrdersBtn'), ordersModal: document.getElementById('ordersModal'),
+            myOrdersBtn: document.getElementById('myOrdersBtn'), historyBadge: document.getElementById('historyBadge'), // Mapeado
+            ordersModal: document.getElementById('ordersModal'),
             ordersModalBg: document.getElementById('ordersModalBg'), ordersModalContent: document.getElementById('ordersModalContent'),
             closeOrdersBtn: document.getElementById('closeOrdersBtn'), ordersListContainer: document.getElementById('ordersListContainer'),
             loginScreen: document.getElementById('loginScreen'), loginForm: document.getElementById('loginForm'),
@@ -899,7 +905,44 @@
                 }
 
                 const { data: pedidosData } = await supabaseClient.from('pedidos').select(`id, data_pedido, data_separacao, observacoes, status, pedido_itens ( produto_id, quantidade )`).eq('usuario_id', State.userId).order('data_pedido', { ascending: false });
+                
                 if (pedidosData) {
+                    // -- Lógica de notificação de histórico --
+                    if (State.ordersHistory.length > 0) {
+                        let newOrdersMap = new Map();
+                        pedidosData.forEach(p => newOrdersMap.set(p.id, p.status));
+
+                        let hasUpdates = false;
+                        let lastMsg = "";
+
+                        State.ordersHistory.forEach(oldOrder => {
+                            if (newOrdersMap.has(oldOrder.id)) {
+                                const newStatus = newOrdersMap.get(oldOrder.id);
+                                if (oldOrder.status !== newStatus) {
+                                    hasUpdates = true;
+                                    unreadHistoryCount++;
+                                    if (newStatus === 'Separação Concluída') lastMsg = "✅ Separação Concluída";
+                                    else if (newStatus === 'Cancelado') lastMsg = "❌ Pedido Cancelado";
+                                    else lastMsg = "🔄 Atualização no Pedido";
+                                }
+                            }
+                        });
+
+                        if (hasUpdates) {
+                            if (els.historyBadge) {
+                                els.historyBadge.textContent = unreadHistoryCount;
+                                els.historyBadge.classList.remove('hidden');
+                                els.historyBadge.classList.add('animate-bounce');
+                                setTimeout(() => els.historyBadge.classList.remove('animate-bounce'), 3000);
+                            }
+                            // Muda o título se a aba estiver em segundo plano
+                            if (document.hidden) {
+                                document.title = `${lastMsg} - ${originalTitle}`;
+                            }
+                        }
+                    }
+                    // -- Fim lógica de notificação --
+
                     State.ordersHistory = pedidosData.map(p => {
                         const items = {};
                         if(p.pedido_itens) p.pedido_itens.forEach(item => items[item.produto_id] = item.quantidade);
@@ -1261,8 +1304,20 @@
         };
 
         const toggleOrdersModal = () => {
-            if (els.ordersModal.classList.contains('hidden')) { renderOrdersHistory(); els.ordersModal.classList.remove('hidden'); setTimeout(() => { els.ordersModalContent.classList.remove('scale-95', 'opacity-0'); els.ordersModalContent.classList.add('scale-100', 'opacity-100'); }, 10); } 
-            else { els.ordersModalContent.classList.remove('scale-100', 'opacity-100'); els.ordersModalContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => els.ordersModal.classList.add('hidden'), 300); }
+            if (els.ordersModal.classList.contains('hidden')) {
+                // Limpa notificações ao abrir
+                unreadHistoryCount = 0;
+                if(els.historyBadge) els.historyBadge.classList.add('hidden');
+                document.title = originalTitle;
+
+                renderOrdersHistory();
+                els.ordersModal.classList.remove('hidden');
+                setTimeout(() => { els.ordersModalContent.classList.remove('scale-95', 'opacity-0'); els.ordersModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
+            } else { 
+                els.ordersModalContent.classList.remove('scale-100', 'opacity-100'); 
+                els.ordersModalContent.classList.add('scale-95', 'opacity-0'); 
+                setTimeout(() => els.ordersModal.classList.add('hidden'), 300); 
+            }
         };
 
         window.cancelOrder = function(orderId) {
@@ -1328,6 +1383,13 @@
 
         els.myOrdersBtn?.addEventListener('click', toggleOrdersModal); els.closeOrdersBtn?.addEventListener('click', toggleOrdersModal); els.ordersModalBg?.addEventListener('click', toggleOrdersModal);
         
+        // Listener global de visibilidade para resetar o título da aba
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                document.title = originalTitle;
+            }
+        });
+
         // Inicialização Final
         window.addEventListener('DOMContentLoaded', () => { checkAuth(); lucide.createIcons(); });
     </script>
