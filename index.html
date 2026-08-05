@@ -1240,7 +1240,7 @@
 
                     // Webhook Google (Assíncrono)
                     try {
-                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec';
+                        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwlnZh3JeZoGhPQV9wSHU2dzrJNW3iCD92mBurN5zlM4iveeL9KNDNH61iY_utAP9YJ6A/exec';
                         fetch(webhookUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
                             body: JSON.stringify({ orderId: orderId, userName: State.userName, date: new Date().toISOString(), separationDate: els.separationDate.value, notes: els.orderNotes.value, status: 'Enviado para Separação', items: orderItems.map(item => { const prod = State.products.find(p => p.id === item.produto_id); return { name: prod ? prod.name : item.produto_id, qty: item.quantidade, unitPrice: item.preco_unitario }; })}) 
                         }).catch(e => console.log('Google acionado silenciosamente.'));
@@ -1331,7 +1331,7 @@
                         await supabaseClient.from('pedidos').update({ status: 'Cancelado' }).eq('id', orderId);
                         await supabaseClient.from('usuarios').update({ saldo: State.userBalance }).eq('id', State.userId);
                         for (let itemId of Object.keys(order.items)) { const p = State.products.find(p => p.id === itemId); if (p) await supabaseClient.from('produtos').update({ estoque: p.stock }).eq('id', itemId); }
-                        try { fetch('https://script.google.com/macros/s/AKfycbwjbabC0IAu0zcdibuaNPVH33tljr4Lhmequ-fiCwbb5dI8YCAQEa_8FcxXe1Norpbrgw/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }); } catch (e) { }
+                        try { fetch('https://script.google.com/macros/s/AKfycbwlnZh3JeZoGhPQV9wSHU2dzrJNW3iCD92mBurN5zlM4iveeL9KNDNH61iY_utAP9YJ6A/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: 'Cancelado' }) }); } catch (e) { }
                     } catch(err) { console.error('Erro banco', err); }
                 }
                 backgroundRefresh(); renderOrdersHistory(); renderProducts(); initDashboard(); lastOrdersHash = JSON.stringify(State.ordersHistory);
